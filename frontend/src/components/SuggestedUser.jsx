@@ -35,7 +35,13 @@ export const SuggestedUser = ({ suggestedUser }) => {
 
   return (
     <Flex gap={2} justifyContent={"space-between"} w="full">
-      <Flex gap={2} as={Link} to={`/${suggestedUser.username}`}>
+      <Flex
+        gap={2}
+        as={Link}
+        to={`/${suggestedUser.username}`}
+        w="80%"
+        overflow="hidden"
+      >
         {suggestedUser.profilePic && (
           <Avatar
             name={suggestedUser.name}
@@ -51,27 +57,29 @@ export const SuggestedUser = ({ suggestedUser }) => {
           ></Avatar>
         )}
         <Box>
-          <Text fontSize={"md"} fontWeight={"bold"}>
+          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
             {suggestedUser.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"}>
+          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
             {suggestedUser.username}
           </Text>
         </Box>
       </Flex>
-      <Button
-        size={"sm"}
-        color={following ? "black" : "white"}
-        bg={following ? "white" : "blue.400"}
-        onClick={handleFollow}
-        isLoading={updating}
-        _hover={{
-          color: following ? "black" : "white",
-          opacity: ".8",
-        }}
-      >
-        {following ? "Unfollow" : "Follow"}
-      </Button>
+      <Flex w="20%" justifyContent="flex-end">
+        <Button
+          size={"sm"}
+          color={following ? "black" : "white"}
+          bg={following ? "white" : "blue.400"}
+          onClick={handleFollow}
+          isLoading={updating}
+          _hover={{
+            color: following ? "black" : "white",
+            opacity: ".8",
+          }}
+        >
+          {following ? "Unfollow" : "Follow"}
+        </Button>
+      </Flex>
     </Flex>
   );
 };

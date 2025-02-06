@@ -46,7 +46,7 @@ export const FollowersPage = () => {
         </Flex>
       ) : (
         <Flex
-          w="60%"
+          w={{ base: "60%", sm: "90%", md: "80%", lg: "60%", xl: "60%" }}
           m="8%"
           bg="gray.800"
           borderRadius={10}
@@ -57,8 +57,8 @@ export const FollowersPage = () => {
           <Flex
             direction="column"
             gap={3}
-            h="500px" // Adjust this if needed
-            maxH="500px" // This ensures a fixed height
+            h="full" // Adjust this if needed
+            // maxH="500px" // This ensures a fixed height
             overflowY="auto" // Adds scroll functionality
             w="full"
             p={5}

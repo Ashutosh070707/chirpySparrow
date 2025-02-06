@@ -69,31 +69,30 @@ export const UserPage = () => {
       alignItems="center"
       direction="column"
     >
-      <Box w="40%" mt="5%">
+      {/* <Box w="40%" mt="5%"> */}
+      <Box
+        w={{ base: "40%", sm: "75%", md: "60%", lg: "60%", xl: "45%" }}
+        mt="5%"
+      >
         <UserHeader searchedUser={searchedUser} />
       </Box>
-      <Box mt="2%" w="40%">
-        <Box
-          w="full"
-          h="1px"
-          border="1px solid white"
-          mt="10px"
-          mb="10px"
-        ></Box>
+      <Box
+        mt="2%"
+        w={{ base: "40%", sm: "75%", md: "60%", lg: "60%", xl: "45%" }}
+      >
+        <Box w="full" h="1px" border="1px solid white" mt="3%" mb="2%"></Box>
         <Flex w="full" justifyContent={"center"}>
-          <Text fontWeight="bold" fontSize="lg">
+          <Text fontWeight="bold" fontSize={{ base: "lg", sm: "md" }}>
             Posts
           </Text>
         </Flex>
-        <Box
-          w="full"
-          h="1px"
-          border="1px solid white"
-          mt="10px"
-          mb="10px"
-        ></Box>
+        <Box w="full" h="1px" border="1px solid white" mt="2%" mb="3%"></Box>
       </Box>
-      <Flex justifyContent={"center"} w={"40%"} direction="column">
+      <Flex
+        justifyContent={"center"}
+        w={{ base: "40%", sm: "75%", md: "60%", lg: "60%", xl: "45%" }}
+        direction="column"
+      >
         {fetchingPost && (
           <Flex>
             <Spinner size="xl"></Spinner>

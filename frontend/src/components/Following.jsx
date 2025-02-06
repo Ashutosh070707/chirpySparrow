@@ -41,7 +41,7 @@ export const Following = ({ user }) => {
 
   return (
     <Flex gap={2} justifyContent={"space-between"} w="full">
-      <Flex gap={2} as={Link} to={`/${user.username}`}>
+      <Flex gap={2} as={Link} to={`/${user.username}`} w="80%">
         {user.profilePic && (
           <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
         )}

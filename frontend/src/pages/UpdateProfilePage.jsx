@@ -9,6 +9,7 @@ import {
   useColorModeValue,
   Avatar,
   Center,
+  Box,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -67,137 +68,156 @@ export function UpdateProfilePage() {
     navigate(`/${loggedInUser.username}`);
   };
   return (
-    <form onSubmit={handleSubmit}>
-      <Flex alignItems={"center"} justify={"center"} my="3%">
-        <Stack
-          spacing={2}
-          w={"full"}
-          maxW={"md"}
-          bg={useColorModeValue("white", "gray.dark")}
-          rounded={"xl"}
-          boxShadow={"lg"}
-          p={6}
-        >
-          <Flex alignItems="center" justifyContent="center">
-            <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-              Update Profile
-            </Heading>
-          </Flex>
-          <FormControl id="userName">
-            <Stack direction={["column", "row"]} spacing={6}>
-              <Center>
-                {loggedInUser.profilePic && (
-                  <Avatar
-                    name={loggedInUser.name}
-                    src={loggedInUser.profilePic}
-                    size="xl"
-                    boxShadow={"md"}
-                  ></Avatar>
-                )}
-                {!loggedInUser.profilePic && (
-                  <Avatar
-                    name={loggedInUser.name}
-                    src="https://example.com/default-avatar.png"
-                    size="xl"
-                    boxShadow={"md"}
-                  ></Avatar>
-                )}
-              </Center>
+    <Flex
+      justifyContent={"center"}
+      w={"full"}
+      alignItems="center"
+      minHeight="100vh"
+    >
+      <Box
+        w={{ base: "40%", sm: "90%", md: "60%", lg: "60%", xl: "45%" }}
+        alignItems="center"
+        mt="2%"
+      >
+        <form onSubmit={handleSubmit}>
+          <Flex alignItems={"center"} justifyContent={"center"}>
+            <Stack
+              spacing={2}
+              w={"full"}
+              maxW={"md"}
+              bg={useColorModeValue("white", "gray.dark")}
+              rounded={"xl"}
+              boxShadow={"lg"}
+              p={6}
+            >
+              <Flex alignItems="center" justifyContent="center" mb="2%">
+                <Heading lineHeight={1.1} fontSize={{ base: "3xl" }}>
+                  Update Profile
+                </Heading>
+              </Flex>
+              <FormControl id="userName">
+                <Stack direction={["column", "row"]} spacing={6}>
+                  <Center>
+                    {loggedInUser.profilePic && (
+                      <Avatar
+                        name={loggedInUser.name}
+                        src={loggedInUser.profilePic}
+                        size="xl"
+                        boxShadow={"md"}
+                      ></Avatar>
+                    )}
+                    {!loggedInUser.profilePic && (
+                      <Avatar
+                        name={loggedInUser.name}
+                        src="https://example.com/default-avatar.png"
+                        size="xl"
+                        boxShadow={"md"}
+                      ></Avatar>
+                    )}
+                  </Center>
 
-              <Center w="full">
-                <Button w="full" onClick={() => fileRef.current.click()}>
-                  Change Avatar
-                </Button>
+                  <Center w="full">
+                    <Button w="full" onClick={() => fileRef.current.click()}>
+                      Change Avatar
+                    </Button>
+                    <Input
+                      type="file"
+                      hidden
+                      ref={fileRef}
+                      onChange={handleImageChange}
+                    />
+                  </Center>
+                </Stack>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Full name</FormLabel>
                 <Input
-                  type="file"
-                  hidden
-                  ref={fileRef}
-                  onChange={handleImageChange}
+                  placeholder="John Doe"
+                  value={inputs.name}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, name: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="text"
                 />
-              </Center>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Username</FormLabel>
+                <Input
+                  placeholder="johndoe"
+                  value={inputs.username}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, username: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="text"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  placeholder="your-email@example.com"
+                  value={inputs.email}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, email: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="email"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Bio</FormLabel>
+                <Input
+                  placeholder="Your bio."
+                  value={inputs.bio}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, bio: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="text"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  placeholder="password"
+                  value={inputs.password}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, password: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="password"
+                />
+              </FormControl>
+              <Stack spacing={6} direction={["column", "row"]}>
+                <Button
+                  bg={"red.400"}
+                  color={"white"}
+                  w="full"
+                  _hover={{
+                    bg: "red.500",
+                  }}
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  bg={"green.400"}
+                  color={"white"}
+                  w="full"
+                  _hover={{
+                    bg: "green.500",
+                  }}
+                  type="submit"
+                  isLoading={updating}
+                >
+                  Submit
+                </Button>
+              </Stack>
             </Stack>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Full name</FormLabel>
-            <Input
-              placeholder="John Doe"
-              value={inputs.name}
-              onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Username</FormLabel>
-            <Input
-              placeholder="johndoe"
-              value={inputs.username}
-              onChange={(e) =>
-                setInputs({ ...inputs, username: e.target.value })
-              }
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <Input
-              placeholder="your-email@example.com"
-              value={inputs.email}
-              onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
-              _placeholder={{ color: "gray.500" }}
-              type="email"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Bio</FormLabel>
-            <Input
-              placeholder="Your bio."
-              value={inputs.bio}
-              onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Password</FormLabel>
-            <Input
-              placeholder="password"
-              value={inputs.password}
-              onChange={(e) =>
-                setInputs({ ...inputs, password: e.target.value })
-              }
-              _placeholder={{ color: "gray.500" }}
-              type="password"
-            />
-          </FormControl>
-          <Stack spacing={6} direction={["column", "row"]}>
-            <Button
-              bg={"red.400"}
-              color={"white"}
-              w="full"
-              _hover={{
-                bg: "red.500",
-              }}
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              bg={"green.400"}
-              color={"white"}
-              w="full"
-              _hover={{
-                bg: "green.500",
-              }}
-              type="submit"
-              isLoading={updating}
-            >
-              Submit
-            </Button>
-          </Stack>
-        </Stack>
-      </Flex>
-    </form>
+          </Flex>
+        </form>
+      </Box>
+    </Flex>
   );
 }

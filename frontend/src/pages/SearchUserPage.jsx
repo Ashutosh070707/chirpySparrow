@@ -9,6 +9,10 @@ import {
   Link,
   Spinner,
   Text,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useShowToast } from "../../hooks/useShowToast";
@@ -27,6 +31,7 @@ export const SearchUserPage = () => {
   const [searchingUser, setSearchingUser] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState([]);
   const prevSearchText = useRef("");
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const getSuggestedUsers = async () => {
@@ -100,12 +105,12 @@ export const SearchUserPage = () => {
   return (
     <Flex w="full" justifyContent="center" h="100vh">
       <Flex
-        w="60%"
+        w={{ base: "60%", sm: "90%", md: "80%", lg: "70%", xl: "60%" }}
         bg="gray.800"
-        p={6}
+        p={{ base: 6, sm: 4, md: 4, lg: 6, xl: 6 }}
         direction="column"
-        m="7%"
-        h="500px"
+        m="10%"
+        h="70%"
         borderRadius={10}
         gap={8}
       >
@@ -186,6 +191,65 @@ export const SearchUserPage = () => {
             ))}
           </Flex>
         )}
+        {/* {searchedUsers.length > 0 && (
+          <Popover isOpen={searchedUsers.length > 0} placement="bottom-start">
+            <PopoverTrigger>
+              <Box />
+            </PopoverTrigger>
+            <PopoverContent mt={2}>
+              <PopoverBody p={0}>
+                <Flex
+                  direction="column"
+                  h="240px"
+                  maxH="240px"
+                  overflowY="auto"
+                  gap={1}
+                  borderRadius={10}
+                  bgColor="gray.700"
+                >
+                  {searchedUsers.map((user) => (
+                    <Flex
+                      key={user._id}
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      p={2}
+                      borderRadius="md"
+                      _hover={{
+                        bg: "gray.600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Avatar
+                        name={user.name}
+                        src={
+                          user.profilePic ||
+                          "https://example.com/default-avatar.png"
+                        }
+                        size="md"
+                      />
+                      <Link
+                        as={RouterLink}
+                        to={`/${user.username}`}
+                        textDecoration="none"
+                        _hover={{ textDecoration: "none" }}
+                        ml={3}
+                      >
+                        <Flex direction="column">
+                          <Text fontSize="md" fontWeight="bold">
+                            {user.name}
+                          </Text>
+                          <Text color="gray.500" fontSize="sm">
+                            {user.username}
+                          </Text>
+                        </Flex>
+                      </Link>
+                    </Flex>
+                  ))}
+                </Flex>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        )} */}
 
         {fetchingSuggestedUsers && (
           <Flex
@@ -211,10 +275,14 @@ export const SearchUserPage = () => {
             maxH="400px"
             overflowY="auto"
             border="1px solid gray"
+            borderRadius={20}
             w="full"
             p={5}
           >
-            <Text fontSize="md" fontWeight="bold">
+            <Text
+              fontSize={{ base: "md", sm: "sm", md: "md", lg: "md", xl: "md" }}
+              fontWeight="bold"
+            >
               Suggested User:
             </Text>
             <Divider></Divider>

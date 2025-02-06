@@ -26,7 +26,7 @@ function App() {
         <Flex direction="row">
           {loggedInUser && (
             <Box
-              w={{ base: "16%", sm: "10%", md: "10%", lg: "16%", xl: "16%" }} // Responsive sidebar width
+              w={{ base: "16%", sm: "11%", md: "10%", lg: "16%", xl: "16%" }}
             >
               <Sidebar />
             </Box>

@@ -20,14 +20,20 @@ export const UserHeader = ({ searchedUser }) => {
   const userPosts = useRecoilValue(userPostsAtom);
 
   return (
-    <Box>
+    <Box w="full" mt="5%">
       <VStack gap={3} alignItems={"start"}>
         <Flex justifyContent={"space-between"} w={"full"} alignItems={"center"}>
-          <Flex direction="column" g={3}>
-            <Text fontSize={"3xl"} fontWeight={"bold"}>
+          <Flex direction="column" g={3} justifyContent="center">
+            <Text
+              fontSize={{ base: "3xl", sm: "xl", md: "2xl", lg: "3xl" }}
+              fontWeight={"bold"}
+            >
               {searchedUser.name}
             </Text>
-            <Text fontSize={"1xl"} color="gray.light">
+            <Text
+              fontSize={{ base: "xl", sm: "md", md: "lg" }}
+              color="gray.light"
+            >
               @{searchedUser.username}{" "}
             </Text>
           </Flex>
@@ -37,21 +43,36 @@ export const UserHeader = ({ searchedUser }) => {
               <Avatar
                 name={searchedUser.name}
                 src={searchedUser.profilePic}
-                size="xl"
+                size={{
+                  base: "xl",
+                  sm: "lg",
+                  md: "xl",
+                  lg: "xl",
+                  xl: "xl",
+                }}
               ></Avatar>
             )}
             {!searchedUser.profilePic && (
               <Avatar
                 name={searchedUser.name}
                 src="https://example.com/default-avatar.png"
-                size="xl"
+                size={{
+                  base: "xl",
+                  sm: "lg",
+                  md: "xl",
+                  lg: "xl",
+                  xl: "xl",
+                }}
               ></Avatar>
             )}
           </Box>
         </Flex>
 
         <Flex mt="5%">
-          <Text fontFamily={"Comic Sans MS, Comic Sans, cursive"} mb="20px">
+          <Text
+            fontSize={{ base: "md", sm: "sm", md: "md", lg: "md", xl: "md" }}
+            mb="20px"
+          >
             {searchedUser.bio}
           </Text>
         </Flex>
@@ -68,7 +89,7 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="18px">{userPosts.length} posts</Text>
+              <Text fontSize="lg">{userPosts.length} posts</Text>
             </Flex>
           </GridItem>
           <GridItem>
@@ -77,7 +98,7 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="18px">
+              <Text fontSize="lg">
                 {searchedUser.followers.length} followers
               </Text>
             </Flex>
@@ -88,7 +109,7 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="18px">
+              <Text fontSize="lg">
                 {searchedUser.following.length} following
               </Text>
             </Flex>

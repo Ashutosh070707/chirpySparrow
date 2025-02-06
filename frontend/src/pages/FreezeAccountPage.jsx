@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text } from "@chakra-ui/react";
 import React from "react";
 import { useShowToast } from "../../hooks/useShowToast";
 import { useLogout } from "../../hooks/useLogout";
@@ -31,21 +31,30 @@ export const FreezeAccount = () => {
   return (
     <Flex w="full" justifyContent="center">
       <Flex
-        w={"50%"}
-        mt="5%"
+        w={{ base: "50%", sm: "70%", md: "70%", lg: "50%", xl: "50%" }}
+        mt={{ base: "5%", sm: "10%", md: "8%", lg: "5%", xl: "5%" }}
         justifyContent="center"
         direction="column"
         gap={15}
       >
-        <Flex justifyContent="center">
-          <Text fontSize="4xl" fontWeight={"bold"}>
+        <Flex justifyContent="center" mb="4%">
+          <Text
+            fontSize={{
+              base: "4xl",
+              sm: "3xl",
+              md: "4xl",
+              lg: "4xl",
+              xl: "4xl",
+            }}
+            fontWeight={"bold"}
+          >
             Freeze Account
           </Text>
         </Flex>
         <Flex justifyContent={"space-between"}>
           <Flex direction="column">
             <Text fontSize="md" fontWeight={"bold"}>
-              Freeze Your Account
+              Freeze Your Account :
             </Text>
             <Text>You can unfreeze your account anytime by logging in.</Text>
           </Flex>

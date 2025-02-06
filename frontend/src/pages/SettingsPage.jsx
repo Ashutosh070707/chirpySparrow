@@ -8,14 +8,14 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { Navigate, Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 
 export const SettingsPage = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex w="full" justifyContent="center">
-      <Box w={"80%"} alignItems="center" mt="3%">
+      <Box w={"80%"} alignItems="center" mt="10%">
         <Grid
           templateRows="repeat(5, 1fr)"
           templateColumns="repeat(1, 1fr)"
@@ -35,10 +35,10 @@ export const SettingsPage = () => {
                 borderRadius={10}
                 h="60px"
               >
-                <Text fontSize="20px" m="3%">
+                <Text fontSize="20px" m="25px">
                   Followers
                 </Text>
-                <Box m="2%">
+                <Box m="3%">
                   <FaArrowRight size={20} />
                 </Box>
               </Flex>
@@ -62,7 +62,7 @@ export const SettingsPage = () => {
                 <Text fontSize="20px" m="25px">
                   Following
                 </Text>
-                <Box m="2%">
+                <Box m="3%">
                   <FaArrowRight size={20} />
                 </Box>
               </Flex>
@@ -85,7 +85,7 @@ export const SettingsPage = () => {
                 <Text fontSize="20px" m="25px">
                   Update Profile
                 </Text>
-                <Box m="2%">
+                <Box m="3%">
                   <FaArrowRight size={20} />
                 </Box>
               </Flex>
@@ -102,7 +102,7 @@ export const SettingsPage = () => {
               <Text fontSize="20px" m="25px">
                 Appearance
               </Text>
-              <Box m="2%">
+              <Box m="3%">
                 <Switch
                   isChecked={colorMode === "dark"}
                   onChange={toggleColorMode}
@@ -128,7 +128,7 @@ export const SettingsPage = () => {
                 <Text fontSize="20px" m="25px">
                   Freeze Account
                 </Text>
-                <Box m="2%">
+                <Box m="3%">
                   <FaArrowRight size={20} />
                 </Box>
               </Flex>

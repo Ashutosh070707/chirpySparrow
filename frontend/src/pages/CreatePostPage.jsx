@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CloseButton,
   Flex,
@@ -9,21 +10,17 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useShowToast } from "../../hooks/useShowToast";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { userPostsAtom } from "../atoms/userPostsAtom";
+import { useRecoilValue } from "recoil";
 import { usePreviewImg } from "../../hooks/usePreviewImg";
 import { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { BsFillImageFill } from "react-icons/bs";
 
 const MAX_CHAR = 500;
 
 export const CreatePostPage = () => {
-  const { username } = useParams();
   const showToast = useShowToast();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
-  const setUserPosts = useSetRecoilState(userPostsAtom);
   const [postText, setPostText] = useState("");
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
@@ -75,18 +72,26 @@ export const CreatePostPage = () => {
   return (
     <Flex w="full" justifyContent="center">
       <Flex
-        w="50%"
+        w={{ base: "50%", sm: "90%", md: "70%", lg: "60%", xl: "50%" }}
         direction="column"
         justifyContent="center"
         borderRadius={10}
         bg="gray.900"
-        mt="5%"
-        mb="5%"
+        mt="6%"
         p="3%"
         gap={10}
       >
         <Flex justifyContent="center" alignItems="center" mb="2%">
-          <Text fontSize="4xl" fontWeight={"bold"}>
+          <Text
+            fontSize={{
+              base: "4xl",
+              sm: "3xl",
+              md: "3xl",
+              lg: "4xl",
+              xl: "4xl",
+            }}
+            fontWeight={"bold"}
+          >
             Create Post
           </Text>
         </Flex>
@@ -124,20 +129,27 @@ export const CreatePostPage = () => {
             Add Image
           </Button>
         </FormControl>
+
         <Flex gap={4} justifyContent="center">
           {imgUrl && (
-            <Flex mt={5} w={"full"}>
-              <Image
-                src={imgUrl}
-                alt="Selected img"
-                w={"full"}
-                h={"300px"}
-                objectFit={"contain"}
-              ></Image>
-              <CloseButton
-                onClick={() => setImgUrl("")}
-                bg={"gray.800"}
-              ></CloseButton>
+            <Flex mt={5} w={"full"} justifyContent={"center"}>
+              <Box position="relative" w="full" h="300px">
+                <Image
+                  src={imgUrl}
+                  alt="Selected img"
+                  w="full"
+                  h="100%"
+                  objectFit="contain"
+                />
+                <CloseButton
+                  onClick={() => setImgUrl("")}
+                  position="absolute"
+                  top="2"
+                  right="6"
+                  bg="gray.800"
+                  _hover={{ bg: "gray.600" }}
+                />
+              </Box>
             </Flex>
           )}
         </Flex>

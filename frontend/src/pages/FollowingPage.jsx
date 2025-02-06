@@ -47,7 +47,7 @@ export const FollowingPage = () => {
         </Flex>
       ) : (
         <Flex
-          w="60%"
+          w={{ base: "60%", sm: "90%", md: "80%", lg: "60%", xl: "60%" }}
           m="8%"
           bg="gray.800"
           borderRadius={10}

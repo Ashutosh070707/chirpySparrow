@@ -5,7 +5,7 @@ import { IoSendSharp } from "react-icons/io5";
 export const Follower = ({ user }) => {
   return (
     <Flex gap={2} justifyContent={"space-between"} w="full">
-      <Flex gap={2} as={Link} to={`/${user.username}`}>
+      <Flex gap={2} as={Link} to={`/${user.username}`} w="90%">
         {user.profilePic && (
           <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
         )}
@@ -17,10 +17,10 @@ export const Follower = ({ user }) => {
           ></Avatar>
         )}
         <Box>
-          <Text fontSize={"md"} fontWeight={"bold"}>
+          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
             {user.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"}>
+          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
             {user.username}
           </Text>
         </Box>

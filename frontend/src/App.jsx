@@ -23,13 +23,18 @@ function App() {
   return (
     <>
       <Box>
-        <Flex direction="row" gap={4}>
+        <Flex direction="row">
           {loggedInUser && (
-            <Box w="16%">
+            <Box
+              w={{ base: "16%", sm: "10%", md: "10%", lg: "16%", xl: "16%" }} // Responsive sidebar width
+            >
               <Sidebar />
             </Box>
           )}
-          <Box w={loggedInUser ? "84%" : "100%"} alignItems="center">
+          <Box
+            flex="1" // Takes remaining space
+            overflowY="auto" // Scrollable content
+          >
             <Routes>
               <Route
                 path="/"

@@ -5,6 +5,7 @@ import {
   Image,
   Link,
   Text,
+  useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -16,27 +17,31 @@ import { FiLogOut } from "react-icons/fi";
 import { FaSearch } from "react-icons/fa";
 import { HiPlus } from "react-icons/hi";
 import { useLogout } from "../../hooks/useLogout";
-import { authScreenAtom } from "../atoms/authAtom";
 import { BsFillChatQuoteFill, BsPlus } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { FaInstagram } from "react-icons/fa";
 
 export const Sidebar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const logout = useLogout();
+  const showText = useBreakpointValue({
+    base: false,
+    sm: false,
+    md: false,
+    lg: true,
+    xl: true,
+  });
 
   return (
     <Flex
       direction={"column"}
-      position="fixed"
+      position="sticky"
+      top="0"
       left="0"
-      height={{ base: "auto", md: "100vh" }} // Adjust height for different screen sizes
-      maxH="100vh" // Prevent sidebar from growing beyond viewport height
-      overflowY="auto" // Add vertical scrollbar if content overflows
       bg={colorMode === "dark" ? "gray.800" : "white"}
-      width="16%"
-      pb="5%"
+      w="full"
+      h="100vh"
     >
       <Flex direction="column" alignItems={"center"} justifyContent="center">
         <Box alignItems="center" mt={"40px"} mb={"50px"}>
@@ -46,13 +51,21 @@ export const Sidebar = () => {
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
           >
-            <Text
-              fontSize={{ base: "2xl", sm: "md", md: "xl" }}
-              fontWeight="bold"
-              fontFamily={"Comic Sans MS, Comic Sans, cursive"}
-            >
-              ChirpySparrow
-            </Text>
+            {!showText && <FaInstagram size={30} />}
+            {showText && (
+              <Text
+                fontSize={{
+                  base: "2xl",
+                  sm: "md",
+                  md: "lg",
+                  lg: "xl",
+                  xl: "2xl",
+                }}
+                fontWeight="bold"
+              >
+                ChirpySparrow
+              </Text>
+            )}
           </Link>
         </Box>
         <Flex direction={"column"} alignItems={"flex-start"} gap={10}>
@@ -64,7 +77,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <AiFillHome size={26}></AiFillHome>
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Home</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Home
+                </Text>
+              )}
             </Flex>
           </Link>
           <Link
@@ -75,7 +92,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <FaSearch size={26} />
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Search</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Search
+                </Text>
+              )}
             </Flex>
           </Link>
           <Link
@@ -88,7 +109,11 @@ export const Sidebar = () => {
               <Box border="3px solid white" borderRadius={10}>
                 <HiPlus size={23} />
               </Box>
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Create</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Create
+                </Text>
+              )}
             </Flex>
           </Link>
 
@@ -100,7 +125,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <BsFillChatQuoteFill size={26} />
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Message</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Message
+                </Text>
+              )}
             </Flex>
           </Link>
           <Link
@@ -111,7 +140,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <RxAvatar size={26}></RxAvatar>
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Profile</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Profile
+                </Text>
+              )}
             </Flex>
           </Link>
 
@@ -123,9 +156,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <MdOutlineSettings size={26} />
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>
-                Settings
-              </Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Settings
+                </Text>
+              )}
             </Flex>
           </Link>
 
@@ -138,7 +173,11 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <FiLogOut size={26} />
-              <Text fontSize={{ base: "lg", sm: "sm", md: "xl" }}>Logout</Text>
+              {showText && (
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                  Logout
+                </Text>
+              )}
             </Flex>
           </Link>
         </Flex>

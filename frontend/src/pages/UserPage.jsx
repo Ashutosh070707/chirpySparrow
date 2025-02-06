@@ -111,14 +111,6 @@ export const UserPage = () => {
           userPosts.map((post, index) => (
             <Box key={post._id}>
               <Post post={post} postedBy={post.postedBy}></Post>
-              {index !== userPosts.length - 1 && (
-                <Box
-                  border="1px solid"
-                  mt="2%"
-                  borderRadius={10}
-                  borderColor="gray.600"
-                ></Box>
-              )}
             </Box>
           ))}
       </Flex>

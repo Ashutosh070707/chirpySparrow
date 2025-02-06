@@ -1,23 +1,21 @@
 import {
   Box,
-  Container,
   Flex,
-  Image,
   Link,
   Text,
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
-import { Navigate, Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
 import { FaSearch } from "react-icons/fa";
 import { HiPlus } from "react-icons/hi";
 import { useLogout } from "../../hooks/useLogout";
-import { BsFillChatQuoteFill, BsPlus } from "react-icons/bs";
+import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaInstagram } from "react-icons/fa";
 

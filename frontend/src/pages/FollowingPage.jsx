@@ -61,6 +61,24 @@ export const FollowingPage = () => {
             h="500px" // Adjust this if needed
             maxH="500px" // This ensures a fixed height
             overflowY="auto" // Adds scroll functionality
+            css={{
+              scrollbarWidth: "thin", // Makes scrollbar thinner
+              scrollbarColor: "#888 transparent", // Thumb and track colors
+              "&::-webkit-scrollbar": {
+                width: "6px",
+                height: "6px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "transparent",
+              },
+            }}
             w="full"
             p={5}
           >

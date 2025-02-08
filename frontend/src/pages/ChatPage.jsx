@@ -265,6 +265,24 @@ export const ChatPage = () => {
                     borderRadius={10}
                     bgColor="gray.900"
                     p={1}
+                    css={{
+                      scrollbarWidth: "thin", // Makes scrollbar thinner
+                      scrollbarColor: "#888 transparent", // Thumb and track colors
+                      "&::-webkit-scrollbar": {
+                        width: "6px",
+                        height: "6px",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: "#888",
+                        borderRadius: "10px",
+                      },
+                      "&::-webkit-scrollbar-thumb:hover": {
+                        background: "#555",
+                      },
+                      "&::-webkit-scrollbar-track": {
+                        background: "transparent",
+                      },
+                    }}
                   >
                     {searchedUsers.map((user) => (
                       <Flex
@@ -313,6 +331,24 @@ export const ChatPage = () => {
                   h="90%"
                   maxH={"90%"}
                   overflowY={"auto"}
+                  css={{
+                    scrollbarWidth: "thin", // Makes scrollbar thinner
+                    scrollbarColor: "#888 transparent", // Thumb and track colors
+                    "&::-webkit-scrollbar": {
+                      width: "6px",
+                      height: "6px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      background: "#888",
+                      borderRadius: "10px",
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                      background: "#555",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "transparent",
+                    },
+                  }}
                   overflowX="hidden"
                 >
                   {loadingConversations &&
@@ -449,6 +485,24 @@ export const ChatPage = () => {
                   h="30%"
                   maxH="30%"
                   overflowY="auto"
+                  css={{
+                    scrollbarWidth: "thin", // Makes scrollbar thinner
+                    scrollbarColor: "#888 transparent", // Thumb and track colors
+                    "&::-webkit-scrollbar": {
+                      width: "6px",
+                      height: "6px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      background: "#888",
+                      borderRadius: "10px",
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                      background: "#555",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "transparent",
+                    },
+                  }}
                   gap={2}
                   borderRadius={10}
                   bgColor="gray.900"
@@ -501,6 +555,24 @@ export const ChatPage = () => {
                 h="90%"
                 maxH={"90%"}
                 overflowY={"auto"}
+                css={{
+                  scrollbarWidth: "thin", // Makes scrollbar thinner
+                  scrollbarColor: "#888 transparent", // Thumb and track colors
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                    height: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#888",
+                    borderRadius: "10px",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    background: "#555",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "transparent",
+                  },
+                }}
                 overflowX="hidden"
               >
                 {loadingConversations &&

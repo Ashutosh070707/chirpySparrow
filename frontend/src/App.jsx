@@ -34,6 +34,24 @@ function App() {
           <Box
             flex="1" // Takes remaining space
             overflowY="auto" // Scrollable content
+            css={{
+              scrollbarWidth: "thin", // Makes scrollbar thinner
+              scrollbarColor: "#888 transparent", // Thumb and track colors
+              "&::-webkit-scrollbar": {
+                width: "6px",
+                height: "6px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "transparent",
+              },
+            }}
           >
             <Routes>
               <Route

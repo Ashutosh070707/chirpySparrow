@@ -130,6 +130,24 @@ export const MessageInput = ({ setMessages }) => {
           maxH="60vh" // Adjust the maximum height of the modal
           overflowX="auto"
           overflowY="auto"
+          css={{
+            scrollbarWidth: "thin", // Makes scrollbar thinner
+            scrollbarColor: "#888 transparent", // Thumb and track colors
+            "&::-webkit-scrollbar": {
+              width: "6px",
+              height: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#888",
+              borderRadius: "10px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#555",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+          }}
           isOpen={imgUrl}
           onClose={() => {
             onClose();
@@ -170,6 +188,24 @@ export const MessageInput = ({ setMessages }) => {
                   maxH="70vh"
                   overflowY="auto"
                   overflowX="auto"
+                  css={{
+                    scrollbarWidth: "thin", // Makes scrollbar thinner
+                    scrollbarColor: "#888 transparent", // Thumb and track colors
+                    "&::-webkit-scrollbar": {
+                      width: "6px",
+                      height: "6px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      background: "#888",
+                      borderRadius: "10px",
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                      background: "#555",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "transparent",
+                    },
+                  }}
                 >
                   <Image
                     src={imgUrl}

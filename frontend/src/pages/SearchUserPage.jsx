@@ -149,6 +149,24 @@ export const SearchUserPage = () => {
             h="240px"
             maxH="240px"
             overflowY="auto"
+            css={{
+              scrollbarWidth: "thin", // Makes scrollbar thinner
+              scrollbarColor: "#888 transparent", // Thumb and track colors
+              "&::-webkit-scrollbar": {
+                width: "6px",
+                height: "6px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "transparent",
+              },
+            }}
             gap={1}
             borderRadius={10}
             bgColor="gray.700"
@@ -275,6 +293,24 @@ export const SearchUserPage = () => {
             h="400px"
             maxH="400px"
             overflowY="auto"
+            css={{
+              scrollbarWidth: "thin", // Makes scrollbar thinner
+              scrollbarColor: "#888 transparent", // Thumb and track colors
+              "&::-webkit-scrollbar": {
+                width: "6px",
+                height: "6px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "transparent",
+              },
+            }}
             border="1px solid gray"
             borderRadius={20}
             w="full"

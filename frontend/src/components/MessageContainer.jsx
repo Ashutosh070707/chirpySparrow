@@ -174,6 +174,24 @@ export const MessageContainer = ({ setBackButton }) => {
         my={4}
         w={"full"}
         overflowY={"auto"}
+        css={{
+          scrollbarWidth: "thin", // Makes scrollbar thinner
+          scrollbarColor: "#888 transparent", // Thumb and track colors
+          "&::-webkit-scrollbar": {
+            width: "6px",
+            height: "6px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#888",
+            borderRadius: "10px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#555",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+        }}
       >
         {loadingMessages &&
           [...Array(7)].map((_, i) => (

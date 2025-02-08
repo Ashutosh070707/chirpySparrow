@@ -31,7 +31,7 @@ export const Follower = ({ user }) => {
           </Text>
         </Flex>
       </Flex>
-      <Button
+      {/* <Button
         size={"sm"}
         color={"white"}
         bg={"blue.400"}
@@ -40,7 +40,7 @@ export const Follower = ({ user }) => {
         }}
       >
         <IoSendSharp size={18} />
-      </Button>
+      </Button> */}
     </Flex>
   );
 };

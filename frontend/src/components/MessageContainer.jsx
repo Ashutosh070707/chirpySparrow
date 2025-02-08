@@ -1,11 +1,13 @@
 import {
   Avatar,
+  Button,
   Divider,
   Flex,
   Image,
   Skeleton,
   SkeletonCircle,
   Text,
+  useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Message } from "../components/Message.jsx";
@@ -20,8 +22,9 @@ import { useSocket } from "../../context/SocketContext.jsx";
 import { useShowToast } from "../../hooks/useShowToast";
 import messageSound from "../../assets/sounds/notification.mp3";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom.js";
+import { FaArrowLeft } from "react-icons/fa";
 
-export const MessageContainer = () => {
+export const MessageContainer = ({ setBackButton }) => {
   const showToast = useShowToast();
   const [selectedConversation, setselectedConversation] = useRecoilState(
     selectedConversationAtom
@@ -32,6 +35,13 @@ export const MessageContainer = () => {
   const setConversations = useSetRecoilState(conversationsAtom);
   const { socket } = useSocket();
   const messageEndRef = useRef(null);
+  const screenSize = useBreakpointValue({
+    base: "sm",
+    sm: "sm",
+    md: "md",
+    lg: "lg",
+    xl: "xl",
+  });
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
@@ -124,10 +134,24 @@ export const MessageContainer = () => {
       borderRadius="md"
       flexDirection="column"
       h="full"
-      gap={2}
-      p={3}
+      gap={1}
+      p={2}
     >
       <Flex w="full" alignItems={"center"} gap={2} flex={10}>
+        {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
+          <Button
+            size="sm"
+            borderRadius={100}
+            w={10}
+            h={10}
+            onClick={() => {
+              setBackButton(false);
+            }}
+          >
+            <FaArrowLeft />
+          </Button>
+        )}
+
         <Avatar
           name={selectedConversation.name}
           src={
@@ -138,17 +162,16 @@ export const MessageContainer = () => {
         ></Avatar>
         <Text display="flex" alignItems="center">
           {selectedConversation.name}
-          <Image src="/verified.png" w={4} h={4} ml={1}></Image>
+          {/* <Image src="/verified.png" w={4} h={4} ml={1}></Image> */}
         </Text>
       </Flex>
-      <Divider></Divider>
+      <Divider flex={2}></Divider>
 
       <Flex
         direction="column"
         gap={4}
         flex={80}
         my={4}
-        h="full"
         w={"full"}
         overflowY={"auto"}
       >
@@ -191,7 +214,7 @@ export const MessageContainer = () => {
             </Flex>
           ))}
       </Flex>
-      <Flex flex={10} w="full" borderRadius={10}>
+      <Flex flex={8} w="full" borderRadius={10}>
         <MessageInput setMessages={setMessages} />
       </Flex>
     </Flex>

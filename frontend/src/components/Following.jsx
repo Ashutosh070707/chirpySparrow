@@ -41,7 +41,13 @@ export const Following = ({ user }) => {
 
   return (
     <Flex gap={2} justifyContent={"space-between"} w="full">
-      <Flex gap={2} as={Link} to={`/${user.username}`} w="80%">
+      <Flex
+        gap={2}
+        as={Link}
+        to={`/${user.username}`}
+        w="80%"
+        overflow="hidden"
+      >
         {user.profilePic && (
           <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
         )}
@@ -52,14 +58,14 @@ export const Following = ({ user }) => {
             size="md"
           ></Avatar>
         )}
-        <Box>
-          <Text fontSize={"md"} fontWeight={"bold"}>
+        <Flex direction="column" w="70%">
+          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
             {user.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"}>
+          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
             {user.username}
           </Text>
-        </Box>
+        </Flex>
       </Flex>
       <Button
         size={"sm"}

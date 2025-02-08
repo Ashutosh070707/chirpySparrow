@@ -56,14 +56,14 @@ export const SuggestedUser = ({ suggestedUser }) => {
             size="md"
           ></Avatar>
         )}
-        <Box>
+        <Flex direction="column" w="70%">
           <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
             {suggestedUser.name}
           </Text>
           <Text color={"gray.light"} fontSize={"sm"} isTruncated>
             {suggestedUser.username}
           </Text>
-        </Box>
+        </Flex>
       </Flex>
       <Flex w="20%" justifyContent="flex-end">
         <Button

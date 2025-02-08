@@ -4,6 +4,7 @@ import {
   Box,
   Flex,
   Image,
+  Text,
   useColorMode,
   useColorModeValue,
   WrapItem,
@@ -14,7 +15,7 @@ import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 
-export const Conversation = ({ conversation, isOnline }) => {
+export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const colorMode = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [selectedConversation, setSelectedConversation] = useRecoilState(
@@ -28,7 +29,7 @@ export const Conversation = ({ conversation, isOnline }) => {
       borderRadius={10}
       alignItems="center"
       p={2}
-      gap={4}
+      gap={3}
       _hover={{
         cursor: "pointer",
         bg: useColorModeValue("gray.600", "gray.dark"),
@@ -44,6 +45,7 @@ export const Conversation = ({ conversation, isOnline }) => {
           name: user.name,
           mock: conversation.mock,
         });
+        setBackButton(true);
       }}
       bg={
         selectedConversation?._id === conversation._id
@@ -53,48 +55,56 @@ export const Conversation = ({ conversation, isOnline }) => {
           : ""
       }
     >
-      <Flex flex={5}>
-        <WrapItem>
-          <Avatar
-            name={user.name}
-            src={user.profilePic || "https://example.com/default-avatar.png"}
-            size="md"
-          >
-            {isOnline ? (
-              <AvatarBadge boxSize="1em" bg="green.500"></AvatarBadge>
-            ) : (
-              ""
-            )}
-          </Avatar>
-        </WrapItem>
-      </Flex>
+      <Flex gap={2} w="full">
+        <Flex flex={8}>
+          <WrapItem>
+            <Avatar
+              name={user.name}
+              src={user.profilePic || "https://example.com/default-avatar.png"}
+              size="md"
+            >
+              {isOnline ? (
+                <AvatarBadge boxSize="1em" bg="green.400"></AvatarBadge>
+              ) : (
+                ""
+              )}
+            </Avatar>
+          </WrapItem>
+        </Flex>
 
-      <Flex direction={"column"} flex={95}>
-        <Box
-          fontSize={"sm"}
-          fontWeight="700"
-          display="flex"
-          alignItems="center"
+        <Flex
+          direction={"column"}
+          flex={92}
+          gap={1}
+          overflow="hidden"
+          justifyContent={"flex-start"}
         >
-          <Flex alignItems="center">
-            {user.name.length > 13
-              ? user.name.substring(0, 13) + "..."
-              : user.name}
-            <Image src="/verified.png" w="4" h={4} ml={1}></Image>
+          <Flex alignItems="center" w="full" overflow="hidden">
+            <Text fontSize={"sm"} fontWeight={"bold"}>
+              {user.name}
+            </Text>
           </Flex>
-        </Box>
 
-        <Box as="span" fontSize="xs" display="flex" alignItems="center" gap={1}>
-          {loggedInUser._id === lastMessage.sender ? (
-            <Box color={lastMessage.seen ? "blue.400" : ""}>
-              <BsCheck2All size={16}></BsCheck2All>
-            </Box>
-          ) : null}
-          {lastMessage.text.length > 20
-            ? lastMessage.text.substring(0, 20) + "..."
-            : lastMessage.text}
-          {/* <BsFillImageFill size={15}/> */}
-        </Box>
+          <Flex
+            fontSize="xs"
+            alignItems="center"
+            gap={1}
+            overflow="hidden"
+            w="full"
+          >
+            {loggedInUser._id === lastMessage.sender ? (
+              <Box color={lastMessage.seen ? "blue.400" : ""}>
+                <BsCheck2All size={16}></BsCheck2All>
+              </Box>
+            ) : null}
+
+            {lastMessage.text.length > 0 && (
+              <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
+                {lastMessage.text}
+              </Text>
+            )}
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );

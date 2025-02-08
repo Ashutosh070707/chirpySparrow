@@ -69,16 +69,15 @@ export const UserPage = () => {
       alignItems="center"
       direction="column"
     >
-      {/* <Box w="40%" mt="5%"> */}
       <Box
-        w={{ base: "40%", sm: "75%", md: "60%", lg: "60%", xl: "45%" }}
+        w={{ base: "40%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
         mt="5%"
       >
         <UserHeader searchedUser={searchedUser} />
       </Box>
       <Box
         mt="2%"
-        w={{ base: "40%", sm: "75%", md: "60%", lg: "60%", xl: "45%" }}
+        w={{ base: "40%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
       >
         <Box w="full" h="1px" border="1px solid white" mt="3%" mb="2%"></Box>
         <Flex w="full" justifyContent={"center"}>

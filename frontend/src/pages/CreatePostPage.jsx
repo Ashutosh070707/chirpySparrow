@@ -70,18 +70,20 @@ export const CreatePostPage = () => {
     }
   };
   return (
-    <Flex w="full" justifyContent="center">
+    <Flex w="full" justifyContent="center" h="full">
       <Flex
         w={{ base: "50%", sm: "90%", md: "70%", lg: "60%", xl: "50%" }}
         direction="column"
         justifyContent="center"
         borderRadius={10}
         bg="gray.900"
-        mt="6%"
+        mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
+        h="80%"
         p="3%"
+        pt="2%"
         gap={10}
       >
-        <Flex justifyContent="center" alignItems="center" mb="2%">
+        <Flex justifyContent="center" alignItems="center" mb="1%">
           <Text
             fontSize={{
               base: "4xl",

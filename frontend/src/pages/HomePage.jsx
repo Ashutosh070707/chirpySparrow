@@ -39,7 +39,7 @@ export const HomePage = () => {
       minHeight="100vh"
     >
       <Box
-        w={{ base: "40%", sm: "90%", md: "60%", lg: "60%", xl: "45%" }}
+        w={{ base: "40%", sm: "90%", md: "60%", lg: "50%", xl: "42%" }}
         alignItems="center"
         mt="2%"
       >

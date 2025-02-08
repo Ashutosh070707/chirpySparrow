@@ -109,8 +109,9 @@ export const SearchUserPage = () => {
         bg="gray.800"
         p={{ base: 6, sm: 4, md: 4, lg: 6, xl: 6 }}
         direction="column"
-        m="10%"
-        h="70%"
+        // m="10%"
+        mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
+        h="75%"
         borderRadius={10}
         gap={8}
       >

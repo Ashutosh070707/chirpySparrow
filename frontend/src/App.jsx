@@ -25,34 +25,11 @@ function App() {
       <Box>
         <Flex direction="row">
           {loggedInUser && (
-            <Box
-              w={{ base: "16%", sm: "11%", md: "10%", lg: "16%", xl: "16%" }}
-            >
+            <Box w={{ base: "16%", sm: "10%", md: "8%", lg: "14%", xl: "14%" }}>
               <Sidebar />
             </Box>
           )}
-          <Box
-            flex="1" // Takes remaining space
-            overflowY="auto" // Scrollable content
-            css={{
-              scrollbarWidth: "thin", // Makes scrollbar thinner
-              scrollbarColor: "#888 transparent", // Thumb and track colors
-              "&::-webkit-scrollbar": {
-                width: "6px",
-                height: "6px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#888",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-            }}
-          >
+          <Box className="custom-scrollbar">
             <Routes>
               <Route
                 path="/"

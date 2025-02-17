@@ -34,7 +34,7 @@ export const Post = ({ post, postedBy }) => {
   if (!user) return null;
 
   return (
-    <Box mt="6%" mb="6%" borderRadius={6}>
+    <Box mt="3%" mb="3%" borderRadius={6}>
       <Flex direction={"column"} gap={4}>
         <Flex justifyContent={"space-between"}>
           <Link
@@ -78,33 +78,51 @@ export const Post = ({ post, postedBy }) => {
           </Flex>
         </Flex>
         <Flex justifyContent="center">
-          <Flex gap={4} direction="column" w="95%">
+          <Flex direction="column" w="full">
+            <Flex w="full">
+              <Flex w="95%">
+                <Link
+                  as={RouterLink}
+                  to={`/${user.username}/post/${post._id}`}
+                  textDecoration={"none"}
+                  _hover={{ textDecoration: "none" }}
+                >
+                  <Text
+                    fontSize={"sm"}
+                    mb="2%"
+                    wordBreak="break-word"
+                    overflowWrap="break-word"
+                  >
+                    {post.text}
+                  </Text>
+                </Link>
+              </Flex>
+              {post.postedBy === loggedInUser._id && (
+                <Flex justifyContent="center" w="5%" alignSelf="flex-start">
+                  <DeletePost post={post} />
+                </Flex>
+              )}
+            </Flex>
+
             <Link
               as={RouterLink}
               to={`/${user.username}/post/${post._id}`}
               textDecoration={"none"}
               _hover={{ textDecoration: "none" }}
             >
-              <Text fontSize={"sm"} mb="2%">
-                {post.text}
-              </Text>
               {post.img && (
-                <Box borderRadius={6} overflow={"hidden"}>
+                <Box borderRadius={6} overflow={"hidden"} maxH="300px">
                   <Image
                     src={post.img}
                     w={"full"}
-                    h={"300px"}
+                    maxH={"300px"}
                     objectFit={"contain"}
+                    borderRadius={6}
                   ></Image>
                 </Box>
               )}
             </Link>
           </Flex>
-          {post.postedBy === loggedInUser._id && (
-            <Flex justifyContent="center">
-              <DeletePost post={post} />
-            </Flex>
-          )}
         </Flex>
         <Flex gap={1}>
           <Actions post={post}></Actions>

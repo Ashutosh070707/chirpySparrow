@@ -13,8 +13,11 @@ import { useShowToast } from "../../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
 import { usePreviewImg } from "../../hooks/usePreviewImg";
 import { useRef, useState } from "react";
+import React from "react";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { BsFillImageFill } from "react-icons/bs";
+import { BiImageAdd } from "react-icons/bi";
+import { BsStars } from "react-icons/bs";
 
 const MAX_CHAR = 500;
 
@@ -26,6 +29,7 @@ export const CreatePostPage = () => {
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [improvingLoader, setImprovingLoader] = useState(false);
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -69,19 +73,47 @@ export const CreatePostPage = () => {
       setLoading(false);
     }
   };
+
+  const improveWithAi = async () => {
+    if (improvingLoader) return;
+    if (postText === "") {
+      showToast("Error", "No text found", "error");
+      return;
+    }
+    setImprovingLoader(true);
+    try {
+      const res = await fetch("/api/gemini/improve", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          question: postText,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      console.log(data);
+      setPostText(data.answer);
+    } catch (error) {
+      showToast("Error", error, "error");
+    } finally {
+      setImprovingLoader(false);
+    }
+  };
+
   return (
     <Flex w="full" justifyContent="center" h="full">
       <Flex
         w={{ base: "50%", sm: "90%", md: "70%", lg: "60%", xl: "50%" }}
         direction="column"
-        justifyContent="center"
         borderRadius={10}
-        bg="gray.900"
         mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
-        h="80%"
-        p="3%"
-        pt="2%"
-        gap={10}
+        gap={6}
       >
         <Flex justifyContent="center" alignItems="center" mb="1%">
           <Text
@@ -103,6 +135,7 @@ export const CreatePostPage = () => {
             placeholder="Post content goes here..."
             onChange={handleTextChange}
             value={postText}
+            overflowWrap="break-word"
           ></Textarea>
           <Text
             fontSize="sm"
@@ -113,41 +146,63 @@ export const CreatePostPage = () => {
           >
             {remainingChar}/{MAX_CHAR}
           </Text>
-          <Input
-            type="file"
-            hidden
-            ref={imageRef}
-            onChange={handleImageChange}
-          ></Input>
-          <Button
-            color={"black"}
-            bg={"gray.300"}
-            _hover={{
-              opacity: ".8",
-            }}
-            size={"sm"}
-            onClick={() => imageRef.current.click()}
-          >
-            Add Image
-          </Button>
+          <Flex w="full" alignItems="center" gap={3}>
+            <Button
+              size="sm"
+              borderRadius={100}
+              onClick={improveWithAi}
+              disabled={improvingLoader}
+              border="1px solid"
+            >
+              {improvingLoader && (
+                <Flex gap={1} alignItems="center">
+                  <BsStars />
+                  <Text>Improving</Text>
+                  <Flex justifyContent="center" mt={1}>
+                    <div className="bouncing-loader">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </Flex>
+                </Flex>
+              )}
+              {!improvingLoader && (
+                <Flex gap={1} alignItems="center">
+                  <BsStars />
+                  <Text>Improve</Text>
+                </Flex>
+              )}
+            </Button>
+            <Input
+              type="file"
+              hidden
+              ref={imageRef}
+              onChange={handleImageChange}
+            ></Input>
+
+            <BiImageAdd size="28" onClick={() => imageRef.current.click()} />
+          </Flex>
         </FormControl>
 
-        <Flex gap={4} justifyContent="center">
+        <Flex justifyContent="center" borderRadius={5}>
           {imgUrl && (
-            <Flex mt={5} w={"full"} justifyContent={"center"}>
-              <Box position="relative" w="full" h="300px">
-                <Image
-                  src={imgUrl}
-                  alt="Selected img"
-                  w="full"
-                  h="100%"
-                  objectFit="contain"
-                />
+            <Flex w={"full"} justifyContent={"center"}>
+              <Box position="relative" w="full" maxH="300px">
+                <Box borderRadius={6} overflow={"hidden"}>
+                  <Image
+                    src={imgUrl}
+                    w={"full"}
+                    maxH={"300px"}
+                    objectFit={"contain"}
+                    borderRadius={6}
+                  ></Image>
+                </Box>
                 <CloseButton
                   onClick={() => setImgUrl("")}
                   position="absolute"
-                  top="2"
-                  right="6"
+                  top={1}
+                  right={2}
                   bg="gray.800"
                   _hover={{ bg: "gray.600" }}
                 />

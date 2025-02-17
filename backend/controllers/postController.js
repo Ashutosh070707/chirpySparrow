@@ -153,18 +153,44 @@ export const getUserPosts = async (req, res) => {
   }
 };
 
+// export const getUserPosts = async (req, res) => {
+//   try {
+//     const { username } = req.params;
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const skip = (page - 1) * limit;
+
+//     const user = await User.findOne({ username });
+//     if (!user) return res.status(400).json({ error: "User not found" });
+
+//     const userPosts = await Post.find({ postedBy: user._id })
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit);
+
+//     res.status(200).json(userPosts);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// };
+
 export const getFeedPost = async (req, res) => {
   try {
     const userId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const user = await User.findById(userId);
 
     if (!user) return res.status(400).json({ error: "User not found." });
 
     const following = user.following.map((follow) => follow.followerId);
 
-    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-      createdAt: -1,
-    });
+    const feedPosts = await Post.find({ postedBy: { $in: following } })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json(feedPosts);
   } catch (err) {

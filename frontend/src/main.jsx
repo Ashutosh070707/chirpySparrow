@@ -8,11 +8,40 @@ import { BrowserRouter } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { SocketContextProvider } from "../context/SocketContext.jsx";
 
+// const styles = {
+//   global: (props) => ({
+//     body: {
+//       color: mode("gray.800", "whiteAlpha.900")(props),
+//       bg: mode("gray.100", "#101010")(props),
+//     },
+//   }),
+// };
+
 const styles = {
   global: (props) => ({
     body: {
       color: mode("gray.800", "whiteAlpha.900")(props),
       bg: mode("gray.100", "#101010")(props),
+    },
+    // Add scrollbar styling here
+    "::-webkit-scrollbar": {
+      width: "8px",
+    },
+    "::-webkit-scrollbar-track": {
+      background: mode("#f1f1f1", "#2d2d2d")(props),
+      borderRadius: "10px",
+    },
+    "::-webkit-scrollbar-thumb": {
+      background: mode("#888", "#555")(props),
+      borderRadius: "10px",
+    },
+    "::-webkit-scrollbar-thumb:hover": {
+      background: mode("#555", "#777")(props),
+    },
+    // Add Firefox compatibility
+    "*": {
+      scrollbarWidth: "thin",
+      scrollbarColor: mode("#888 #f1f1f1", "#555 #2d2d2d")(props),
     },
   }),
 };

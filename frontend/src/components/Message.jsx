@@ -73,7 +73,6 @@ export const Message = ({ message, ownMessage, setMessages }) => {
               p={2}
               color="black"
               borderRadius="md"
-              wordBreak="break-word"
               overflowWrap="break-word"
             >
               {message.text}

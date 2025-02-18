@@ -77,7 +77,7 @@ export const DeleteConversation = ({ conversation }) => {
             _active={{ bgColor: "transparent" }} // Remove background on click
             _focus={{ bgColor: "transparent" }} // Remove background on focus
           />
-          <MenuList w="150px" minW="120px">
+          <MenuList w="100px" minW="120px">
             <MenuItem onClick={handleDeleteConversation}>
               <Flex gap={2}>
                 <FiTrash color="red" size={20} />

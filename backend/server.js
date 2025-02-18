@@ -9,6 +9,8 @@ import messageRoutes from "./routes/messageRoutes.js";
 import geminiRoutes from "./routes/geminiRoute.js";
 import { v2 as cloudinary } from "cloudinary";
 import { app, io, server } from "./socket/socket.js";
+import User from "./models/userModel.js";
+import { trie } from "./utils/algorithms/trie.js";
 // import job from "./cron/cron.js";
 dotenv.config();
 connectDB();
@@ -23,6 +25,26 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Load usernames and details into Trie before starting the server
+const loadUsersIntoTrie = async () => {
+  try {
+    const users = await User.find({}, "username name email profilePic"); // Fetch additional user data
+    users.forEach((user) => {
+      const userData = {
+        _id: user._id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        profilePic: user.profilePic,
+      };
+      trie.insert(user.username, userData); // Insert username along with user data
+    });
+    console.log("Trie initialized with usernames and additional user data.");
+  } catch (error) {
+    console.error("Error initializing Trie:", error);
+  }
+};
+
 // middlewares
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
@@ -33,6 +55,17 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/gemini", geminiRoutes);
+
+// ✅ Start the server after loading Trie
+loadUsersIntoTrie().then(() => {
+  server.listen(PORT, () =>
+    console.log(`🚀 Server started at http://localhost:${PORT}`)
+  );
+});
+
+// server.listen(PORT, () =>
+//   console.log(`server stated at http://localhost:${PORT} `)
+// );
 
 // package.json before dployment ::::::::::::::::::::::
 // "scripts": {
@@ -57,7 +90,3 @@ app.use("/api/gemini", geminiRoutes);
 //     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 //   });
 // }
-
-server.listen(PORT, () =>
-  console.log(`server stated at http://localhost:${PORT} `)
-);

@@ -43,6 +43,7 @@ export const ChatPage = () => {
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [searchedUsers, setSearchedUsers] = useState([]);
   const prevSearchText = useRef("");
+
   const screenSize = useBreakpointValue({
     base: "sm",
     sm: "sm",
@@ -52,10 +53,10 @@ export const ChatPage = () => {
   });
 
   const handleSearchUser = async () => {
-    if (!searchText.trim()) return; // Skip search if input is empty
+    if (!searchText.trim()) return;
     setSearchingUser(true);
     try {
-      const res = await fetch(`/api/users/searching/${searchText}`, {
+      const res = await fetch(`/api/users/searching/${searchText.trim()}`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -79,10 +80,15 @@ export const ChatPage = () => {
   const debouncedSearch = debounce(handleSearchUser, 400);
 
   useEffect(() => {
-    // Check if searchText is non-empty and different from the previous value
-    if (searchText.trim() && searchText !== prevSearchText.current) {
+    if (!searchText.trim()) {
+      prevSearchText.current = ""; // Clear previous search text when input is empty
+      return;
+    }
+
+    // Only trigger the search if the search text has changed
+    if (searchText !== prevSearchText.current) {
       debouncedSearch();
-      prevSearchText.current = searchText; // Update the previous searchText
+      prevSearchText.current = searchText; // Update prevSearchText
     }
 
     // Cleanup to cancel pending debounced calls on unmount or searchText change
@@ -95,6 +101,7 @@ export const ChatPage = () => {
       handleSearchUser();
     }
     setSearchText("");
+    prevSearchText.current = ""; // Reset after search submission
   };
 
   useEffect(() => {
@@ -194,11 +201,13 @@ export const ChatPage = () => {
   return (
     <Flex w="full" h="100vh" justifyContent={"center"} alignItems="center">
       <Flex
-        w={{ base: "80%", sm: "100%", md: "100%", lg: "80%", xl: "80%" }}
-        h={{ base: "80%", sm: "100%", md: "100%", lg: "85%", xl: "85%" }}
+        w={{ base: "80%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        h={{ base: "80%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
         gap={2}
         borderRadius={{ base: "80%", sm: 0, md: 0, lg: 10, xl: 10 }}
-        border={"1px solid gray"}
+        border={
+          screenSize == "lg" || screenSize == "xl" ? "1px solid white" : "none"
+        }
         p={2}
       >
         {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
@@ -206,17 +215,13 @@ export const ChatPage = () => {
             {!backButton && (
               <Flex
                 w="full"
-                gap={3}
-                p={4}
+                gap={4}
+                p={3}
+                mt={2}
                 flexDirection={"column"}
-                borderRadius={10}
                 h="full"
               >
-                <Text
-                  fontWeight="bold"
-                  w="full"
-                  color={useColorModeValue("gray.600", "gray.400")}
-                >
+                <Text fontWeight="bold" w="full" fontSize="lg">
                   Your Conversations
                 </Text>
 
@@ -258,31 +263,13 @@ export const ChatPage = () => {
                   <Flex
                     w="full"
                     direction="column"
-                    h="30%"
-                    maxH="30%"
+                    h="20%"
+                    maxH="20%"
                     overflowY="auto"
                     gap={2}
                     borderRadius={10}
-                    bgColor="gray.900"
                     p={1}
-                    css={{
-                      scrollbarWidth: "thin", // Makes scrollbar thinner
-                      scrollbarColor: "#888 transparent", // Thumb and track colors
-                      "&::-webkit-scrollbar": {
-                        width: "6px",
-                        height: "6px",
-                      },
-                      "&::-webkit-scrollbar-thumb": {
-                        background: "#888",
-                        borderRadius: "10px",
-                      },
-                      "&::-webkit-scrollbar-thumb:hover": {
-                        background: "#555",
-                      },
-                      "&::-webkit-scrollbar-track": {
-                        background: "transparent",
-                      },
-                    }}
+                    className="custom-scrollbar"
                   >
                     {searchedUsers.map((user) => (
                       <Flex
@@ -297,7 +284,7 @@ export const ChatPage = () => {
                         }}
                         _hover={{
                           cursor: "pointer",
-                          bg: "gray.600",
+                          bg: "gray.900",
                           color: "white",
                         }}
                         borderRadius={10}
@@ -331,24 +318,7 @@ export const ChatPage = () => {
                   h="90%"
                   maxH={"90%"}
                   overflowY={"auto"}
-                  css={{
-                    scrollbarWidth: "thin", // Makes scrollbar thinner
-                    scrollbarColor: "#888 transparent", // Thumb and track colors
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
-                      height: "6px",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#888",
-                      borderRadius: "10px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "#555",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "transparent",
-                    },
-                  }}
+                  className="custom-scrollbar"
                   overflowX="hidden"
                 >
                   {loadingConversations &&
@@ -436,11 +406,7 @@ export const ChatPage = () => {
               borderRadius={10}
               h="full"
             >
-              <Text
-                fontWeight="bold"
-                w="full"
-                color={useColorModeValue("gray.600", "gray.400")}
-              >
+              <Text fontWeight="bold" w="full" fontSize="lg">
                 Your Conversations
               </Text>
 
@@ -482,30 +448,12 @@ export const ChatPage = () => {
                 <Flex
                   w="full"
                   direction="column"
-                  h="30%"
-                  maxH="30%"
+                  h="20%"
+                  maxH="20%"
                   overflowY="auto"
-                  css={{
-                    scrollbarWidth: "thin", // Makes scrollbar thinner
-                    scrollbarColor: "#888 transparent", // Thumb and track colors
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
-                      height: "6px",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#888",
-                      borderRadius: "10px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "#555",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "transparent",
-                    },
-                  }}
+                  className="custom-scrollbar"
                   gap={2}
                   borderRadius={10}
-                  bgColor="gray.900"
                   p={1}
                 >
                   {searchedUsers.map((user) => (
@@ -521,7 +469,7 @@ export const ChatPage = () => {
                       }}
                       _hover={{
                         cursor: "pointer",
-                        bg: "gray.600",
+                        bg: "gray.900",
                         color: "white",
                       }}
                       borderRadius={10}
@@ -555,24 +503,7 @@ export const ChatPage = () => {
                 h="90%"
                 maxH={"90%"}
                 overflowY={"auto"}
-                css={{
-                  scrollbarWidth: "thin", // Makes scrollbar thinner
-                  scrollbarColor: "#888 transparent", // Thumb and track colors
-                  "&::-webkit-scrollbar": {
-                    width: "6px",
-                    height: "6px",
-                  },
-                  "&::-webkit-scrollbar-thumb": {
-                    background: "#888",
-                    borderRadius: "10px",
-                  },
-                  "&::-webkit-scrollbar-thumb:hover": {
-                    background: "#555",
-                  },
-                  "&::-webkit-scrollbar-track": {
-                    background: "transparent",
-                  },
-                }}
+                className="custom-scrollbar"
                 overflowX="hidden"
               >
                 {loadingConversations &&

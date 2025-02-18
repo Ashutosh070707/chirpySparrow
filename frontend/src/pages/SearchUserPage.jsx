@@ -1,7 +1,6 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Avatar,
-  Box,
   Button,
   Divider,
   Flex,
@@ -9,10 +8,6 @@ import {
   Link,
   Spinner,
   Text,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useShowToast } from "../../hooks/useShowToast";
@@ -30,8 +25,7 @@ export const SearchUserPage = () => {
   const [searchText, setSearchText] = useState("");
   const [searchingUser, setSearchingUser] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState([]);
-  const prevSearchText = useRef("");
-  const inputRef = useRef(null);
+  const prevSearchText = useRef(""); // Use ref to store previous search text without triggering re-renders
 
   useEffect(() => {
     const getSuggestedUsers = async () => {
@@ -60,7 +54,7 @@ export const SearchUserPage = () => {
     if (!searchText.trim()) return; // Skip search if input is empty
     setSearchingUser(true);
     try {
-      const res = await fetch(`/api/users/searching/${searchText}`, {
+      const res = await fetch(`/api/users/searching/${searchText.trim()}`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -84,10 +78,15 @@ export const SearchUserPage = () => {
   const debouncedSearch = debounce(handleSearchUser, 400);
 
   useEffect(() => {
-    // Check if searchText is non-empty and different from the previous value
-    if (searchText.trim() && searchText !== prevSearchText.current) {
+    if (!searchText.trim()) {
+      prevSearchText.current = ""; // Clear previous search text when input is empty
+      return;
+    }
+
+    // Only trigger the search if the search text has changed
+    if (searchText !== prevSearchText.current) {
       debouncedSearch();
-      prevSearchText.current = searchText; // Update the previous searchText
+      prevSearchText.current = searchText; // Update prevSearchText
     }
 
     // Cleanup to cancel pending debounced calls on unmount or searchText change
@@ -100,32 +99,39 @@ export const SearchUserPage = () => {
       handleSearchUser();
     }
     setSearchText("");
+    prevSearchText.current = ""; // Reset after search submission
   };
 
   return (
     <Flex w="full" justifyContent="center" h="100vh">
       <Flex
-        w={{ base: "60%", sm: "90%", md: "80%", lg: "70%", xl: "60%" }}
-        bg="gray.800"
+        w={{ base: "60%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        h={{ base: "75%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
         p={{ base: 6, sm: 4, md: 4, lg: 6, xl: 6 }}
-        direction="column"
-        // m="10%"
-        mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
-        h="75%"
+        border={{
+          base: "1px solid white",
+          sm: "none",
+          md: "none",
+          lg: "1px solid white",
+          xl: "1px solid white",
+        }}
         borderRadius={10}
-        gap={8}
+        direction="column"
+        mt={{ base: "6%", sm: "0", md: "0", lg: "3%", xl: "3%" }}
+        gap={4}
       >
+        {/* Search form remains the same */}
         <form
           onSubmit={
             searchText.length > 0 ? handleSubmit : (e) => e.preventDefault()
           }
         >
-          <Flex alignItems="center" gap={2}>
+          <Flex alignItems="center" gap={2} w="full" mt={2}>
             <Input
               placeholder="Search here"
               value={searchText}
               onChange={(e) => {
-                setSearchText(e.target.value); // Just update state here
+                setSearchText(e.target.value);
                 setSearchedUsers([]);
               }}
               spellCheck={false}
@@ -146,57 +152,42 @@ export const SearchUserPage = () => {
           <Flex
             w="full"
             direction="column"
-            h="240px"
-            maxH="240px"
+            h={{ base: "20%", sm: "20%", md: "20%", lg: "25%", xl: "25%" }}
+            maxH={{ base: "30%", sm: "20%", md: "35%", lg: "25%", xl: "25%" }}
             overflowY="auto"
-            css={{
-              scrollbarWidth: "thin", // Makes scrollbar thinner
-              scrollbarColor: "#888 transparent", // Thumb and track colors
-              "&::-webkit-scrollbar": {
-                width: "6px",
-                height: "6px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#888",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-            }}
             gap={1}
             borderRadius={10}
-            bgColor="gray.700"
+            className="custom-scrollbar"
           >
             {searchedUsers.map((user) => (
-              <Flex
+              <Link
+                as={RouterLink}
+                to={`/${user.username}`}
+                textDecoration="none"
+                _hover={{ textDecoration: "none" }}
                 key={user._id}
-                justifyContent="flex-start"
-                alignItems="center"
-                p={2}
-                borderRadius="md"
-                _hover={{
-                  bg: "gray.600",
-                  cursor: "pointer",
-                }}
+                ml={3}
               >
-                <Avatar
-                  name={user.name}
-                  src={
-                    user.profilePic || "https://example.com/default-avatar.png"
-                  }
-                  size="md"
-                />
-                <Link
-                  as={RouterLink}
-                  to={`/${user.username}`}
-                  textDecoration="none"
-                  _hover={{ textDecoration: "none" }}
-                  ml={3}
+                <Flex
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  p={2}
+                  borderRadius="md"
+                  _hover={{
+                    bg: "gray.900",
+                    cursor: "pointer",
+                  }}
+                  gap={3}
                 >
+                  <Avatar
+                    name={user.name}
+                    src={
+                      user.profilePic ||
+                      "https://example.com/default-avatar.png"
+                    }
+                    size="md"
+                  />
+
                   <Flex direction="column">
                     <Text fontSize="md" fontWeight="bold">
                       {user.name}
@@ -205,113 +196,37 @@ export const SearchUserPage = () => {
                       {user.username}
                     </Text>
                   </Flex>
-                </Link>
-              </Flex>
+                </Flex>
+              </Link>
             ))}
           </Flex>
         )}
-        {/* {searchedUsers.length > 0 && (
-          <Popover isOpen={searchedUsers.length > 0} placement="bottom-start">
-            <PopoverTrigger>
-              <Box />
-            </PopoverTrigger>
-            <PopoverContent mt={2}>
-              <PopoverBody p={0}>
-                <Flex
-                  direction="column"
-                  h="240px"
-                  maxH="240px"
-                  overflowY="auto"
-                  gap={1}
-                  borderRadius={10}
-                  bgColor="gray.700"
-                >
-                  {searchedUsers.map((user) => (
-                    <Flex
-                      key={user._id}
-                      justifyContent="flex-start"
-                      alignItems="center"
-                      p={2}
-                      borderRadius="md"
-                      _hover={{
-                        bg: "gray.600",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Avatar
-                        name={user.name}
-                        src={
-                          user.profilePic ||
-                          "https://example.com/default-avatar.png"
-                        }
-                        size="md"
-                      />
-                      <Link
-                        as={RouterLink}
-                        to={`/${user.username}`}
-                        textDecoration="none"
-                        _hover={{ textDecoration: "none" }}
-                        ml={3}
-                      >
-                        <Flex direction="column">
-                          <Text fontSize="md" fontWeight="bold">
-                            {user.name}
-                          </Text>
-                          <Text color="gray.500" fontSize="sm">
-                            {user.username}
-                          </Text>
-                        </Flex>
-                      </Link>
-                    </Flex>
-                  ))}
-                </Flex>
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
-        )} */}
 
         {fetchingSuggestedUsers && (
           <Flex
             direction="column"
             gap={5}
-            h="400px"
+            h="60%"
             w="full"
             borderRadius={5}
             justifyContent="center"
             alignItems="center"
             p={10}
           >
-            <Flex>
-              <Spinner size="xl"></Spinner>
+            <Flex h="full" alignItems="center" justifyContent="center">
+              <Spinner size="xl" />
             </Flex>
           </Flex>
         )}
+
         {!fetchingSuggestedUsers && suggestedUsers.length > 0 && (
           <Flex
             direction="column"
+            className="custom-scrollbar"
             gap={3}
-            h="400px"
-            maxH="400px"
+            h={{ base: "50%", sm: "60%", md: "60%", lg: "60%", xl: "60%" }}
+            maxH={{ base: "60%", sm: "85%", md: "85%", lg: "85%", xl: "85%" }}
             overflowY="auto"
-            css={{
-              scrollbarWidth: "thin", // Makes scrollbar thinner
-              scrollbarColor: "#888 transparent", // Thumb and track colors
-              "&::-webkit-scrollbar": {
-                width: "6px",
-                height: "6px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#888",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-            }}
-            border="1px solid gray"
             borderRadius={20}
             w="full"
             p={5}
@@ -322,13 +237,13 @@ export const SearchUserPage = () => {
             >
               Suggested User:
             </Text>
-            <Divider></Divider>
+            <Divider />
             <Flex direction="column" w="full" gap={2}>
               {suggestedUsers.map((suggestedUser) => (
                 <SuggestedUser
                   key={suggestedUser._id}
                   suggestedUser={suggestedUser}
-                ></SuggestedUser>
+                />
               ))}
             </Flex>
           </Flex>

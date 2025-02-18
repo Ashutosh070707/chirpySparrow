@@ -129,14 +129,7 @@ export const MessageContainer = ({ setBackButton }) => {
   }, [showToast, selectedConversation.userId, selectedConversation.mock]);
 
   return (
-    <Flex
-      bg={useColorModeValue("gray.200", "gray.dark")}
-      borderRadius="md"
-      flexDirection="column"
-      h="full"
-      gap={1}
-      p={2}
-    >
+    <Flex borderRadius="md" flexDirection="column" h="full" gap={1} p={2}>
       <Flex w="full" alignItems={"center"} gap={2} flex={10}>
         {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
           <Button
@@ -146,6 +139,13 @@ export const MessageContainer = ({ setBackButton }) => {
             h={10}
             onClick={() => {
               setBackButton(false);
+              setselectedConversation({
+                _id: "",
+                userId: "",
+                username: "",
+                userProfilePic: "",
+                name: "",
+              });
             }}
           >
             <FaArrowLeft />

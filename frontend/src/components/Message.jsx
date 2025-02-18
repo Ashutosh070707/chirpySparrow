@@ -30,7 +30,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
             </Flex>
           )}
           {message.img && !imgLoaded && (
-            <Flex w="40%" h="200px">
+            <Flex w="40%" h="40%">
               <Image
                 src={message.img}
                 hidden
@@ -38,7 +38,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                 alt="image"
                 borderRadius={4}
               />
-              <Skeleton w="40%" h="200px" borderRadius={4} />
+              <Skeleton w="40%" h="40%" borderRadius={4} />
             </Flex>
           )}
           {message.img && imgLoaded && (
@@ -79,7 +79,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
             </Text>
           )}
           {message.img && !imgLoaded && (
-            <Flex w="40%" h="200px">
+            <Flex w="40%" h="40%">
               <Image
                 src={message.img}
                 hidden
@@ -87,7 +87,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                 alt="image"
                 borderRadius={4}
               />
-              <Skeleton w="40%" h="200px" borderRadius={4} />
+              <Skeleton w="40%" h="40%" borderRadius={4} />
             </Flex>
           )}
           {message.img && imgLoaded && (

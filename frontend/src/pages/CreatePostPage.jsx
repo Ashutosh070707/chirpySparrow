@@ -109,7 +109,7 @@ export const CreatePostPage = () => {
   return (
     <Flex w="full" justifyContent="center" h="full">
       <Flex
-        w={{ base: "50%", sm: "90%", md: "70%", lg: "60%", xl: "50%" }}
+        w={{ base: "50%", sm: "90%", md: "70%", lg: "70%", xl: "60%" }}
         direction="column"
         borderRadius={10}
         mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}

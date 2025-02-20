@@ -55,7 +55,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           : ""
       }
     >
-      <Flex gap={2} w="full">
+      <Flex gap={3} w="full">
         <Flex flex={8}>
           <WrapItem>
             <Avatar
@@ -64,7 +64,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
               size="md"
             >
               {isOnline ? (
-                <AvatarBadge boxSize="1em" bg="green.400"></AvatarBadge>
+                <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
               ) : (
                 ""
               )}
@@ -77,7 +77,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           flex={92}
           gap={1}
           overflow="hidden"
-          justifyContent={"flex-start"}
+          justifyContent="center"
         >
           <Flex alignItems="center" w="full" overflow="hidden">
             <Text fontSize={"sm"} fontWeight={"bold"}>
@@ -102,6 +102,9 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
               <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
                 {lastMessage.text}
               </Text>
+            )}
+            {lastMessage.text.length === 0 && lastMessage.img !== "" && (
+              <BsFillImageFill size={16} />
             )}
           </Flex>
         </Flex>

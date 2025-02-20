@@ -13,17 +13,33 @@ const io = new Server(server, {
   },
 });
 
-export const getRecipientSocketId = (recipientId) => {
-  return userSocketMap[recipientId];
-};
 const userSocketMap = {}; //userId: socketId
 
+export const getRecipientSocketId = (recipientId) => {
+  return userSocketMap[recipientId] || null;
+};
+
 io.on("connection", (socket) => {
-  // console.log("user connected", socket.id);
   const userId = socket.handshake.query.userId;
 
-  if (userId != "undefined") userSocketMap[userId] = socket.id;
+  if (userId && userId !== "undefined") {
+    userSocketMap[userId] = socket.id;
+  }
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("typing", ({ conversationId, userId }) => {
+    const recipientSocketId = getRecipientSocketId(userId);
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit("userTyping", { conversationId });
+    }
+  });
+
+  socket.on("stopTyping", ({ conversationId, userId }) => {
+    const recipientSocketId = getRecipientSocketId(userId);
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit("userStoppedTyping", { conversationId });
+    }
+  });
 
   socket.on("markMessagesAsSeen", async ({ conversationId, userId }) => {
     try {
@@ -42,7 +58,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // console.log("user disconnected");
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });

@@ -91,25 +91,35 @@ export const DeleteConversation = ({ conversation }) => {
   );
 };
 
-export const DeleteMessage = ({ message, setMessages }) => {
+export const DeleteMessage = ({
+  message,
+  setMessages,
+  selectedConversation,
+}) => {
   const showToast = useShowToast();
-
   const [deleting, setDeleting] = useState(false);
+  const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const handleDeleteMessage = async () => {
     if (deleting) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/messages/${message._id}`, {
+      const res = await fetch(`/api/messages/delete/message`, {
         method: "DELETE",
+        headers: {
+          "content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messageId: message._id,
+          selectedConversationId: selectedConversation._id,
+          recipientId: selectedConversation.userId,
+        }),
       });
       const data = await res.json();
       if (data.error) {
         showToast("Error", data.error, "error");
         return;
       }
-      setMessages((prevMessages) =>
-        prevMessages.filter((m) => m._id !== message._id)
-      );
+
       showToast("Success", "Message deleted successfully", "success");
     } catch (error) {
       showToast("Error", error.message, "error");

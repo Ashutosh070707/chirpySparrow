@@ -31,19 +31,19 @@
 
 /* Custom scrollbar styling */
 .custom-scrollbar {
-  flex: 1; /* Takes remaining space */
+  flex: 1;
   overflow-y: auto;
-  scrollbar-width: thin; /* Makes scrollbar thinner */
-  scrollbar-color: #888 transparent; /* Thumb and track colors */
+  scrollbar-width: thin;
+  scrollbar-color: #777373 transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #5a5959;
   border-radius: 10px;
 }
 

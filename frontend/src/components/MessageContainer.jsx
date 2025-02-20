@@ -1,14 +1,13 @@
 import {
   Avatar,
+  AvatarBadge,
   Button,
   Divider,
   Flex,
-  Image,
   Skeleton,
   SkeletonCircle,
   Text,
   useBreakpointValue,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { Message } from "../components/Message.jsx";
 import { MessageInput } from "./MessageInput.jsx";
@@ -23,6 +22,7 @@ import { useShowToast } from "../../hooks/useShowToast";
 import messageSound from "../../assets/sounds/notification.mp3";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom.js";
 import { FaArrowLeft } from "react-icons/fa";
+import { TypingIndicator } from "./TypingIndicator";
 
 export const MessageContainer = ({ setBackButton }) => {
   const showToast = useShowToast();
@@ -33,8 +33,10 @@ export const MessageContainer = ({ setBackButton }) => {
   const [messages, setMessages] = useState([]);
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const setConversations = useSetRecoilState(conversationsAtom);
-  const { socket } = useSocket();
+  const { socket, onlineUsers } = useSocket();
   const messageEndRef = useRef(null);
+  const [isUserTyping, setIsUserTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
   const screenSize = useBreakpointValue({
     base: "sm",
     sm: "sm",
@@ -42,16 +44,54 @@ export const MessageContainer = ({ setBackButton }) => {
     lg: "lg",
     xl: "xl",
   });
+  const isOnline = onlineUsers.includes(selectedConversation?.userId);
+
+  ///////////////////////////////////////////////////////////////////  socket.io functionality
+
+  useEffect(() => {
+    socket?.on("userTyping", ({ conversationId }) => {
+      if (selectedConversation._id === conversationId) {
+        setIsUserTyping(true);
+
+        // Clear previous timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Set timeout to hide typing indicator after 3 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsUserTyping(false);
+        }, 2000);
+      }
+    });
+
+    socket?.on("userStoppedTyping", ({ conversationId }) => {
+      if (selectedConversation._id === conversationId) {
+        setIsUserTyping(false);
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+      }
+    });
+
+    return () => {
+      socket?.off("userTyping");
+      socket?.off("userStoppedTyping");
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [socket, selectedConversation._id]);
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
-      if (selectedConversation._id === message.conversationId) {
+      if (selectedConversation?._id === message.conversationId) {
         setMessages((prevMessages) => [...prevMessages, message]);
       }
-      if (!document.hasFocus()) {
-        const sound = new Audio(messageSound);
-        sound.play();
-      }
+      // if (!document.hasFocus()) {
+      //   const sound = new Audio(messageSound);
+      //   sound.play();
+      // }
 
       setConversations((prev) => {
         const updatedConversations = prev.map((conversation) => {
@@ -61,6 +101,7 @@ export const MessageContainer = ({ setBackButton }) => {
               lastMessage: {
                 text: message.text,
                 sender: message.sender,
+                img: message.img,
               },
             };
           }
@@ -103,7 +144,46 @@ export const MessageContainer = ({ setBackButton }) => {
   }, [socket, loggedInUser._id, messages, selectedConversation]);
 
   useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    socket.on(
+      "messageDeleted",
+      ({ messageId, selectedConversationId, updatedLastMessage }) => {
+        if (selectedConversation._id === selectedConversationId) {
+          setMessages((prevMessages) =>
+            prevMessages.filter((msg) => msg._id !== messageId)
+          );
+
+          setConversations((prev) =>
+            prev.map((conversation) =>
+              conversation._id === selectedConversationId
+                ? {
+                    ...conversation,
+                    lastMessage: updatedLastMessage,
+                  }
+                : conversation
+            )
+          );
+        }
+      }
+    );
+
+    return () => socket.off("messageDeleted");
+  }, [socket, selectedConversation]);
+
+  //////////////////////////////////////////////////////////  getMessages logic and scroll to the bottom of messagecontainer logic
+
+  const scrollToBottom = () => {
+    if (messageEndRef.current) {
+      setTimeout(() => {
+        messageEndRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 500); // Small delay to ensure content is rendered
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
@@ -159,10 +239,15 @@ export const MessageContainer = ({ setBackButton }) => {
             "https://example.com/default-avatar.png"
           }
           size="md"
-        ></Avatar>
+        >
+          {isOnline ? (
+            <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
+          ) : (
+            ""
+          )}
+        </Avatar>
         <Text display="flex" alignItems="center">
           {selectedConversation.name}
-          {/* <Image src="/verified.png" w={4} h={4} ml={1}></Image> */}
         </Text>
       </Flex>
       <Divider flex={2}></Divider>
@@ -174,24 +259,7 @@ export const MessageContainer = ({ setBackButton }) => {
         my={4}
         w={"full"}
         overflowY={"auto"}
-        css={{
-          scrollbarWidth: "thin", // Makes scrollbar thinner
-          scrollbarColor: "#888 transparent", // Thumb and track colors
-          "&::-webkit-scrollbar": {
-            width: "6px",
-            height: "6px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#888",
-            borderRadius: "10px",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#555",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-        }}
+        className="custom-scrollbar"
       >
         {loadingMessages &&
           [...Array(7)].map((_, i) => (
@@ -215,15 +283,7 @@ export const MessageContainer = ({ setBackButton }) => {
 
         {!loadingMessages &&
           messages.map((message) => (
-            <Flex
-              key={message._id}
-              direction={"column"}
-              ref={
-                messages.length - 1 === messages.indexOf(message)
-                  ? messageEndRef
-                  : null
-              }
-            >
+            <Flex key={message._id} direction={"column"}>
               <Message
                 message={message}
                 ownMessage={loggedInUser._id === message.sender}
@@ -231,7 +291,14 @@ export const MessageContainer = ({ setBackButton }) => {
               />
             </Flex>
           ))}
+
+        <div ref={messageEndRef}></div>
       </Flex>
+      {isUserTyping && (
+        <Flex justifyContent={"flex-end"} alignItems="center" m={4} pr={8}>
+          <TypingIndicator />
+        </Flex>
+      )}
       <Flex flex={8} w="full" borderRadius={10}>
         <MessageInput setMessages={setMessages} />
       </Flex>

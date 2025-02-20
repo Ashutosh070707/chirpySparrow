@@ -152,7 +152,7 @@ export const CreatePostPage = () => {
               borderRadius={100}
               onClick={improveWithAi}
               disabled={improvingLoader}
-              border="1px solid"
+              border="1px solid white"
             >
               {improvingLoader && (
                 <Flex gap={1} alignItems="center">

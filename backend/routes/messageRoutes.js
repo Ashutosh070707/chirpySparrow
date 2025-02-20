@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/conversations", protectRoute, getConversations);
 router.post("/", protectRoute, sendMessage);
 router.get("/:otherUserId", protectRoute, getMessages);
-router.delete("/:conversationId", deleteConversation);
-router.delete("/:messageId", deleteMessage);
+router.delete("/:conversationId", protectRoute, deleteConversation);
+router.delete("/delete/message", protectRoute, deleteMessage);
 
 export default router;

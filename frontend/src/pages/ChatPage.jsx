@@ -3,14 +3,11 @@ import {
   Avatar,
   Box,
   Button,
-  Divider,
   Flex,
   Input,
-  Link,
   Skeleton,
   Text,
   useBreakpointValue,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { SkeletonCircle } from "@chakra-ui/react";
@@ -43,6 +40,7 @@ export const ChatPage = () => {
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [searchedUsers, setSearchedUsers] = useState([]);
   const prevSearchText = useRef("");
+  const [backButton, setBackButton] = useState(false);
 
   const screenSize = useBreakpointValue({
     base: "sm",
@@ -52,6 +50,7 @@ export const ChatPage = () => {
     xl: "xl",
   });
 
+  /////////////////////////////////////////////////////////////////////////////  searchuser - functionality
   const handleSearchUser = async () => {
     if (!searchText.trim()) return;
     setSearchingUser(true);
@@ -75,7 +74,6 @@ export const ChatPage = () => {
       setSearchingUser(false);
     }
   };
-
   // Debounce the search function
   const debouncedSearch = debounce(handleSearchUser, 400);
 
@@ -104,26 +102,7 @@ export const ChatPage = () => {
     prevSearchText.current = ""; // Reset after search submission
   };
 
-  useEffect(() => {
-    socket?.on("messagesSeen", ({ conversationId }) => {
-      setConversations((prev) => {
-        const updatedConversations = prev.map((conversation) => {
-          if (conversation._id === conversationId) {
-            return {
-              ...conversation,
-              lastMessage: {
-                ...conversation.lastMessage,
-                seen: true,
-              },
-            };
-          }
-          return conversation;
-        });
-        return updatedConversations;
-      });
-    });
-  }, [socket, setConversations]);
-
+  ////////////////////////////////////////////////////////////////  fetchingConversations and adding conversations array functionality
   useEffect(() => {
     const getConversations = async () => {
       setSelectedConversation({
@@ -136,7 +115,6 @@ export const ChatPage = () => {
       try {
         const res = await fetch("/api/messages/conversations");
         const data = await res.json();
-        // console.log(data);
         if (data.error) {
           showToast("Error", data.error, "error");
           return;
@@ -178,6 +156,7 @@ export const ChatPage = () => {
         lastMessage: {
           text: "",
           sender: "",
+          img: "",
         },
         _id: Date.now(),
         participants: [
@@ -192,11 +171,50 @@ export const ChatPage = () => {
       setConversations((prevConvs) => [...prevConvs, mockConversation]);
     } catch (error) {
       showToast("Error", error.message, "error");
-    } finally {
     }
   };
 
-  const [backButton, setBackButton] = useState(false);
+  ///////////////////////////////////////////////////////////////////////   socket.io functionality
+  useEffect(() => {
+    socket?.on("messagesSeen", ({ conversationId }) => {
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conversation) => {
+          if (conversation._id === conversationId) {
+            return {
+              ...conversation,
+              lastMessage: {
+                ...conversation.lastMessage,
+                seen: true,
+              },
+            };
+          }
+          return conversation;
+        });
+        return updatedConversations;
+      });
+    });
+  }, [socket, setConversations]);
+
+  useEffect(() => {
+    socket?.on("conversationUpdated", ({ conversationId, lastMessage }) => {
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conversation) => {
+          if (conversation._id === conversationId) {
+            return {
+              ...conversation,
+              lastMessage: lastMessage,
+            };
+          }
+          return conversation;
+        });
+        return updatedConversations;
+      });
+    });
+
+    return () => {
+      socket?.off("conversationUpdated");
+    };
+  }, [socket, setConversations]);
 
   return (
     <Flex w="full" h="100vh" justifyContent={"center"} alignItems="center">
@@ -322,7 +340,7 @@ export const ChatPage = () => {
                   overflowX="hidden"
                 >
                   {loadingConversations &&
-                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => (
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8].map((_, i) => (
                       <Flex
                         key={i}
                         gap={4}
@@ -544,6 +562,7 @@ export const ChatPage = () => {
                                   conversation.participants[0]._id
                                 )}
                                 conversation={conversation}
+                                setBackButton={setBackButton}
                               />
                             </Flex>
                             {!conversation.mock && (

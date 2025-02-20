@@ -41,14 +41,28 @@ export const sendMessage = async (req, res) => {
         lastMessage: {
           text: message,
           sender: senderId,
+          img: img,
           seen: false,
         },
       }),
     ]);
 
+    // In your sendMessage controller, after updating the conversation
     const recipientSocketId = getRecipientSocketId(recipientId);
     if (recipientSocketId) {
+      // Emit newMessage as before
       io.to(recipientSocketId).emit("newMessage", newMessage);
+
+      // Add this new emit for conversation update
+      io.to(recipientSocketId).emit("conversationUpdated", {
+        conversationId: conversation._id,
+        lastMessage: {
+          text: message,
+          sender: senderId,
+          img: img || "",
+          seen: false,
+        },
+      });
     }
 
     res.status(200).json(newMessage);
@@ -123,7 +137,8 @@ export const deleteConversation = async (req, res) => {
 };
 
 export const deleteMessage = async (req, res) => {
-  const { messageId } = req.params;
+  const { messageId, selectedConversationId, recipientId } = req.body;
+
   try {
     const message = await Message.findById(messageId);
     if (!message) {
@@ -136,7 +151,38 @@ export const deleteMessage = async (req, res) => {
       );
     }
 
+    // Delete the message
     await Message.findByIdAndDelete(messageId);
+
+    // Fetch the latest message after deletion
+    const latestMessage = await Message.findOne({
+      conversationId: selectedConversationId,
+    }).sort({ createdAt: -1 });
+
+    const updatedLastMessage = latestMessage
+      ? {
+          text: latestMessage.text,
+          img: latestMessage.img,
+          sender: latestMessage.sender,
+        }
+      : { text: "Message deleted", img: null };
+
+    await Conversation.findByIdAndUpdate(selectedConversationId, {
+      $set: { lastMessage: updatedLastMessage },
+    });
+
+    // Emit delete event to both users
+    io.to(getRecipientSocketId(message.sender)).emit("messageDeleted", {
+      messageId,
+      selectedConversationId,
+      updatedLastMessage,
+    });
+    io.to(getRecipientSocketId(recipientId)).emit("messageDeleted", {
+      messageId,
+      selectedConversationId,
+      updatedLastMessage,
+    });
+
     res.status(200).json({ message: "Message deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -12,6 +12,7 @@ import { app, io, server } from "./socket/socket.js";
 import User from "./models/userModel.js";
 import { trie } from "./utils/algorithms/trie.js";
 // import job from "./cron/cron.js";
+
 dotenv.config();
 connectDB();
 // job.start(); // adding crons features( make a get request every 14 minutes)
@@ -42,6 +43,7 @@ const loadUsersIntoTrie = async () => {
     console.log("Trie initialized with usernames and additional user data.");
   } catch (error) {
     console.error("Error initializing Trie:", error);
+    throw new Error("Trie initialization failed"); // Prevents server start
   }
 };
 
@@ -56,12 +58,27 @@ app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/gemini", geminiRoutes);
 
+// ✅ Start the server only if Trie loads successfully
+const startServer = async () => {
+  try {
+    await loadUsersIntoTrie();
+    server.listen(PORT, () =>
+      console.log(`🚀 Server started at http://localhost:${PORT}`)
+    );
+  } catch (error) {
+    console.error("❌ Server startup failed:", error);
+    process.exit(1); // Exit process if startup fails
+  }
+};
+
+startServer();
+
 // ✅ Start the server after loading Trie
-loadUsersIntoTrie().then(() => {
-  server.listen(PORT, () =>
-    console.log(`🚀 Server started at http://localhost:${PORT}`)
-  );
-});
+// loadUsersIntoTrie().then(() => {
+//   server.listen(PORT, () =>
+//     console.log(`🚀 Server started at http://localhost:${PORT}`)
+//   );
+// });
 
 // server.listen(PORT, () =>
 //   console.log(`server stated at http://localhost:${PORT} `)

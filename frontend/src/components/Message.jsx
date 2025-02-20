@@ -2,9 +2,14 @@ import { Box, Flex, Image, Skeleton, Text } from "@chakra-ui/react";
 import { BsCheck2All } from "react-icons/bs";
 import { useState } from "react";
 import { DeleteMessage } from "./DeleteButton";
+import { useRecoilState } from "recoil";
+import { selectedConversationAtom } from "../atoms/messagesAtom";
 
 export const Message = ({ message, ownMessage, setMessages }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useRecoilState(
+    selectedConversationAtom
+  );
 
   return (
     <Flex w="full">
@@ -60,8 +65,12 @@ export const Message = ({ message, ownMessage, setMessages }) => {
               </Box>
             </Flex>
           )}
-          <Flex justifyContent="center" alignItems="center">
-            <DeleteMessage message={message} setMessages={setMessages} />
+          <Flex justifyContent="center" alignItems="center" ml={1} mr={2}>
+            <DeleteMessage
+              message={message}
+              setMessages={setMessages}
+              selectedConversation={selectedConversation}
+            />
           </Flex>
         </Flex>
       ) : (

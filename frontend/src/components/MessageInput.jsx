@@ -24,6 +24,8 @@ import {
 import { useShowToast } from "../../hooks/useShowToast";
 import { BsFillImageFill } from "react-icons/bs";
 import { usePreviewImg } from "../../hooks/usePreviewImg";
+import { useSocket } from "../../context/SocketContext.jsx";
+import { IoSparkles } from "react-icons/io5";
 
 export const MessageInput = ({ setMessages }) => {
   const [messageText, setMessageText] = useState("");
@@ -34,15 +36,73 @@ export const MessageInput = ({ setMessages }) => {
   const { onClose } = useDisclosure();
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const [isSending, setIsSending] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState(null);
+  const { socket } = useSocket();
+  const [improvingLoader, setImprovingLoader] = useState(false);
+
+  const improveWithAi = async () => {
+    if (improvingLoader || isSending) return;
+    if (messageText === "") {
+      showToast("Error", "No text found", "error");
+      return;
+    }
+    setImprovingLoader(true);
+    try {
+      const res = await fetch("/api/gemini/improve", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          question: messageText,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setMessageText(data.answer);
+    } catch (error) {
+      showToast("Error", error, "error");
+    } finally {
+      setImprovingLoader(false);
+    }
+  };
 
   useEffect(() => {
-    setMessageText(""); // Clear the input text
-  }, [selectedConversation]); // Trigger this effect when selectedConversation changes
+    setMessageText("");
+  }, [selectedConversation]);
+
+  const handleTyping = () => {
+    socket.emit("typing", {
+      conversationId: selectedConversation._id,
+      userId: selectedConversation.userId,
+    });
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      socket.emit("stopTyping", {
+        conversationId: selectedConversation._id,
+        userId: selectedConversation.userId,
+      });
+    }, 2000); // Stop typing indicator after 1 second of no input
+
+    setTypingTimeout(timeout);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeout) clearTimeout(typingTimeout);
+    };
+  }, [typingTimeout]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!messageText && !imgUrl) return;
-    if (isSending) return;
+    if (isSending || improvingLoader) return;
     setIsSending(true);
     try {
       const res = await fetch("/api/messages", {
@@ -66,12 +126,14 @@ export const MessageInput = ({ setMessages }) => {
 
       setConversations((prevConvs) => {
         const updatedConversations = prevConvs.map((conversation) => {
-          if (conversation._id === selectedConversation._id) {
+          if (conversation._id === data.conversationId) {
             return {
               ...conversation,
               lastMessage: {
-                text: messageText,
+                text: data.text,
                 sender: data.sender,
+                img: data.img,
+                seen: false,
               },
             };
           }
@@ -79,6 +141,7 @@ export const MessageInput = ({ setMessages }) => {
         });
         return updatedConversations;
       });
+
       setMessageText("");
       setImgUrl("");
     } catch (error) {
@@ -88,8 +151,8 @@ export const MessageInput = ({ setMessages }) => {
     }
   };
   return (
-    <Flex gap={2} alignItems={"center"} w="full">
-      <Flex flex={95}>
+    <Flex gap={3} alignItems={"center"} w="full">
+      <Flex flex={90}>
         <form
           onSubmit={(e) => {
             handleSendMessage(e);
@@ -101,7 +164,10 @@ export const MessageInput = ({ setMessages }) => {
               w={"full"}
               placeholder="Type a message"
               value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
+              onChange={(e) => {
+                setMessageText(e.target.value);
+                handleTyping();
+              }}
             ></Input>
             <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
               <IoSendSharp />
@@ -109,7 +175,29 @@ export const MessageInput = ({ setMessages }) => {
           </InputGroup>
         </form>
       </Flex>
-      <Flex flex={5}>
+      <Flex flex={4} alignItems="center">
+        <Button
+          bgGradient="linear(to-r, pink.400, purple.500, blue.500)"
+          _hover={{
+            bgGradient: "linear(to-r, pink.300, purple.400, blue.400)",
+            transform: "scale(1.1)",
+          }}
+          _active={{ transform: "scale(0.95)" }}
+          boxShadow="0px 0px 10px rgba(255, 0, 255, 0.5)"
+          transition="all 0.2s ease-in-out"
+          size="xs"
+          borderRadius={100}
+          onClick={improveWithAi}
+          disabled={improvingLoader}
+        >
+          {improvingLoader ? (
+            <Spinner size="sm" color="white" />
+          ) : (
+            <IoSparkles color="white" />
+          )}
+        </Button>
+      </Flex>
+      <Flex flex={3}>
         <Flex flex={5} cursor="pointer">
           <BsFillImageFill
             size={22}
@@ -130,24 +218,7 @@ export const MessageInput = ({ setMessages }) => {
           maxH="60vh" // Adjust the maximum height of the modal
           overflowX="auto"
           overflowY="auto"
-          css={{
-            scrollbarWidth: "thin", // Makes scrollbar thinner
-            scrollbarColor: "#888 transparent", // Thumb and track colors
-            "&::-webkit-scrollbar": {
-              width: "6px",
-              height: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#888",
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              background: "#555",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-          }}
+          className="custom-scrollbar"
           isOpen={imgUrl}
           onClose={() => {
             onClose();
@@ -188,24 +259,7 @@ export const MessageInput = ({ setMessages }) => {
                   maxH="70vh"
                   overflowY="auto"
                   overflowX="auto"
-                  css={{
-                    scrollbarWidth: "thin", // Makes scrollbar thinner
-                    scrollbarColor: "#888 transparent", // Thumb and track colors
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
-                      height: "6px",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#888",
-                      borderRadius: "10px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "#555",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "transparent",
-                    },
-                  }}
+                  className="custom-scrollbar"
                 >
                   <Image
                     src={imgUrl}

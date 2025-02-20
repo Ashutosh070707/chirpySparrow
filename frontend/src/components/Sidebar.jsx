@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Flex,
   Link,
@@ -6,7 +7,7 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { Link as RouterLink } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
@@ -18,10 +19,14 @@ import { useLogout } from "../../hooks/useLogout";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaInstagram } from "react-icons/fa";
+import { unreadMessageCountAtom } from "../atoms/unreadMessageCountAtom";
 
 export const Sidebar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
+  const [unreadMessageCount, setUnreadMessageCountAtom] = useRecoilState(
+    unreadMessageCountAtom
+  );
   const logout = useLogout();
   const showText = useBreakpointValue({
     base: false,
@@ -122,7 +127,28 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <BsFillChatQuoteFill size={26} />
+              <Flex position="relative">
+                <BsFillChatQuoteFill size={26} />
+                {unreadMessageCount > 0 && (
+                  <Badge
+                    color="white"
+                    bgColor="red.500"
+                    borderRadius="full"
+                    position="absolute"
+                    bottom="60%"
+                    left="65%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    fontSize="xs"
+                  >
+                    <Text m={"1px"}>
+                      {unreadMessageCount > 50 ? "50+" : unreadMessageCount}
+                    </Text>
+                  </Badge>
+                )}
+              </Flex>
+
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Message

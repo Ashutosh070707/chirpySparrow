@@ -13,15 +13,52 @@ export const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
   const showToast = useShowToast();
-  const POSTS_PER_PAGE = 10; // Adjust number as needed
+  const POSTS_PER_PAGE = 10;
+
+  const getFeedPosts = useCallback(
+    async (pageNum) => {
+      if (pageNum === 1) {
+        setInitialLoading(true);
+        setFeedPosts([]);
+      } else setLoading(true);
+
+      try {
+        const res = await fetch(
+          `/api/posts/feed?page=${pageNum}&limit=${POSTS_PER_PAGE}`
+        );
+        const data = await res.json();
+
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+
+        if (data.length < POSTS_PER_PAGE) {
+          setHasMore(false);
+        }
+
+        setFeedPosts((prev) => (pageNum === 1 ? data : [...prev, ...data]));
+      } catch (error) {
+        showToast("Error", error.message, "error");
+      } finally {
+        setLoading(false);
+        setInitialLoading(false);
+      }
+    },
+    [showToast, setFeedPosts]
+  );
+
+  useEffect(() => {
+    getFeedPosts(page);
+  }, [page, getFeedPosts]);
 
   const lastPostElementRef = useCallback(
     (node) => {
-      if (loading) return;
+      if (loading || !hasMore) return;
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0].isIntersecting) {
           setPage((prevPage) => prevPage + 1);
         }
       });
@@ -31,41 +68,23 @@ export const HomePage = () => {
     [loading, hasMore]
   );
 
-  const getFeedPosts = async (pageNum) => {
-    if (pageNum === 1) setInitialLoading(true);
-    else setLoading(true);
-
-    try {
-      const res = await fetch(
-        `/api/posts/feed?page=${pageNum}&limit=${POSTS_PER_PAGE}`
-      );
-      const data = await res.json();
-
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-
-      if (data.length < POSTS_PER_PAGE) {
-        setHasMore(false);
-      }
-
-      if (pageNum === 1) {
-        setFeedPosts(data);
-      } else {
-        setFeedPosts((prev) => [...prev, ...data]);
-      }
-    } catch (error) {
-      showToast("Error", error.message, "error");
-    } finally {
-      setInitialLoading(false);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    getFeedPosts(page);
-  }, [page]);
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (loading) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "auto";
+  //   }
+
+  //   return () => {
+  //     document.body.style.overflow = "auto";
+  //   };
+  // }, [loading]);
 
   return (
     <Flex
@@ -80,7 +99,13 @@ export const HomePage = () => {
         mt="2%"
       >
         <Box>
-          {feedPosts.length === 0 && !initialLoading && (
+          {initialLoading && (
+            <Flex justifyContent="center" alignItems="center" mt={4}>
+              <Spinner size="xl" />
+            </Flex>
+          )}
+
+          {!initialLoading && feedPosts.length === 0 && (
             <Flex justifyContent={"center"} alignItems="center">
               <Text
                 fontSize={{
@@ -97,7 +122,8 @@ export const HomePage = () => {
             </Flex>
           )}
 
-          {feedPosts.length > 0 &&
+          {!initialLoading &&
+            feedPosts.length > 0 &&
             feedPosts.map((post, index) => {
               if (feedPosts.length === index + 1) {
                 return (
@@ -114,12 +140,6 @@ export const HomePage = () => {
               }
             })}
 
-          {initialLoading && (
-            <Flex justifyContent="center" alignItems="center" mt={4}>
-              <Spinner size="xl" />
-            </Flex>
-          )}
-
           {loading && !initialLoading && hasMore && (
             <Flex justifyContent="center" alignItems="center" mt={4}>
               <Spinner
@@ -127,12 +147,6 @@ export const HomePage = () => {
               />
             </Flex>
           )}
-
-          {/* {!hasMore && feedPosts.length > 0 && (
-            <Text textAlign="center" mt={4} color="gray.500">
-              No more posts to load
-            </Text>
-          )} */}
         </Box>
       </Box>
     </Flex>

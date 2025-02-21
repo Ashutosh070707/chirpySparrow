@@ -43,7 +43,7 @@ export const FollowingPage = () => {
   }, [loggedInUser, showToast]);
 
   return (
-    <Flex justify="center" align="center" w="full" h="100vh" p={4}>
+    <Flex justify="center" align="center" w="full" h="100vh">
       {fetchingProfile ? (
         <Spinner size="xl" />
       ) : following.length === 0 ? (
@@ -53,13 +53,13 @@ export const FollowingPage = () => {
           w={{ base: "90%", sm: "100%", md: "80%", lg: "50%", xl: "50%" }}
           h="90vh"
           maxH="90vh"
-          p={5}
+          p={{ base: 3, sm: 5 }}
           borderRadius="lg"
-          border="1px solid white"
+          border={{ base: "none", sm: "none", md: "1px solid white" }}
           overflowY="auto"
           className="custom-scrollbar"
         >
-          <Text fontSize="lg" fontWeight="bold" mb={2}>
+          <Text fontSize={{ base: "md", sm: "lg" }} fontWeight="bold" mb={2}>
             Following:
           </Text>
           <Divider mb={3} />

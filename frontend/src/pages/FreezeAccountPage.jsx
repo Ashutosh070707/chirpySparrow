@@ -31,16 +31,16 @@ export const FreezeAccount = () => {
   return (
     <Flex w="full" justifyContent="center">
       <Flex
-        w={{ base: "50%", sm: "70%", md: "70%", lg: "50%", xl: "50%" }}
-        mt={{ base: "5%", sm: "10%", md: "8%", lg: "5%", xl: "5%" }}
+        w={{ base: "90%", sm: "70%", md: "70%", lg: "50%", xl: "50%" }}
+        mt={{ base: "10%", sm: "10%", md: "8%", lg: "5%", xl: "5%" }}
         justifyContent="center"
         direction="column"
-        gap={15}
+        gap={5}
       >
-        <Flex justifyContent="center" mb="4%">
+        <Flex justifyContent="center" mb="4%" w="full">
           <Text
             fontSize={{
-              base: "4xl",
+              base: "xl",
               sm: "3xl",
               md: "4xl",
               lg: "4xl",
@@ -51,14 +51,20 @@ export const FreezeAccount = () => {
             Freeze Account
           </Text>
         </Flex>
-        <Flex justifyContent={"space-between"}>
-          <Flex direction="column">
-            <Text fontSize="md" fontWeight={"bold"}>
+        <Flex justifyContent={"space-between"} w="full">
+          <Flex direction="column" gap={3}>
+            <Text fontSize={{ base: "md", sm: "lg" }} fontWeight={"bold"}>
               Freeze Your Account :
             </Text>
-            <Text>You can unfreeze your account anytime by logging in.</Text>
+            <Text fontSize={{ base: "sm", sm: "md" }}>
+              You can unfreeze your account anytime by logging in.
+            </Text>
           </Flex>
-          <Button size={"sm"} colorScheme="red" onClick={freezeAccount}>
+          <Button
+            size={{ base: "sm", sm: "md" }}
+            colorScheme="red"
+            onClick={freezeAccount}
+          >
             Freeze
           </Button>
         </Flex>

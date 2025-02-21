@@ -13,34 +13,36 @@ export const Follower = ({ user }) => {
         overflow="hidden"
       >
         {user.profilePic && (
-          <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
+          <Avatar
+            name={user.name}
+            src={user.profilePic}
+            boxSize={{ base: "40px", sm: "50px" }}
+          ></Avatar>
         )}
         {!user.profilePic && (
           <Avatar
             name={user.name}
             src="https://example.com/default-avatar.png"
-            size="md"
+            boxSize={{ base: "40px", sm: "50px" }}
           ></Avatar>
         )}
-        <Flex direction={"column"} w="70%">
-          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
+        <Flex direction={"column"} w="full" overflow="hidden">
+          <Text
+            fontSize={{ base: "sm", sm: "md" }}
+            fontWeight={"bold"}
+            isTruncated
+          >
             {user.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
-            {user.username}
+          <Text
+            color={"gray.light"}
+            fontSize={{ base: "xs", sm: "sm" }}
+            isTruncated
+          >
+            @{user.username}
           </Text>
         </Flex>
       </Flex>
-      {/* <Button
-        size={"sm"}
-        color={"white"}
-        bg={"blue.400"}
-        _hover={{
-          opacity: ".8",
-        }}
-      >
-        <IoSendSharp size={18} />
-      </Button> */}
     </Flex>
   );
 };

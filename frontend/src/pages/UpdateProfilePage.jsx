@@ -77,9 +77,10 @@ export function UpdateProfilePage() {
       minHeight="100vh"
     >
       <Box
-        w={{ base: "40%", sm: "90%", md: "60%", lg: "60%", xl: "45%" }}
+        w={{ base: "95%", sm: "90%", md: "60%", lg: "60%", xl: "45%" }}
         alignItems="center"
         mt="2%"
+        mb="2%"
       >
         <form onSubmit={handleSubmit}>
           <Flex alignItems={"center"} justifyContent={"center"}>
@@ -88,12 +89,15 @@ export function UpdateProfilePage() {
               w={"full"}
               maxW={"md"}
               bg={useColorModeValue("white", "gray.dark")}
-              rounded={"xl"}
+              rounded="lg"
               boxShadow={"lg"}
               p={6}
             >
               <Flex alignItems="center" justifyContent="center" mb="2%">
-                <Heading lineHeight={1.1} fontSize={{ base: "3xl" }}>
+                <Heading
+                  lineHeight={1.1}
+                  fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
+                >
                   Update Profile
                 </Heading>
               </Flex>
@@ -107,8 +111,7 @@ export function UpdateProfilePage() {
                         loggedInUser.profilePic ||
                         "https://example.com/default-avatar.png"
                       }
-                      size="xl"
-                      boxShadow={"md"}
+                      boxSize={{ base: "90px", sm: "130px" }}
                     />
                   </Center>
 

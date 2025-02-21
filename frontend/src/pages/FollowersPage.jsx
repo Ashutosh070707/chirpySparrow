@@ -42,23 +42,23 @@ export const FollowersPage = () => {
   }, [loggedInUser, showToast]);
 
   return (
-    <Flex justify="center" align="center" w="full" h="100vh" p={4}>
+    <Flex justifyContent="center" alignItems="center" w="full" h="100vh">
       {fetchingProfile ? (
-        <Spinner size="xl" />
+        <Spinner size={{ base: "lg", sm: "xl" }} />
       ) : followers.length === 0 ? (
-        <Text fontSize="xl">No followers</Text>
+        <Text fontSize={{ base: "md", md: "xl" }}>No followers</Text>
       ) : (
         <Box
-          w={{ base: "90%", sm: "100%", md: "80%", lg: "50%", xl: "50%" }}
+          w={{ base: "100%", sm: "100%", md: "80%", lg: "50%", xl: "50%" }}
           h="90vh"
           maxH="90vh"
-          p={5}
+          p={{ base: 3, sm: 5 }}
           borderRadius="lg"
-          border="1px solid white"
+          border={{ base: "none", sm: "none", md: "1px solid white" }}
           overflowY="auto"
           className="custom-scrollbar"
         >
-          <Text fontSize="lg" fontWeight="bold" mb={2}>
+          <Text fontSize={{ base: "md", sm: "lg" }} fontWeight="bold" mb={2}>
             Followers:
           </Text>
           <Divider mb={3} />

@@ -49,26 +49,38 @@ export const Following = ({ user }) => {
         overflow="hidden"
       >
         {user.profilePic && (
-          <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
+          <Avatar
+            name={user.name}
+            src={user.profilePic}
+            boxSize={{ base: "40px", sm: "50px" }}
+          ></Avatar>
         )}
         {!user.profilePic && (
           <Avatar
             name={user.name}
             src="https://example.com/default-avatar.png"
-            size="md"
+            boxSize={{ base: "40px", sm: "50px" }}
           ></Avatar>
         )}
-        <Flex direction="column" w="70%">
-          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
+        <Flex direction="column" w="70%" overflow="hidden">
+          <Text
+            fontSize={{ base: "sm", sm: "md" }}
+            fontWeight={"bold"}
+            isTruncated
+          >
             {user.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
-            {user.username}
+          <Text
+            color={"gray.light"}
+            fontSize={{ base: "xs", sm: "sm" }}
+            isTruncated
+          >
+            @{user.username}
           </Text>
         </Flex>
       </Flex>
       <Button
-        size={"sm"}
+        size={{ base: "xs", sm: "sm" }}
         color={true ? "black" : "white"}
         bg={true ? "white" : "blue.400"}
         onClick={handleUnfollow}

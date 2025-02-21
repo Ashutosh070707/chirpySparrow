@@ -15,109 +15,120 @@ export const Message = ({ message, ownMessage, setMessages }) => {
     <Flex w="full">
       {ownMessage ? (
         <Flex justifyContent="flex-end" w="100%">
-          {message.text && (
-            <Flex bg="green.800" maxW="60%" p={2} borderRadius="md">
-              <Text
-                color="white"
-                wordBreak="break-word"
-                overflowWrap="break-word"
+          <Flex justifyContent="flex-end" maxW="90%" alignItems="center">
+            {message.text && (
+              <Flex
+                bg="green.800"
+                w="full"
+                p={2}
+                borderRadius="md"
+                justifyContent="flex-end"
               >
-                {message.text}
-              </Text>
-              <Box
-                alignSelf="flex-end"
-                ml={1}
-                color={message.seen ? "blue.400" : ""}
-                fontWeight="bold"
-              >
-                <BsCheck2All size={16} />
-              </Box>
-            </Flex>
-          )}
-          {message.img && !imgLoaded && (
-            <Flex w="40%" h="40%">
-              <Image
-                src={message.img}
-                hidden
-                onLoad={() => setImgLoaded(true)}
-                alt="image"
-                borderRadius={4}
+                <Text
+                  color="white"
+                  wordBreak="break-word"
+                  overflowWrap="break-word"
+                  fontSize="sm"
+                >
+                  {message.text}
+                </Text>
+                <Box
+                  alignSelf="flex-end"
+                  ml={"2px"}
+                  color={message.seen ? "blue.400" : ""}
+                  fontWeight="bold"
+                >
+                  <BsCheck2All size={16} />
+                </Box>
+              </Flex>
+            )}
+            {message.img && !imgLoaded && (
+              <Flex w="40%" h="40%">
+                <Image
+                  src={message.img}
+                  hidden
+                  onLoad={() => setImgLoaded(true)}
+                  alt="image"
+                  borderRadius={4}
+                />
+                <Skeleton w="40%" h="40%" borderRadius={4} />
+              </Flex>
+            )}
+
+            {message.img && imgLoaded && (
+              <Flex w="full" borderRadius={10} justifyContent="flex-end">
+                <Image
+                  src={message.img}
+                  w="full"
+                  maxHeight="200px"
+                  objectFit="contain"
+                  borderRadius={10}
+                />
+                <Box
+                  alignSelf="flex-end"
+                  ml={"2px"}
+                  color={message.seen ? "blue.400" : ""}
+                  fontWeight="bold"
+                >
+                  <BsCheck2All size={16} />
+                </Box>
+              </Flex>
+            )}
+            <Flex justifyContent="center" alignItems="center">
+              <DeleteMessage
+                message={message}
+                setMessages={setMessages}
+                selectedConversation={selectedConversation}
               />
-              <Skeleton w="40%" h="40%" borderRadius={4} />
             </Flex>
-          )}
-          {message.img && imgLoaded && (
-            <Flex maxW="40%" borderRadius={10} justifyContent="flex-end">
-              <Image
-                src={message.img}
-                maxWidth="100%"
-                maxHeight="200px"
-                objectFit="contain"
-                borderRadius={10}
-              />
-              <Box
-                alignSelf="flex-end"
-                ml={1}
-                color={message.seen ? "blue.400" : ""}
-                fontWeight="bold"
-              >
-                <BsCheck2All size={16} />
-              </Box>
-            </Flex>
-          )}
-          <Flex justifyContent="center" alignItems="center" ml={1} mr={2}>
-            <DeleteMessage
-              message={message}
-              setMessages={setMessages}
-              selectedConversation={selectedConversation}
-            />
           </Flex>
         </Flex>
       ) : (
-        <Flex w="full" justifyContent="flex-start">
-          {message.text && (
-            <Text
-              maxW="60%"
-              bg="gray.400"
-              p={2}
-              color="black"
-              borderRadius="md"
-              overflowWrap="break-word"
-            >
-              {message.text}
-            </Text>
-          )}
-          {message.img && !imgLoaded && (
-            <Flex w="40%" h="40%">
-              <Image
-                src={message.img}
-                hidden
-                onLoad={() => setImgLoaded(true)}
-                alt="image"
-                borderRadius={4}
-              />
-              <Skeleton w="40%" h="40%" borderRadius={4} />
-            </Flex>
-          )}
-          {message.img && imgLoaded && (
-            <Flex maxW="40%" borderRadius={10} justifyContent="flex-start">
-              <Image
-                src={message.img}
-                maxWidth="100%"
-                maxHeight="200px"
-                objectFit="contain"
-                borderRadius={10}
-              />
-              <Box
-                alignSelf="flex-end"
-                ml={1}
-                color={message.seen ? "blue.400" : ""}
-                fontWeight="bold"
+        <Flex justifyContent="flex-start" w="100%">
+          <Flex justifyContent="flex-start" maxW="90%" alignItems="center">
+            {message.text && (
+              <Flex
+                bg="gray.400"
+                w="full"
+                p={2}
+                borderRadius="md"
+                justifyContent="flex-end"
               >
-                <BsCheck2All size={16} />
-              </Box>
-            </Flex>
-          )}
+                <Text
+                  color="black"
+                  wordBreak="break-word"
+                  overflowWrap="break-word"
+                  fontSize="sm"
+                >
+                  {message.text}
+                </Text>
+              </Flex>
+            )}
+            {message.img && !imgLoaded && (
+              <Flex w="40%" h="40%">
+                <Image
+                  src={message.img}
+                  hidden
+                  onLoad={() => setImgLoaded(true)}
+                  alt="image"
+                  borderRadius={4}
+                />
+                <Skeleton w="40%" h="40%" borderRadius={4} />
+              </Flex>
+            )}
+
+            {message.img && imgLoaded && (
+              <Flex w="full" borderRadius={10} justifyContent="flex-end">
+                <Image
+                  src={message.img}
+                  w="full"
+                  maxHeight="200px"
+                  objectFit="contain"
+                  borderRadius={10}
+                />
+              </Flex>
+            )}
+          </Flex>
         </Flex>
       )}
     </Flex>

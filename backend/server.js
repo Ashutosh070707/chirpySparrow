@@ -15,7 +15,7 @@ import { app, io, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
 
 connectDB();
-// job.start(); // adding crons features( make a get request every 14 minutes)
+job.start(); // adding crons features( make a get request every 14 minutes)
 
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
@@ -40,7 +40,6 @@ app.use("/api/gemini", geminiRoutes);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-  // Fallback to index.html for SPA
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
   });

@@ -51,6 +51,7 @@ export const FollowingPage = () => {
       ) : (
         <Box
           w={{ base: "90%", sm: "100%", md: "80%", lg: "50%", xl: "50%" }}
+          h="90vh"
           maxH="90vh"
           p={5}
           borderRadius="lg"

@@ -11,7 +11,7 @@ import {
   Center,
   Box,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
@@ -27,6 +27,7 @@ export function UpdateProfilePage() {
     username: loggedInUser.username,
     email: loggedInUser.email,
     bio: loggedInUser.bio,
+    profilePic: loggedInUser.profilePic,
     password: "",
   });
   const fileRef = useRef(null);
@@ -67,6 +68,7 @@ export function UpdateProfilePage() {
   const handleCancel = () => {
     navigate(`/${loggedInUser.username}`);
   };
+
   return (
     <Flex
       justifyContent={"center"}
@@ -98,22 +100,16 @@ export function UpdateProfilePage() {
               <FormControl id="userName">
                 <Stack direction={["column", "row"]} spacing={6}>
                   <Center>
-                    {loggedInUser.profilePic && (
-                      <Avatar
-                        name={loggedInUser.name}
-                        src={loggedInUser.profilePic}
-                        size="xl"
-                        boxShadow={"md"}
-                      ></Avatar>
-                    )}
-                    {!loggedInUser.profilePic && (
-                      <Avatar
-                        name={loggedInUser.name}
-                        src="https://example.com/default-avatar.png"
-                        size="xl"
-                        boxShadow={"md"}
-                      ></Avatar>
-                    )}
+                    <Avatar
+                      name={loggedInUser.name}
+                      src={
+                        imgUrl ||
+                        loggedInUser.profilePic ||
+                        "https://example.com/default-avatar.png"
+                      }
+                      size="xl"
+                      boxShadow={"md"}
+                    />
                   </Center>
 
                   <Center w="full">

@@ -23,16 +23,18 @@ export const UserHeader = ({ searchedUser }) => {
     <Box w="full" mt="5%">
       <VStack gap={3} alignItems={"start"}>
         <Flex justifyContent={"space-between"} w={"full"} alignItems={"center"}>
-          <Flex direction="column" g={3} justifyContent="center">
+          <Flex direction="column" g={3} justifyContent="center" w="72%">
             <Text
               fontSize={{ base: "3xl", sm: "xl", md: "2xl", lg: "3xl" }}
               fontWeight={"bold"}
+              isTruncated
             >
               {searchedUser.name}
             </Text>
             <Text
               fontSize={{ base: "xl", sm: "md", md: "lg" }}
               color="gray.light"
+              isTruncated
             >
               @{searchedUser.username}{" "}
             </Text>

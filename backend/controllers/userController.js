@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
-import { trie } from "../utils/algorithms/trie.js";
+// import { trie } from "../utils/algorithms/trie.js";
 
 export const signupUser = async (req, res) => {
   try {
@@ -35,7 +35,7 @@ export const signupUser = async (req, res) => {
       email: newUser.email,
       profilePic: newUser.profilePic,
     };
-    trie.insert(newUser.username, userData); // Insert into Trie
+    // trie.insert(newUser.username, userData); // Insert into Trie
 
     if (newUser) {
       generateTokenandSetCookie(newUser._id, res);
@@ -76,7 +76,7 @@ export const loginUser = async (req, res) => {
       email: user.email,
       profilePic: user.profilePic,
     };
-    trie.insert(user.username, userData); // Insert into Trie if necessary
+    // trie.insert(user.username, userData); // Insert into Trie if necessary
 
     if (user.isFrozen) {
       user.isFrozen = false;
@@ -143,11 +143,11 @@ export const getSearchedUser = async (req, res) => {
     }
 
     // Search in Trie first
-    const searchedUsersFromTrie = trie.searchPrefix(username);
+    // const searchedUsersFromTrie = trie.searchPrefix(username);
 
-    if (searchedUsersFromTrie.length > 0) {
-      return res.status(200).json(searchedUsersFromTrie); // Return Trie results if found
-    }
+    // if (searchedUsersFromTrie.length > 0) {
+    //   return res.status(200).json(searchedUsersFromTrie); // Return Trie results if found
+    // }
 
     const searchedUsers = await User.find(
       {

@@ -8,6 +8,7 @@ import {
   Input,
   Text,
   Textarea,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useShowToast } from "../../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
@@ -15,7 +16,6 @@ import { usePreviewImg } from "../../hooks/usePreviewImg";
 import { useRef, useState } from "react";
 import React from "react";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
-import { BsFillImageFill } from "react-icons/bs";
 import { BiImageAdd } from "react-icons/bi";
 import { BsStars } from "react-icons/bs";
 
@@ -30,6 +30,7 @@ export const CreatePostPage = () => {
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [improvingLoader, setImprovingLoader] = useState(false);
+  const iconSize = useBreakpointValue({ base: 25, md: 28 });
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -109,16 +110,16 @@ export const CreatePostPage = () => {
   return (
     <Flex w="full" justifyContent="center" h="full">
       <Flex
-        w={{ base: "50%", sm: "90%", md: "70%", lg: "70%", xl: "60%" }}
+        w={{ base: "92%", sm: "90%", md: "70%", lg: "70%", xl: "60%" }}
         direction="column"
         borderRadius={10}
         mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
-        gap={6}
+        gap={5}
       >
         <Flex justifyContent="center" alignItems="center" mb="1%">
           <Text
             fontSize={{
-              base: "4xl",
+              base: "2xl",
               sm: "3xl",
               md: "3xl",
               lg: "4xl",
@@ -138,7 +139,7 @@ export const CreatePostPage = () => {
             overflowWrap="break-word"
           ></Textarea>
           <Text
-            fontSize="sm"
+            fontSize={{ base: "xs", sm: "sm" }}
             fontWeight="bold"
             textAlign="right"
             m={"1"}
@@ -148,11 +149,11 @@ export const CreatePostPage = () => {
           </Text>
           <Flex w="full" alignItems="center" gap={3}>
             <Button
-              size="sm"
+              size={{ base: "xs", sm: "sm" }}
               borderRadius={100}
               onClick={improveWithAi}
               disabled={improvingLoader}
-              border="1px solid white"
+              border="1px solid gray"
             >
               {improvingLoader && (
                 <Flex gap={1} alignItems="center">
@@ -181,7 +182,10 @@ export const CreatePostPage = () => {
               onChange={handleImageChange}
             ></Input>
 
-            <BiImageAdd size="28" onClick={() => imageRef.current.click()} />
+            <BiImageAdd
+              size={iconSize}
+              onClick={() => imageRef.current.click()}
+            />
           </Flex>
         </FormControl>
 
@@ -212,6 +216,7 @@ export const CreatePostPage = () => {
         </Flex>
         <Flex justifyContent="center">
           <Button
+            size={{ base: "sm", sm: "md" }}
             w="full"
             bg="blue.600"
             onClick={handleCreatePost}

@@ -9,7 +9,7 @@ export const useShowToast = () => {
         title,
         description,
         status,
-        duration: 2000,
+        duration: 1000,
         isClosable: true,
       });
     },

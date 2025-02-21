@@ -105,11 +105,11 @@ export const SearchUserPage = () => {
   return (
     <Flex w="full" justifyContent="center" h="100vh">
       <Flex
-        w={{ base: "60%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
-        h={{ base: "75%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
-        p={{ base: 6, sm: 4, md: 4, lg: 6, xl: 6 }}
+        w={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        h={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        p={{ base: 2, sm: 4, md: 4, lg: 6, xl: 6 }}
         border={{
-          base: "1px solid white",
+          base: "none",
           sm: "none",
           md: "none",
           lg: "1px solid white",
@@ -117,10 +117,9 @@ export const SearchUserPage = () => {
         }}
         borderRadius={10}
         direction="column"
-        mt={{ base: "6%", sm: "0", md: "0", lg: "3%", xl: "3%" }}
-        gap={4}
+        mt={{ base: "0", lg: "3%", xl: "3%" }}
+        gap={2}
       >
-        {/* Search form remains the same */}
         <form
           onSubmit={
             searchText.length > 0 ? handleSubmit : (e) => e.preventDefault()
@@ -139,7 +138,7 @@ export const SearchUserPage = () => {
             />
             <Button
               type="submit"
-              size="md"
+              size={{ base: "sm", sm: "md" }}
               isLoading={searchingUser}
               borderRadius={100}
             >
@@ -177,7 +176,7 @@ export const SearchUserPage = () => {
                     bg: "gray.900",
                     cursor: "pointer",
                   }}
-                  gap={3}
+                  gap={2}
                 >
                   <Avatar
                     name={user.name}
@@ -185,15 +184,26 @@ export const SearchUserPage = () => {
                       user.profilePic ||
                       "https://example.com/default-avatar.png"
                     }
-                    size="md"
+                    boxSize={{
+                      base: "40px",
+                      sm: "50px",
+                    }}
                   />
 
-                  <Flex direction="column">
-                    <Text fontSize="md" fontWeight="bold">
+                  <Flex direction="column" overflow="hidden">
+                    <Text
+                      fontSize={{ base: "sm", sm: "md" }}
+                      fontWeight="bold"
+                      isTruncated
+                    >
                       {user.name}
                     </Text>
-                    <Text color="gray.500" fontSize="sm">
-                      {user.username}
+                    <Text
+                      color="gray.500"
+                      fontSize={{ base: "xs", sm: "sm" }}
+                      isTruncated
+                    >
+                      @{user.username}
                     </Text>
                   </Flex>
                 </Flex>
@@ -206,7 +216,7 @@ export const SearchUserPage = () => {
           <Flex
             direction="column"
             gap={5}
-            h="60%"
+            h="80%"
             w="full"
             borderRadius={5}
             justifyContent="center"
@@ -214,7 +224,7 @@ export const SearchUserPage = () => {
             p={10}
           >
             <Flex h="full" alignItems="center" justifyContent="center">
-              <Spinner size="xl" />
+              <Spinner size={{ base: "md", sm: "lg", md: "xl" }} />
             </Flex>
           </Flex>
         )}
@@ -224,15 +234,14 @@ export const SearchUserPage = () => {
             direction="column"
             className="custom-scrollbar"
             gap={3}
-            h={{ base: "50%", sm: "60%", md: "60%", lg: "60%", xl: "60%" }}
-            maxH={{ base: "60%", sm: "85%", md: "85%", lg: "85%", xl: "85%" }}
+            h="90%"
             overflowY="auto"
             borderRadius={20}
             w="full"
             p={5}
           >
             <Text
-              fontSize={{ base: "md", sm: "sm", md: "md", lg: "md", xl: "md" }}
+              fontSize={{ base: "sm", sm: "sm", md: "md", lg: "md", xl: "md" }}
               fontWeight="bold"
             >
               Suggested User:

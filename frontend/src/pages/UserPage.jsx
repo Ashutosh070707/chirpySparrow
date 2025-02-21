@@ -239,19 +239,20 @@ export const UserPage = () => {
       {/* User Header */}
       <Box
         w={{ base: "90%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        mt="2%"
+        mt={"5%"}
       >
         <UserHeader searchedUser={searchedUser} />
       </Box>
 
       {/* Posts Section */}
       <Box
-        w={{ base: "90%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        mt="4%"
+        w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
+        mt={3}
+        mb={3}
       >
         <Box w="full" h="1px" border="1px solid white" my="2%" />
         <Flex w="full" justifyContent="center">
-          <Text fontWeight="bold" fontSize="md">
+          <Text fontWeight="bold" fontSize={{ base: "sm", sm: "md" }}>
             Posts
           </Text>
         </Flex>
@@ -260,7 +261,7 @@ export const UserPage = () => {
 
       {/* Posts Container */}
       <Box
-        w={{ base: "90%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
+        w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
         h="500px" // Scrollable container
         overflowY="auto"
         className="custom-scrollbar"
@@ -268,13 +269,22 @@ export const UserPage = () => {
       >
         {fetchingPost && (
           <Flex justifyContent="center">
-            <Spinner size="lg" />
+            <Spinner size={{ base: "md", sm: "lg" }} />
           </Flex>
         )}
 
         {!fetchingPost && userPosts.length === 0 && (
           <Flex justifyContent="center" alignItems="center" w="full">
-            <Text fontSize="xl" color="gray.400">
+            <Text
+              fontSize={{
+                base: "sm",
+                sm: "lg",
+                md: "xl",
+                lg: "2xl",
+                xl: "2xl",
+              }}
+              color="gray.400"
+            >
               Ready to make your first post
             </Text>
           </Flex>

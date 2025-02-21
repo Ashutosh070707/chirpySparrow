@@ -36,39 +36,59 @@ export const Post = ({ post, postedBy }) => {
   return (
     <Box mt="3%" mb="3%" borderRadius={6}>
       <Flex direction={"column"} gap={4}>
-        <Flex justifyContent={"space-between"}>
+        <Flex justifyContent={"space-between"} alignItems="center" w="full">
           <Link
             as={RouterLink}
             to={`/${user.username}`}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            w="70%"
           >
-            <Flex gap={4}>
+            <Flex gap={2}>
               {user.profilePic && (
                 <Avatar
                   name={user.name}
                   src={user.profilePic}
-                  size="md"
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
               {!user.profilePic && (
                 <Avatar
                   name={user.name}
                   src="https://example.com/default-avatar.png"
-                  size="md"
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
-              <Flex gap={1} justifyContent="center" alignItems="center">
-                <Text fontSize={"sm"} fontWeight={"bold"}>
+              <Flex
+                gap={1}
+                justifyContent="center"
+                alignItems="center"
+                overflow="hidden"
+              >
+                <Text
+                  fontSize={{ base: "xs", sm: "sm" }}
+                  fontWeight={"bold"}
+                  isTruncated
+                  maxW="90%"
+                >
                   {user?.username}
                 </Text>
-                <Image src="/verified.png" w="4" h={4}></Image>
+                <Image
+                  src="/verified.png"
+                  w={{ base: 3, sm: 4 }}
+                  h={{ base: 3, sm: 4 }}
+                ></Image>
               </Flex>
             </Flex>
           </Link>
 
-          <Flex alignItems="center" justifyContent="center">
-            <Text fontSize="sm" color={"gray.light"} mr="10px" isTruncated>
+          <Flex alignItems="center" justifyContent="flex-end" w="30%">
+            <Text
+              fontSize={{ base: "xs", sm: "sm" }}
+              color={"gray.light"}
+              isTruncated
+              maxW="100%"
+            >
               {formatDistanceToNow(new Date(post.createdAt)).replace(
                 "about ",
                 ""
@@ -77,62 +97,55 @@ export const Post = ({ post, postedBy }) => {
             </Text>
           </Flex>
         </Flex>
-        <Flex justifyContent="center">
-          <Flex direction="column" w="full" gap={1}>
-            <Flex w="full">
-              <Flex w="95%">
-                <Link
-                  as={RouterLink}
-                  to={`/${user.username}/post/${post._id}`}
-                  textDecoration={"none"}
-                  _hover={{ textDecoration: "none" }}
+        <Flex direction="column" w="full" gap={1}>
+          <Flex w="full">
+            <Flex w="98%">
+              <Link
+                as={RouterLink}
+                to={`/${user.username}/post/${post._id}`}
+                textDecoration={"none"}
+                _hover={{ textDecoration: "none" }}
+              >
+                <Text
+                  fontSize={{ base: "xs", sm: "sm" }}
+                  mb="2%"
+                  wordBreak="break-word"
+                  overflowWrap="break-word"
                 >
-                  <Text
-                    fontSize={"sm"}
-                    mb="2%"
-                    wordBreak="break-word"
-                    overflowWrap="break-word"
-                  >
-                    {post.text}
-                  </Text>
-                </Link>
-              </Flex>
-              {post.postedBy === loggedInUser._id && (
-                <Flex justifyContent="center" w="5%" alignSelf="flex-start">
-                  <DeletePost post={post} />
-                </Flex>
-              )}
+                  {post.text}
+                </Text>
+              </Link>
             </Flex>
-
-            <Link
-              as={RouterLink}
-              to={`/${user.username}/post/${post._id}`}
-              textDecoration={"none"}
-              _hover={{ textDecoration: "none" }}
-            >
-              {post.img && (
-                <Box borderRadius={6} overflow={"hidden"} maxH="300px">
-                  <Image
-                    src={post.img}
-                    w={"full"}
-                    maxH={"300px"}
-                    objectFit={"contain"}
-                    borderRadius={6}
-                  ></Image>
-                </Box>
-              )}
-            </Link>
+            {post.postedBy === loggedInUser._id && (
+              <Flex justifyContent="center" alignItems="center" flex={1}>
+                <DeletePost post={post} />
+              </Flex>
+            )}
           </Flex>
+
+          <Link
+            as={RouterLink}
+            to={`/${user.username}/post/${post._id}`}
+            textDecoration={"none"}
+            _hover={{ textDecoration: "none" }}
+          >
+            {post.img && (
+              <Box borderRadius={6} overflow={"hidden"} maxH="300px">
+                <Image
+                  src={post.img}
+                  w={"full"}
+                  maxH={"300px"}
+                  objectFit={"contain"}
+                  borderRadius={6}
+                ></Image>
+              </Box>
+            )}
+          </Link>
         </Flex>
         <Flex gap={1}>
           <Actions post={post}></Actions>
         </Flex>
-        <Box
-          border="1px solid"
-          mt="2%"
-          borderRadius={10}
-          borderColor="gray.600"
-        ></Box>
+        <Box border="1px solid" borderRadius={10} borderColor="gray.600"></Box>
       </Flex>
     </Box>
   );

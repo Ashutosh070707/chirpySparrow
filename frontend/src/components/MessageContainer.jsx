@@ -209,14 +209,14 @@ export const MessageContainer = ({ setBackButton }) => {
   }, [showToast, selectedConversation.userId, selectedConversation.mock]);
 
   return (
-    <Flex borderRadius="md" flexDirection="column" h="full" gap={1} p={2}>
-      <Flex w="full" alignItems={"center"} gap={2} flex={10}>
+    <Flex borderRadius="md" flexDirection="column" h="full" gap={1} p={1}>
+      {/* <Flex w="full" alignItems={"center"} gap={2} flex={10} overflow="hidden">
         {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
           <Button
-            size="sm"
-            borderRadius={100}
-            w={10}
-            h={10}
+            size={{ base: "xs", sm: "sm" }}
+            borderRadius={"full"}
+            // w={10}
+            // h={10}
             onClick={() => {
               setBackButton(false);
               setselectedConversation({
@@ -238,7 +238,10 @@ export const MessageContainer = ({ setBackButton }) => {
             selectedConversation.userProfilePic ||
             "https://example.com/default-avatar.png"
           }
-          size="md"
+          boxSize={{
+            base: "40px",
+            sm: "50px",
+          }}
         >
           {isOnline ? (
             <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
@@ -257,9 +260,57 @@ export const MessageContainer = ({ setBackButton }) => {
         >
           {selectedConversation.name}
         </Text>
+      </Flex> */}
+      <Flex w="full" alignItems="center" gap={2} flex={10} overflow="hidden">
+        {/* Back Button (Only on Small Screens) */}
+        {(screenSize === "xs" ||
+          screenSize === "sm" ||
+          screenSize === "md") && (
+          <Button
+            size={{ base: "xs", sm: "sm" }}
+            borderRadius="full"
+            onClick={() => {
+              setBackButton(false);
+              setselectedConversation({
+                _id: "",
+                userId: "",
+                username: "",
+                userProfilePic: "",
+                name: "",
+              });
+            }}
+          >
+            <FaArrowLeft />
+          </Button>
+        )}
+
+        {/* Avatar */}
+        <Avatar
+          name={selectedConversation.name}
+          src={
+            selectedConversation.userProfilePic ||
+            "https://example.com/default-avatar.png"
+          }
+          boxSize={{ base: "40px", sm: "50px" }}
+          flexShrink={0} // Prevents shrinking
+        >
+          {isOnline && <AvatarBadge boxSize="1em" bg="green.300" />}
+        </Avatar>
+
+        {/* User Name (Proper Truncation) */}
+        <Flex flex={1} minW={0} overflow="hidden">
+          <Text
+            fontSize="sm"
+            fontWeight="bold"
+            isTruncated
+            maxW="100%"
+            whiteSpace="nowrap"
+          >
+            {selectedConversation.name}
+          </Text>
+        </Flex>
       </Flex>
       <Divider flex={2}></Divider>
-
       <Flex
         direction="column"
         gap={4}

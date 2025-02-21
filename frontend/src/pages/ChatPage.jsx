@@ -241,10 +241,10 @@ export const ChatPage = () => {
   return (
     <Flex w="full" h="100vh" justifyContent={"center"} alignItems="center">
       <Flex
-        w={{ base: "80%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
-        h={{ base: "80%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        w={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
+        h={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
         gap={2}
-        borderRadius={{ base: "80%", sm: 0, md: 0, lg: 10, xl: 10 }}
+        borderRadius={{ base: 0, sm: 0, md: 0, lg: 10, xl: 10 }}
         border={
           screenSize == "lg" || screenSize == "xl" ? "1px solid white" : "none"
         }
@@ -253,15 +253,12 @@ export const ChatPage = () => {
         {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
           <Flex w="full">
             {!backButton && (
-              <Flex
-                w="full"
-                gap={4}
-                p={3}
-                mt={2}
-                flexDirection={"column"}
-                h="full"
-              >
-                <Text fontWeight="bold" w="full" fontSize="lg">
+              <Flex w="full" gap={3} p={3} flexDirection={"column"} h="full">
+                <Text
+                  fontWeight="bold"
+                  w="full"
+                  fontSize={{ base: "md", sm: "lg" }}
+                >
                   Your Conversations
                 </Text>
 
@@ -286,7 +283,7 @@ export const ChatPage = () => {
                         w="full"
                       ></Input>
                       <Button
-                        size="md"
+                        size={{ base: "sm", sm: "md" }}
                         borderRadius={100}
                         w={10}
                         h={10}
@@ -303,12 +300,10 @@ export const ChatPage = () => {
                   <Flex
                     w="full"
                     direction="column"
-                    h="20%"
-                    maxH="20%"
+                    h="25%"
                     overflowY="auto"
-                    gap={2}
+                    gap={1}
                     borderRadius={10}
-                    p={1}
                     className="custom-scrollbar"
                   >
                     {searchedUsers.map((user) => (
@@ -328,10 +323,7 @@ export const ChatPage = () => {
                           color: "white",
                         }}
                         borderRadius={10}
-                        pl={2}
-                        pr={2}
-                        pt={1}
-                        pb={1}
+                        p={2}
                       >
                         <Avatar
                           name={user.name}
@@ -339,11 +331,19 @@ export const ChatPage = () => {
                             user.profilePic ||
                             "https://example.com/default-avatar.png"
                           }
-                          size="sm"
+                          boxSize={{
+                            base: "40px",
+                            sm: "50px",
+                          }}
                         />
 
-                        <Flex direction="column" ml={3} alignItems={"center"}>
-                          <Text fontSize="sm" fontWeight="bold">
+                        <Flex
+                          ml={2}
+                          alignItems={"center"}
+                          overflow="hidden"
+                          w="full"
+                        >
+                          <Text fontSize="sm" fontWeight="bold" isTruncated>
                             {user.name}
                           </Text>
                         </Flex>
@@ -362,7 +362,7 @@ export const ChatPage = () => {
                   overflowX="hidden"
                 >
                   {loadingConversations &&
-                    [0, 1, 2, 3, 4, 5, 6, 7, 8].map((_, i) => (
+                    [0, 1, 2, 3, 4, 5, 6, 7].map((_, i) => (
                       <Flex
                         key={i}
                         gap={4}
@@ -547,7 +547,7 @@ export const ChatPage = () => {
                 overflowX="hidden"
               >
                 {loadingConversations &&
-                  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => (
+                  [0, 1, 2, 3, 4, 5, 6, 7].map((_, i) => (
                     <Flex
                       key={i}
                       gap={4}

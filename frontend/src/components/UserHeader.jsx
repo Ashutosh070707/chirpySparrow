@@ -20,19 +20,25 @@ export const UserHeader = ({ searchedUser }) => {
   const userPosts = useRecoilValue(userPostsAtom);
 
   return (
-    <Box w="full" mt="5%">
-      <VStack gap={3} alignItems={"start"}>
+    <Box w="full">
+      <VStack gap={4} alignItems={"start"}>
         <Flex justifyContent={"space-between"} w={"full"} alignItems={"center"}>
-          <Flex direction="column" g={3} justifyContent="center" w="72%">
+          <Flex
+            direction="column"
+            g={2}
+            justifyContent="center"
+            w="72%"
+            overflow="hidden"
+          >
             <Text
-              fontSize={{ base: "3xl", sm: "xl", md: "2xl", lg: "3xl" }}
+              fontSize={{ base: "lg", sm: "2xl", md: "2xl", lg: "3xl" }}
               fontWeight={"bold"}
               isTruncated
             >
               {searchedUser.name}
             </Text>
             <Text
-              fontSize={{ base: "xl", sm: "md", md: "lg" }}
+              fontSize={{ base: "sm", sm: "md", md: "lg" }}
               color="gray.light"
               isTruncated
             >
@@ -40,17 +46,16 @@ export const UserHeader = ({ searchedUser }) => {
             </Text>
           </Flex>
 
-          <Box>
+          <Flex justifyContent={"center"} alignItems="center">
             {searchedUser.profilePic && (
               <Avatar
                 name={searchedUser.name}
                 src={searchedUser.profilePic}
-                size={{
-                  base: "xl",
-                  sm: "lg",
-                  md: "xl",
-                  lg: "xl",
-                  xl: "xl",
+                boxSize={{
+                  base: "70px",
+                  sm: "100px",
+                  md: "110px",
+                  lg: "120px",
                 }}
               ></Avatar>
             )}
@@ -58,22 +63,22 @@ export const UserHeader = ({ searchedUser }) => {
               <Avatar
                 name={searchedUser.name}
                 src="https://example.com/default-avatar.png"
-                size={{
-                  base: "xl",
-                  sm: "lg",
-                  md: "xl",
-                  lg: "xl",
-                  xl: "xl",
+                boxSize={{
+                  base: "70px",
+                  sm: "100px",
+                  md: "110px",
+                  lg: "120px",
                 }}
               ></Avatar>
             )}
-          </Box>
+          </Flex>
         </Flex>
 
-        <Flex mt="5%">
+        <Flex w="full">
           <Text
-            fontSize={{ base: "md", sm: "sm", md: "md", lg: "md", xl: "md" }}
-            mb="20px"
+            fontSize={{ base: "xs", sm: "sm", md: "md" }}
+            wordBreak="break-word"
+            overflowWrap="break-word"
           >
             {searchedUser.bio}
           </Text>
@@ -91,7 +96,9 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="lg">{userPosts.length} posts</Text>
+              <Text fontSize={{ base: "sm", sm: "md", md: "lg" }}>
+                {userPosts.length} posts
+              </Text>
             </Flex>
           </GridItem>
           <GridItem>
@@ -100,7 +107,7 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="lg">
+              <Text fontSize={{ base: "sm", sm: "md", md: "lg" }}>
                 {searchedUser.followers.length} followers
               </Text>
             </Flex>
@@ -111,7 +118,7 @@ export const UserHeader = ({ searchedUser }) => {
               alignItems="center"
               color="gray.100"
             >
-              <Text fontSize="lg">
+              <Text fontSize={{ base: "sm", sm: "md", md: "lg" }}>
                 {searchedUser.following.length} following
               </Text>
             </Flex>
@@ -130,7 +137,6 @@ export const UserHeader = ({ searchedUser }) => {
               opacity: ".8",
             }}
             w="full"
-            mt="20px"
           >
             {following ? "Unfollow" : "Follow"}
           </Button>

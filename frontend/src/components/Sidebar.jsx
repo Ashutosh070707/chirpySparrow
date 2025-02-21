@@ -50,6 +50,8 @@ export const Sidebar = () => {
 
   //   return () => socket?.off("newMessage");
   // }, [socket, conversations, setUnreadMessageCountAtom]);
+  const iconSize = useBreakpointValue({ base: 25, md: 30 });
+  const createIcon = useBreakpointValue({ base: 20, sm: 23 });
 
   return (
     <Flex
@@ -63,7 +65,7 @@ export const Sidebar = () => {
       maxH="100vh"
       borderRight="1px"
       className="custom-scrollbar"
-      pt={10}
+      pt={6}
       pb={20}
     >
       <Flex direction="column" alignItems={"center"} justifyContent="center">
@@ -74,18 +76,9 @@ export const Sidebar = () => {
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
           >
-            {!showText && <FaInstagram size={30} />}
+            {!showText && <FaInstagram size={iconSize} />}
             {showText && (
-              <Text
-                fontSize={{
-                  base: "2xl",
-                  sm: "md",
-                  md: "lg",
-                  lg: "xl",
-                  xl: "2xl",
-                }}
-                fontWeight="bold"
-              >
+              <Text fontSize="xl" fontWeight="bold">
                 ChirpySparrow
               </Text>
             )}
@@ -99,7 +92,7 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <AiFillHome size={26}></AiFillHome>
+              <AiFillHome size={iconSize}></AiFillHome>
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Home
@@ -114,7 +107,7 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <FaSearch size={26} />
+              <FaSearch size={iconSize} />
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Search
@@ -135,7 +128,7 @@ export const Sidebar = () => {
                 justifyContent="center"
                 alignItems="center"
               >
-                <HiPlus size={23} />
+                <HiPlus size={createIcon} />
               </Flex>
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
@@ -154,7 +147,7 @@ export const Sidebar = () => {
           >
             <Flex gap={4}>
               <Flex position="relative">
-                <BsFillChatQuoteFill size={26} />
+                <BsFillChatQuoteFill size={iconSize} />
                 {/* {unreadMessageCount > 0 && (
                   <Badge
                     color="white"
@@ -191,7 +184,7 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <RxAvatar size={26}></RxAvatar>
+              <RxAvatar size={iconSize}></RxAvatar>
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Profile
@@ -207,7 +200,7 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <MdOutlineSettings size={26} />
+              <MdOutlineSettings size={iconSize} />
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Settings
@@ -224,7 +217,7 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <FiLogOut size={26} />
+              <FiLogOut size={iconSize} />
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Logout

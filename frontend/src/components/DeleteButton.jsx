@@ -6,6 +6,7 @@ import {
   IconButton,
   Flex,
   Spinner,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { FiMoreVertical } from "react-icons/fi";
 import { FiTrash } from "react-icons/fi";
@@ -187,18 +188,20 @@ export const DeletePost = ({ post }) => {
       setDeleting(false);
     }
   };
+
+  const iconSize = useBreakpointValue({ base: 16, sm: 20 });
   return (
-    <Flex>
+    <Flex justifyContent="center" alignItems="center">
       {deleting && (
         <Flex justifyContent="center">
-          <Spinner size="md"></Spinner>
+          <Spinner size={{ base: "xs", sm: "md" }}></Spinner>
         </Flex>
       )}
       {!deleting && (
         <Menu>
           <MenuButton
             as={IconButton}
-            icon={<FiMoreVertical size={20} />}
+            icon={<FiMoreVertical size={iconSize} />}
             variant="ghost"
             aria-label="Options"
             borderRadius="full"

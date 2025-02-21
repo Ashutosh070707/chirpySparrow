@@ -100,7 +100,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
             <Avatar
               name={user.name}
               src={user.profilePic || "https://example.com/default-avatar.png"}
-              size="md"
+              boxSize={{ base: "40px", sm: "50px" }}
             >
               {isOnline ? (
                 <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
@@ -163,7 +163,11 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
               overflow="hidden"
               w="full"
             >
-              <Text color="#90EE90" fontWeight="bold" fontSize="sm">
+              <Text
+                color="#90EE90"
+                fontWeight="bold"
+                fontSize={{ base: "xs", sm: "sm" }}
+              >
                 Typing
               </Text>
               <Flex justifyContent="center" mt={1}>

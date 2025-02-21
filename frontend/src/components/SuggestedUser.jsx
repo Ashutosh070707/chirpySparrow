@@ -46,28 +46,42 @@ export const SuggestedUser = ({ suggestedUser }) => {
           <Avatar
             name={suggestedUser.name}
             src={suggestedUser.profilePic}
-            size="md"
+            boxSize={{
+              base: "40px",
+              sm: "50px",
+            }}
           ></Avatar>
         )}
         {!suggestedUser.profilePic && (
           <Avatar
             name={suggestedUser.name}
             src="https://example.com/default-avatar.png"
-            size="md"
+            boxSize={{
+              base: "40px",
+              sm: "50px",
+            }}
           ></Avatar>
         )}
-        <Flex direction="column" w="70%">
-          <Text fontSize={"md"} fontWeight={"bold"} isTruncated>
+        <Flex direction="column" w="70%" overflow="hidden">
+          <Text
+            fontSize={{ base: "sm", sm: "md" }}
+            fontWeight={"bold"}
+            isTruncated
+          >
             {suggestedUser.name}
           </Text>
-          <Text color={"gray.light"} fontSize={"sm"} isTruncated>
-            {suggestedUser.username}
+          <Text
+            color={"gray.light"}
+            fontSize={{ base: "xs", sm: "sm" }}
+            isTruncated
+          >
+            @{suggestedUser.username}
           </Text>
         </Flex>
       </Flex>
       <Flex w="20%" justifyContent="flex-end">
         <Button
-          size={"sm"}
+          size={{ base: "xs", sm: "md" }}
           color={following ? "black" : "white"}
           bg={following ? "white" : "blue.400"}
           onClick={handleFollow}

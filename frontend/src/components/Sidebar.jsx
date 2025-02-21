@@ -20,13 +20,18 @@ import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaInstagram } from "react-icons/fa";
 import { unreadMessageCountAtom } from "../atoms/unreadMessageCountAtom";
+import { conversationsAtom } from "../atoms/messagesAtom";
+import { useEffect } from "react";
+import { useSocket } from "../../context/SocketContext";
 
 export const Sidebar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
-  const [unreadMessageCount, setUnreadMessageCountAtom] = useRecoilState(
-    unreadMessageCountAtom
-  );
+  // const [unreadMessageCount, setUnreadMessageCountAtom] = useRecoilState(
+  //   unreadMessageCountAtom
+  // );
+  // const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const { socket } = useSocket();
   const logout = useLogout();
   const showText = useBreakpointValue({
     base: false,
@@ -35,6 +40,16 @@ export const Sidebar = () => {
     lg: true,
     xl: true,
   });
+
+  // useEffect(() => {
+  //   if (!conversations.length) return;
+
+  //   socket.on("newMessage", (message) => {
+  //     setUnreadMessageCountAtom((prev) => prev + 1);
+  //   });
+
+  //   return () => socket.off("newMessage");
+  // }, [socket, conversations, setUnreadMessageCountAtom]);
 
   return (
     <Flex
@@ -125,11 +140,12 @@ export const Sidebar = () => {
             to={"/chat"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            // onClick={() => setUnreadMessageCountAtom(0)}
           >
             <Flex gap={4}>
               <Flex position="relative">
                 <BsFillChatQuoteFill size={26} />
-                {unreadMessageCount > 0 && (
+                {/* {unreadMessageCount > 0 && (
                   <Badge
                     color="white"
                     bgColor="red.500"
@@ -142,11 +158,13 @@ export const Sidebar = () => {
                     justifyContent="center"
                     fontSize="xs"
                   >
-                    <Text m={"1px"}>
-                      {unreadMessageCount > 50 ? "50+" : unreadMessageCount}
-                    </Text>
+                    {unreadMessageCount > 0 && (
+                      <Text m={"1px"}>
+                        {unreadMessageCount > 50 ? "50+" : unreadMessageCount}
+                      </Text>
+                    )}
                   </Badge>
-                )}
+                )} */}
               </Flex>
 
               {showText && (

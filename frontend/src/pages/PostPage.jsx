@@ -192,7 +192,7 @@ export const PostPage = () => {
                     sm: "md",
                     md: "lg",
                     lg: "lg",
-                    lg: "xl",
+                    xl: "xl",
                   }}
                   color="gray.400"
                 >

@@ -48,3 +48,9 @@ if (process.env.NODE_ENV === "production") {
 server.listen(PORT, () =>
   console.log(`🚀 Server started at http://localhost:${PORT}`)
 );
+
+// "scripts": {
+//   "dev": "cross-env NODE_ENV=development nodemon backend/server.js",
+//   "start": "cross-env NODE_ENV=production node backend/server.js",
+//   "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+// },

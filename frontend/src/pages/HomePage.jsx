@@ -74,18 +74,6 @@ export const HomePage = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (loading) {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "auto";
-  //   }
-
-  //   return () => {
-  //     document.body.style.overflow = "auto";
-  //   };
-  // }, [loading]);
-
   return (
     <Flex
       justifyContent={"center"}
@@ -94,14 +82,20 @@ export const HomePage = () => {
       minHeight="100vh"
     >
       <Box
-        w={{ base: "40%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
+        w={{
+          base: "95%",
+          sm: "80%",
+          md: "60%",
+          lg: "55%",
+          xl: "42%",
+        }}
         alignItems="center"
         mt="2%"
       >
         <Box>
           {initialLoading && (
             <Flex justifyContent="center" alignItems="center" mt={4}>
-              <Spinner size="xl" />
+              <Spinner size={{ base: "md", sm: "xl" }} />
             </Flex>
           )}
 
@@ -109,7 +103,7 @@ export const HomePage = () => {
             <Flex justifyContent={"center"} alignItems="center">
               <Text
                 fontSize={{
-                  base: "2xl",
+                  base: "sm",
                   sm: "lg",
                   md: "xl",
                   lg: "2xl",
@@ -142,9 +136,7 @@ export const HomePage = () => {
 
           {loading && !initialLoading && hasMore && (
             <Flex justifyContent="center" alignItems="center" mt={4}>
-              <Spinner
-                size={{ base: "md", sm: "sm", md: "md", lg: "md", xl: "md" }}
-              />
+              <Spinner size={{ base: "sm", md: "md", lg: "md", xl: "md" }} />
             </Flex>
           )}
         </Box>

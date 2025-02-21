@@ -68,7 +68,7 @@ export const Post = ({ post, postedBy }) => {
           </Link>
 
           <Flex alignItems="center" justifyContent="center">
-            <Text fontSize="sm" color={"gray.light"} mr="10px">
+            <Text fontSize="sm" color={"gray.light"} mr="10px" isTruncated>
               {formatDistanceToNow(new Date(post.createdAt)).replace(
                 "about ",
                 ""

@@ -84,7 +84,7 @@ export const MessageContainer = ({ setBackButton }) => {
   }, [socket, selectedConversation._id]);
 
   useEffect(() => {
-    socket.on("newMessage", (message) => {
+    socket?.on("newMessage", (message) => {
       if (selectedConversation?._id === message.conversationId) {
         setMessages((prevMessages) => [...prevMessages, message]);
       }
@@ -111,40 +111,40 @@ export const MessageContainer = ({ setBackButton }) => {
       });
     });
 
-    return () => socket.off("newMessage");
+    return () => socket?.off("newMessage");
   }, [socket, selectedConversation, setConversations]);
 
   useEffect(() => {
     const lastMessageIsFromOtherUser =
       messages.length &&
       messages[messages.length - 1].sender !== loggedInUser._id;
+
     if (lastMessageIsFromOtherUser) {
-      socket.emit("markMessagesAsSeen", {
+      socket?.emit("markMessagesAsSeen", {
         conversationId: selectedConversation._id,
         userId: selectedConversation.userId,
       });
     }
 
-    socket.on("messagesSeen", ({ conversationId }) => {
+    const handleMessagesSeen = ({ conversationId }) => {
       if (selectedConversation._id === conversationId) {
-        setMessages((prev) => {
-          const updatedMessages = prev.map((message) => {
-            if (!message.seen) {
-              return {
-                ...message,
-                seen: true,
-              };
-            }
-            return message;
-          });
-          return updatedMessages;
-        });
+        setMessages((prev) =>
+          prev.map((message) =>
+            !message.seen ? { ...message, seen: true } : message
+          )
+        );
       }
-    });
-  }, [socket, loggedInUser._id, messages, selectedConversation]);
+    };
+
+    socket?.on("messagesSeen", handleMessagesSeen);
+
+    return () => {
+      socket?.off("messagesSeen", handleMessagesSeen); // Cleanup listener on unmount
+    };
+  }, [socket, loggedInUser._id, messages, selectedConversation, setMessages]);
 
   useEffect(() => {
-    socket.on(
+    socket?.on(
       "messageDeleted",
       ({ messageId, selectedConversationId, updatedLastMessage }) => {
         if (selectedConversation._id === selectedConversationId) {
@@ -166,7 +166,7 @@ export const MessageContainer = ({ setBackButton }) => {
       }
     );
 
-    return () => socket.off("messageDeleted");
+    return () => socket?.off("messageDeleted");
   }, [socket, selectedConversation]);
 
   //////////////////////////////////////////////////////////  getMessages logic and scroll to the bottom of messagecontainer logic
@@ -246,7 +246,15 @@ export const MessageContainer = ({ setBackButton }) => {
             ""
           )}
         </Avatar>
-        <Text display="flex" alignItems="center">
+        <Text
+          display="flex"
+          alignItems="center"
+          fontSize={"sm"}
+          fontWeight={"bold"}
+          isTruncated
+          maxW="100%" // Ensures it respects parent width
+          whiteSpace="nowrap"
+        >
           {selectedConversation.name}
         </Text>
       </Flex>

@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { useEffect, useState } from "react";
 import { Box, Divider, Flex, Spinner, Text } from "@chakra-ui/react";
@@ -16,14 +16,21 @@ export const FollowersPage = () => {
       try {
         setFetchingProfile(true);
         const res = await fetch(`/api/users/profile/${loggedInUser.username}`);
+
+        if (!res.ok) throw new Error("Failed to fetch profile");
+
         const data = await res.json();
+
         if (data.error) {
           showToast("Error", data.error, "error");
+          setFollowers([]);
+          return;
         }
-        setFollowers(data.followers);
+
+        setFollowers(data.followers || []);
       } catch (error) {
         showToast("Error", error.message, "error");
-        setFollowers(null);
+        setFollowers([]);
       } finally {
         setFetchingProfile(false);
       }
@@ -35,64 +42,32 @@ export const FollowersPage = () => {
   }, [loggedInUser, showToast]);
 
   return (
-    <Flex justifyContent="center" w="full" h="100vh">
+    <Flex justify="center" align="center" w="full" h="100vh" p={4}>
       {fetchingProfile ? (
-        <Flex justifyContent={"center"} alignItems="center" w="full" h="100vh">
-          <Spinner size="xl" />
-        </Flex>
+        <Spinner size="xl" />
       ) : followers.length === 0 ? (
-        <Flex w="full" h="100vh" justifyContent="center" alignItems="center">
-          <Text fontSize="2xl">"No followers"</Text>
-        </Flex>
+        <Text fontSize="xl">No followers</Text>
       ) : (
-        <Flex
-          w={{ base: "60%", sm: "90%", md: "80%", lg: "60%", xl: "60%" }}
-          m="8%"
-          bg="gray.800"
-          borderRadius={10}
-          justifyContent="center"
-          alignItems="center"
-          h="500px"
+        <Box
+          w={{ base: "90%", sm: "100%", md: "80%", lg: "50%", xl: "50%" }}
+          maxH="90vh"
+          p={5}
+          borderRadius="lg"
+          border="1px solid white"
+          overflowY="auto"
+          className="custom-scrollbar"
         >
-          <Flex
-            direction="column"
-            gap={3}
-            h="full" // Adjust this if needed
-            // maxH="500px" // This ensures a fixed height
-            overflowY="auto" // Adds scroll functionality
-            css={{
-              scrollbarWidth: "thin", // Makes scrollbar thinner
-              scrollbarColor: "#888 transparent", // Thumb and track colors
-              "&::-webkit-scrollbar": {
-                width: "6px",
-                height: "6px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#888",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-            }}
-            w="full"
-            p={5}
-          >
-            <Text fontSize="md" fontWeight="bold">
-              Followers:
-            </Text>
-            <Divider></Divider>
+          <Text fontSize="lg" fontWeight="bold" mb={2}>
+            Followers:
+          </Text>
+          <Divider mb={3} />
 
-            <Flex direction="column" w="full" gap={2}>
-              {followers.map((user) => (
-                <Follower key={user.followerId} user={user} />
-              ))}
-            </Flex>
+          <Flex direction="column" gap={2}>
+            {followers.map((user) => (
+              <Follower key={user.followerId} user={user} />
+            ))}
           </Flex>
-        </Flex>
+        </Box>
       )}
     </Flex>
   );

@@ -165,7 +165,7 @@ export const deleteMessage = async (req, res) => {
           img: latestMessage.img,
           sender: latestMessage.sender,
         }
-      : { text: "Message deleted", img: null };
+      : { text: "", img: "" };
 
     await Conversation.findByIdAndUpdate(selectedConversationId, {
       $set: { lastMessage: updatedLastMessage },

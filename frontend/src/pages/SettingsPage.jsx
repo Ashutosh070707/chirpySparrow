@@ -1,5 +1,6 @@
 import {
   Box,
+  Divider,
   Flex,
   Grid,
   GridItem,
@@ -15,7 +16,14 @@ export const SettingsPage = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex w="full" justifyContent="center">
-      <Box w={"80%"} alignItems="center" mt="10%">
+      <Box
+        w="90%"
+        alignItems="center"
+        mt={8}
+        border="1px"
+        borderRadius={10}
+        // bgColor="#343434"
+      >
         <Grid
           templateRows="repeat(5, 1fr)"
           templateColumns="repeat(1, 1fr)"
@@ -31,7 +39,6 @@ export const SettingsPage = () => {
               <Flex
                 justifyContent="space-between"
                 alignItems="center"
-                bg="gray.800"
                 borderRadius={10}
                 h="60px"
               >
@@ -43,6 +50,7 @@ export const SettingsPage = () => {
                 </Box>
               </Flex>
             </Link>
+            <Divider w="full" h="1px" bgColor={"white"}></Divider>
           </GridItem>
 
           <GridItem>
@@ -55,7 +63,6 @@ export const SettingsPage = () => {
               <Flex
                 justifyContent="space-between"
                 alignItems="center"
-                bg="gray.800"
                 borderRadius={10}
                 h="60px"
               >
@@ -67,6 +74,7 @@ export const SettingsPage = () => {
                 </Box>
               </Flex>
             </Link>
+            <Divider w="full" h="1px" bgColor={"white"}></Divider>
           </GridItem>
           <GridItem>
             <Link
@@ -78,7 +86,6 @@ export const SettingsPage = () => {
               <Flex
                 justifyContent="space-between"
                 alignItems="center"
-                bg="gray.800"
                 borderRadius={10}
                 h="60px"
               >
@@ -90,12 +97,12 @@ export const SettingsPage = () => {
                 </Box>
               </Flex>
             </Link>
+            <Divider w="full" h="1px" bgColor={"white"}></Divider>
           </GridItem>
           <GridItem>
             <Flex
               justifyContent="space-between"
               alignItems="center"
-              bg="gray.800"
               borderRadius={10}
               h="60px"
             >
@@ -110,6 +117,7 @@ export const SettingsPage = () => {
                 />
               </Box>
             </Flex>
+            <Divider w="full" h="1px" bgColor={"white"}></Divider>
           </GridItem>
           <GridItem>
             <Link
@@ -121,7 +129,6 @@ export const SettingsPage = () => {
               <Flex
                 justifyContent="space-between"
                 alignItems="center"
-                bg="gray.800"
                 borderRadius={10}
                 h="60px"
               >

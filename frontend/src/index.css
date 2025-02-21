@@ -31,7 +31,6 @@
 
 /* Custom scrollbar styling */
 .custom-scrollbar {
-  flex: 1;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #777373 transparent;

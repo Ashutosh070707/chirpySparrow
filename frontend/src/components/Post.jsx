@@ -78,7 +78,7 @@ export const Post = ({ post, postedBy }) => {
           </Flex>
         </Flex>
         <Flex justifyContent="center">
-          <Flex direction="column" w="full">
+          <Flex direction="column" w="full" gap={1}>
             <Flex w="full">
               <Flex w="95%">
                 <Link

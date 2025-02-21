@@ -9,11 +9,12 @@ import {
   useColorModeValue,
   WrapItem,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
+import { useSocket } from "../../context/SocketContext";
 
 export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const colorMode = useColorMode();
@@ -21,8 +22,46 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const [selectedConversation, setSelectedConversation] = useRecoilState(
     selectedConversationAtom
   );
+  const { socket } = useSocket();
   const user = conversation.participants[0];
   const lastMessage = conversation.lastMessage;
+  const [isUserTyping, setIsUserTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    socket?.on("userTyping", ({ conversationId }) => {
+      if (conversation._id === conversationId) {
+        setIsUserTyping(true);
+
+        // Clear previous timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Set timeout to hide typing indicator after 3 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsUserTyping(false);
+        }, 2000);
+      }
+    });
+
+    socket?.on("userStoppedTyping", ({ conversationId }) => {
+      if (conversation._id === conversationId) {
+        setIsUserTyping(false);
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+      }
+    });
+
+    return () => {
+      socket?.off("userTyping");
+      socket?.off("userStoppedTyping");
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [socket, selectedConversation._id]);
 
   return (
     <Flex
@@ -80,33 +119,62 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           justifyContent="center"
         >
           <Flex alignItems="center" w="full" overflow="hidden">
-            <Text fontSize={"sm"} fontWeight={"bold"}>
+            <Text
+              fontSize={"sm"}
+              fontWeight={"bold"}
+              isTruncated
+              maxW="100%" // Ensures it respects parent width
+              whiteSpace="nowrap"
+            >
               {user.name}
             </Text>
           </Flex>
 
-          <Flex
-            fontSize="xs"
-            alignItems="center"
-            gap={1}
-            overflow="hidden"
-            w="full"
-          >
-            {loggedInUser._id === lastMessage.sender ? (
-              <Box color={lastMessage.seen ? "blue.400" : ""}>
-                <BsCheck2All size={16}></BsCheck2All>
-              </Box>
-            ) : null}
+          {!isUserTyping && (
+            <Flex
+              fontSize="xs"
+              alignItems="center"
+              gap={1}
+              overflow="hidden"
+              w="full"
+            >
+              {lastMessage.sender && loggedInUser._id === lastMessage.sender ? (
+                <Box color={lastMessage.seen ? "blue.400" : ""}>
+                  <BsCheck2All size={16}></BsCheck2All>
+                </Box>
+              ) : null}
 
-            {lastMessage.text.length > 0 && (
-              <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
-                {lastMessage.text}
+              {lastMessage.text.length > 0 && (
+                <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
+                  {lastMessage.text}
+                </Text>
+              )}
+              {lastMessage.text.length === 0 && lastMessage.img !== "" && (
+                <BsFillImageFill size={16} />
+              )}
+            </Flex>
+          )}
+
+          {isUserTyping && (
+            <Flex
+              fontSize="xs"
+              alignItems="center"
+              gap={1}
+              overflow="hidden"
+              w="full"
+            >
+              <Text color="#90EE90" fontWeight="bold" fontSize="sm">
+                Typing
               </Text>
-            )}
-            {lastMessage.text.length === 0 && lastMessage.img !== "" && (
-              <BsFillImageFill size={16} />
-            )}
-          </Flex>
+              <Flex justifyContent="center" mt={1}>
+                <div className="bouncing-loader">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </Flex>
+            </Flex>
+          )}
         </Flex>
       </Flex>
     </Flex>

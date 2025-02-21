@@ -81,16 +81,23 @@ export const PostPage = () => {
   if (!post || !user) return null;
 
   return (
-    <Flex w="full" justifyContent="center">
-      <Flex w="40%" justifyContent="center" direction="column" mt="5%" gap={6}>
-        <Flex justifyContent={"space-between"} alignItems="center">
+    <Flex w="full" justifyContent="center" minHeight="100vh">
+      <Flex
+        w={{ base: "40%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
+        mt={10}
+        // justifyContent="center"
+        direction="column"
+        gap={4}
+      >
+        <Flex alignItems="center" w="full">
           <Link
             as={RouterLink}
             to={`/${user.username}`}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            w="70%"
           >
-            <Flex w={"full"} alignItems={"center"} gap={3}>
+            <Flex w="full" alignItems={"center"} gap={2}>
               {user.profilePic && (
                 <Avatar
                   name={user.name}
@@ -105,16 +112,28 @@ export const PostPage = () => {
                   size="md"
                 ></Avatar>
               )}
-              <Flex>
-                <Text fontSize={"sm"} fontWeight={"bold"}>
-                  {user.username}
+
+              <Flex
+                alignItems="center"
+                justifyContent="center"
+                overflow="hidden"
+                g={2}
+              >
+                <Text
+                  fontSize={"sm"}
+                  fontWeight={"bold"}
+                  isTruncated
+                  maxW="100%" // Ensures it respects parent width
+                  whiteSpace="nowrap"
+                >
+                  {user.name}
                 </Text>
-                <Image src="/verified.png" w="4" h={4} ml={2} mt={1}></Image>
+                <Image src="/verified.png" w="4" h={4} mt={1}></Image>
               </Flex>
             </Flex>
           </Link>
-          <Flex gap={4} textAlign={"right"}>
-            <Text fontSize="sm" width={"40"} color={"gray.light"} pr={"10px"}>
+          <Flex w="30%" justifyContent={"flex-end"}>
+            <Text fontSize="sm" color={"gray.light"}>
               {formatDistanceToNow(new Date(post.createdAt)).replace(
                 "about ",
                 ""
@@ -123,16 +142,19 @@ export const PostPage = () => {
             </Text>
           </Flex>
         </Flex>
-        <Text>{post.text}</Text>
+        <Text fontSize="sm">{post.text}</Text>
 
         <Box borderRadius={6} overflow={"hidden"}>
           {post.img && (
-            <Image
-              src={post.img}
-              w={"full"}
-              h={"400px"}
-              objectFit={"contain"}
-            ></Image>
+            <Box borderRadius={6} overflow={"hidden"} maxH="300px">
+              <Image
+                src={post.img}
+                w={"full"}
+                maxH={"300px"}
+                objectFit={"contain"}
+                borderRadius={6}
+              ></Image>
+            </Box>
           )}
         </Box>
 
@@ -160,6 +182,22 @@ export const PostPage = () => {
                     />
                   ))}
                 </Flex>
+              </Flex>
+            )}
+            {post.replies.length === 0 && (
+              <Flex justifyContent={"center"} alignItems="center">
+                <Text
+                  fontSize={{
+                    base: "2xl",
+                    sm: "md",
+                    md: "lg",
+                    lg: "lg",
+                    lg: "xl",
+                  }}
+                  color="gray.400"
+                >
+                  "No replies"
+                </Text>
               </Flex>
             )}
           </Flex>

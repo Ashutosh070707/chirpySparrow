@@ -44,11 +44,11 @@ export const Sidebar = () => {
   // useEffect(() => {
   //   if (!conversations.length) return;
 
-  //   socket.on("newMessage", (message) => {
+  //   socket?.on("newMessage", (message) => {
   //     setUnreadMessageCountAtom((prev) => prev + 1);
   //   });
 
-  //   return () => socket.off("newMessage");
+  //   return () => socket?.off("newMessage");
   // }, [socket, conversations, setUnreadMessageCountAtom]);
 
   return (
@@ -59,10 +59,15 @@ export const Sidebar = () => {
       left="0"
       bg={colorMode === "dark" ? "gray.800" : "white"}
       w="full"
-      h="100vh"
+      minH="100vh"
+      maxH="100vh"
+      borderRight="1px"
+      className="custom-scrollbar"
+      pt={10}
+      pb={20}
     >
       <Flex direction="column" alignItems={"center"} justifyContent="center">
-        <Box alignItems="center" mt={"40px"} mb={"50px"}>
+        <Box alignItems="center" pb={12}>
           <Link
             as={RouterLink}
             to="/"
@@ -124,9 +129,14 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <Box border="3px solid white" borderRadius={10}>
+              <Flex
+                border="3px solid white"
+                borderRadius={10}
+                justifyContent="center"
+                alignItems="center"
+              >
                 <HiPlus size={23} />
-              </Box>
+              </Flex>
               {showText && (
                 <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
                   Create

@@ -22,14 +22,18 @@ function App() {
 
   return (
     <>
-      <Box>
+      <Box h="100vh" overflow="hidden">
         <Flex direction="row">
           {loggedInUser && (
-            <Box w={{ base: "16%", sm: "10%", md: "8%", lg: "14%", xl: "14%" }}>
+            <Box
+              w={{ base: "16%", sm: "10%", md: "10%", lg: "16%", xl: "16%" }}
+              overflowY="auto"
+              className="custom-scrollbar"
+            >
               <Sidebar />
             </Box>
           )}
-          <Box className="custom-scrollbar">
+          <Box h="100vh" overflowY="auto" flex={1} className="custom-scrollbar">
             <Routes>
               <Route
                 path="/"

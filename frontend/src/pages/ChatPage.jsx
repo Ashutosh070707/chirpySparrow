@@ -157,6 +157,7 @@ export const ChatPage = () => {
           text: "",
           sender: "",
           img: "",
+          seen: false,
         },
         _id: Date.now(),
         participants: [
@@ -176,23 +177,24 @@ export const ChatPage = () => {
 
   ///////////////////////////////////////////////////////////////////////   socket.io functionality
   useEffect(() => {
-    socket?.on("messagesSeen", ({ conversationId }) => {
+    const handleMessagesSeen = ({ conversationId }) => {
       setConversations((prev) => {
-        const updatedConversations = prev.map((conversation) => {
-          if (conversation._id === conversationId) {
-            return {
-              ...conversation,
-              lastMessage: {
-                ...conversation.lastMessage,
-                seen: true,
-              },
-            };
-          }
-          return conversation;
-        });
-        return updatedConversations;
+        return prev.map((conversation) =>
+          conversation._id === conversationId
+            ? {
+                ...conversation,
+                lastMessage: { ...conversation.lastMessage, seen: true },
+              }
+            : conversation
+        );
       });
-    });
+    };
+
+    socket?.on("messagesSeen", handleMessagesSeen);
+
+    return () => {
+      socket?.off("messagesSeen", handleMessagesSeen); // Cleanup listener on unmount
+    };
   }, [socket, setConversations]);
 
   useEffect(() => {
@@ -215,6 +217,26 @@ export const ChatPage = () => {
       socket?.off("conversationUpdated");
     };
   }, [socket, setConversations]);
+
+  useEffect(() => {
+    socket?.on(
+      "messageDeleted",
+      ({ messageId, selectedConversationId, updatedLastMessage }) => {
+        setConversations((prev) =>
+          prev.map((conversation) =>
+            conversation._id === selectedConversationId
+              ? {
+                  ...conversation,
+                  lastMessage: updatedLastMessage,
+                }
+              : conversation
+          )
+        );
+      }
+    );
+
+    return () => socket?.off("messageDeleted");
+  }, [socket, selectedConversation]);
 
   return (
     <Flex w="full" h="100vh" justifyContent={"center"} alignItems="center">

@@ -83,11 +83,11 @@ export const PostPage = () => {
   return (
     <Flex w="full" justifyContent="center" minHeight="100vh">
       <Flex
-        w={{ base: "40%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
-        mt={10}
+        w={{ base: "90%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
+        mt={{ base: 5, sm: 10 }}
         // justifyContent="center"
         direction="column"
-        gap={4}
+        gap={3}
       >
         <Flex alignItems="center" w="full">
           <Link
@@ -102,14 +102,14 @@ export const PostPage = () => {
                 <Avatar
                   name={user.name}
                   src={user.profilePic}
-                  size="md"
+                  boxSize={{ base: "50px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
               {!user.profilePic && (
                 <Avatar
                   name={user.name}
                   src="https://example.com/default-avatar.png"
-                  size="md"
+                  boxSize={{ base: "50px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
 
@@ -117,23 +117,36 @@ export const PostPage = () => {
                 alignItems="center"
                 justifyContent="center"
                 overflow="hidden"
-                g={2}
+                g={1}
               >
                 <Text
-                  fontSize={"sm"}
+                  fontSize={{ base: "xs", sm: "sm" }}
                   fontWeight={"bold"}
                   isTruncated
-                  maxW="100%" // Ensures it respects parent width
-                  whiteSpace="nowrap"
+                  maxW="90%" // Ensures it respects parent width
                 >
                   {user.name}
                 </Text>
-                <Image src="/verified.png" w="4" h={4} mt={1}></Image>
+                <Image
+                  src="/verified.png"
+                  w={{ base: 3, sm: 4 }}
+                  h={{ base: 3, sm: 4 }}
+                ></Image>
               </Flex>
             </Flex>
           </Link>
-          <Flex w="30%" justifyContent={"flex-end"}>
-            <Text fontSize="sm" color={"gray.light"}>
+          <Flex
+            w="30%"
+            justifyContent={"flex-end"}
+            alignItems="center"
+            overflow="hidden"
+          >
+            <Text
+              fontSize={{ base: "xs", sm: "sm" }}
+              color={"gray.light"}
+              isTruncated
+              maxW="100%"
+            >
               {formatDistanceToNow(new Date(post.createdAt)).replace(
                 "about ",
                 ""
@@ -142,7 +155,14 @@ export const PostPage = () => {
             </Text>
           </Flex>
         </Flex>
-        <Text fontSize="sm">{post.text}</Text>
+        <Text
+          fontSize={{ base: "xs", sm: "sm" }}
+          mb="2%"
+          wordBreak="break-word"
+          overflowWrap="break-word"
+        >
+          {post.text}
+        </Text>
 
         <Box borderRadius={6} overflow={"hidden"}>
           {post.img && (
@@ -158,7 +178,7 @@ export const PostPage = () => {
           )}
         </Box>
 
-        <Flex gap={3}>
+        <Flex gap={1}>
           <Actions post={post}></Actions>
         </Flex>
 
@@ -168,7 +188,7 @@ export const PostPage = () => {
           <Flex direction="column">
             {post.replies.length > 0 && (
               <Flex direction="column" gap={6}>
-                <Text fontSize="1xl" fontWeight="bold">
+                <Text fontSize={{ base: "lg", sm: "xl" }} fontWeight="bold">
                   Replies:
                 </Text>
                 <Flex direction="column" gap={5} w="full">
@@ -188,7 +208,7 @@ export const PostPage = () => {
               <Flex justifyContent={"center"} alignItems="center">
                 <Text
                   fontSize={{
-                    base: "2xl",
+                    base: "md",
                     sm: "md",
                     md: "lg",
                     lg: "lg",

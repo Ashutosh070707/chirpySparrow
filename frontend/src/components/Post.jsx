@@ -82,7 +82,12 @@ export const Post = ({ post, postedBy }) => {
             </Flex>
           </Link>
 
-          <Flex alignItems="center" justifyContent="flex-end" w="30%">
+          <Flex
+            alignItems="center"
+            justifyContent="flex-end"
+            w="30%"
+            overflow="hidden"
+          >
             <Text
               fontSize={{ base: "xs", sm: "sm" }}
               color={"gray.light"}

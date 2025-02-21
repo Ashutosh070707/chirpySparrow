@@ -26,7 +26,7 @@ export const Comment = ({ reply, lastReply }) => {
 
   if (!user) return null;
   return (
-    <Flex w={"full"} gap={4}>
+    <Flex w={"full"} gap={3}>
       <Link
         as={RouterLink}
         to={`/${user.username}`}
@@ -34,30 +34,41 @@ export const Comment = ({ reply, lastReply }) => {
         _hover={{ textDecoration: "none" }}
       >
         {user.profilePic && (
-          <Avatar name={user.name} src={user.profilePic} size="md"></Avatar>
+          <Avatar
+            name={user.name}
+            src={user.profilePic}
+            boxSize={{ base: "40px", sm: "50px" }}
+          ></Avatar>
         )}
         {!user.profilePic && (
           <Avatar
             name={user.name}
             src="https://example.com/default-avatar.png"
-            size="md"
+            boxSize={{ base: "40px", sm: "50px" }}
           ></Avatar>
         )}
       </Link>
       <Flex gap={1} w={"full"} flexDirection={"column"}>
-        <Flex w={"full"} justifyContent={"space-between"} alignItems={"center"}>
+        <Flex
+          w={"full"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          overflow="hidden"
+        >
           <Link
             as={RouterLink}
             to={`/${user.username}`}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            w="full"
+            overflow="hidden"
           >
-            <Text fontSize="sm" fontWeight="bold">
+            <Text fontSize="sm" fontWeight="bold" isTruncated>
               {user.username}
             </Text>
           </Link>
         </Flex>
-        <Text>{reply.text}</Text>
+        <Text fontSize={{ base: "xs", sm: "sm" }}>{reply.text}</Text>
       </Flex>
 
       {!lastReply && <Divider my={2} mb={"10px"}></Divider>}

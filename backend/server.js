@@ -61,9 +61,3 @@ server.listen(PORT, () =>
 //     "dev": "nodemon server.js",
 //     "start": "node server.js"
 //   },
-
-// package.json before deployment
-// "scripts": {
-//     "dev": "nodemon server.js",
-//     "start": "node server.js"
-//   },

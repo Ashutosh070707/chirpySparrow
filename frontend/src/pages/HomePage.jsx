@@ -135,8 +135,8 @@ export const HomePage = () => {
             })}
 
           {loading && !initialLoading && hasMore && (
-            <Flex justifyContent="center" alignItems="center" mt={4}>
-              <Spinner size={{ base: "sm", md: "md", lg: "md", xl: "md" }} />
+            <Flex justifyContent="center" alignItems="center" m={4}>
+              <Spinner size={{ base: "sm", sm: "xl" }} />
             </Flex>
           )}
         </Box>

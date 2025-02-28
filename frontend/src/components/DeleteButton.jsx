@@ -7,6 +7,7 @@ import {
   Flex,
   Spinner,
   useBreakpointValue,
+  Text,
 } from "@chakra-ui/react";
 import { FiMoreVertical } from "react-icons/fi";
 import { FiTrash } from "react-icons/fi";
@@ -60,29 +61,33 @@ export const DeleteConversation = ({ conversation }) => {
     }
   };
   return (
-    <Flex>
-      {deleting && (
-        <Flex justifyContent="center">
-          <Spinner size="md"></Spinner>
+    <Flex alignItems="center">
+      {deleting ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner size="xs" />
         </Flex>
-      )}
-      {!deleting && (
-        <Menu>
+      ) : (
+        <Menu placement="bottom-end">
           <MenuButton
             as={IconButton}
-            icon={<FiMoreVertical size={18} />}
+            icon={<FiMoreVertical size={16} />}
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bgColor: "transparent" }} // Remove background on hover
-            _active={{ bgColor: "transparent" }} // Remove background on click
-            _focus={{ bgColor: "transparent" }} // Remove background on focus
+            _hover={{ bg: "transparent" }} // Prevents hover background
+            _active={{ bg: "transparent" }} // Prevents click background
+            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
           />
-          <MenuList w="100px" minW="120px">
-            <MenuItem onClick={handleDeleteConversation}>
-              <Flex gap={2}>
-                <FiTrash color="red" size={20} />
-                Delete
+          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+            <MenuItem
+              onClick={handleDeleteConversation}
+              borderRadius="md"
+              px={3}
+              py={2}
+            >
+              <Flex align="center" gap={2}>
+                <FiTrash color="red" size={16} />
+                <Text fontSize="sm">Delete</Text>
               </Flex>
             </MenuItem>
           </MenuList>
@@ -129,29 +134,33 @@ export const DeleteMessage = ({
     }
   };
   return (
-    <Flex>
-      {deleting && (
+    <Flex alignItems="center">
+      {deleting ? (
         <Flex justifyContent="center" alignItems="center">
-          <Spinner size="xs"></Spinner>
+          <Spinner size="xs" />
         </Flex>
-      )}
-      {!deleting && (
-        <Menu>
+      ) : (
+        <Menu placement="bottom-end">
           <MenuButton
             as={IconButton}
-            icon={<FiMoreVertical size={14} />}
+            icon={<FiMoreVertical size={16} />}
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bgColor: "transparent" }} // Remove background on hover
-            _active={{ bgColor: "transparent" }} // Remove background on click
-            _focus={{ bgColor: "transparent" }} // Remove background on focus
+            _hover={{ bg: "transparent" }} // Prevents hover background
+            _active={{ bg: "transparent" }} // Prevents click background
+            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
           />
-          <MenuList w="150px" minW="120px">
-            <MenuItem onClick={handleDeleteMessage}>
-              <Flex gap={2}>
-                <FiTrash color="red" size={20} />
-                Delete
+          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+            <MenuItem
+              onClick={handleDeleteMessage}
+              borderRadius="md"
+              px={3}
+              py={2}
+            >
+              <Flex align="center" gap={2}>
+                <FiTrash color="red" size={16} />
+                <Text fontSize="sm">Delete</Text>
               </Flex>
             </MenuItem>
           </MenuList>
@@ -191,29 +200,33 @@ export const DeletePost = ({ post }) => {
 
   const iconSize = useBreakpointValue({ base: 16, sm: 20 });
   return (
-    <Flex justifyContent="center" alignItems="center">
-      {deleting && (
-        <Flex justifyContent="center">
-          <Spinner size={{ base: "xs", sm: "md" }}></Spinner>
+    <Flex alignItems="center">
+      {deleting ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner size="xs" />
         </Flex>
-      )}
-      {!deleting && (
-        <Menu>
+      ) : (
+        <Menu placement="bottom-end">
           <MenuButton
             as={IconButton}
-            icon={<FiMoreVertical size={iconSize} />}
+            icon={<FiMoreVertical size={16} />}
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bgColor: "transparent" }} // Remove background on hover
-            _active={{ bgColor: "transparent" }} // Remove background on click
-            _focus={{ bgColor: "transparent" }} // Remove background on focus
+            _hover={{ bg: "transparent" }} // Prevents hover background
+            _active={{ bg: "transparent" }} // Prevents click background
+            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
           />
-          <MenuList w="150px" minW="120px">
-            <MenuItem onClick={handleDeletePost}>
-              <Flex gap={2}>
-                <FiTrash color="red" size={20} />
-                Delete
+          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+            <MenuItem
+              onClick={handleDeletePost}
+              borderRadius="md"
+              px={3}
+              py={2}
+            >
+              <Flex align="center" gap={2}>
+                <FiTrash color="red" size={16} />
+                <Text fontSize="sm">Delete</Text>
               </Flex>
             </MenuItem>
           </MenuList>

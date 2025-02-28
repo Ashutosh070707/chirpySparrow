@@ -171,20 +171,34 @@ export const MessageContainer = ({ setBackButton }) => {
 
   //////////////////////////////////////////////////////////  getMessages logic and scroll to the bottom of messagecontainer logic
 
+  // const scrollToBottom = () => {
+  //   if (messageEndRef.current) {
+  //     setTimeout(() => {
+  //       messageEndRef.current.scrollIntoView({
+  //         behavior: "smooth",
+  //         block: "end",
+  //       });
+  //     }, 500); // Small delay to ensure content is rendered
+  //   }
+  // };
+
   const scrollToBottom = () => {
     if (messageEndRef.current) {
       setTimeout(() => {
-        messageEndRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-        });
-      }, 500); // Small delay to ensure content is rendered
+        if (messageEndRef.current) {
+          // Add this check
+          messageEndRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+        }
+      }, 500);
     }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isUserTyping]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -313,7 +327,7 @@ export const MessageContainer = ({ setBackButton }) => {
       <Divider flex={2}></Divider>
       <Flex
         direction="column"
-        gap={4}
+        gap={3}
         flex={80}
         my={4}
         w={"full"}
@@ -351,13 +365,15 @@ export const MessageContainer = ({ setBackButton }) => {
             </Flex>
           ))}
 
+        {isUserTyping && (
+          <Flex justifyContent={"flex-end"} alignItems="center" mt={4} pr={8}>
+            <TypingIndicator />
+          </Flex>
+        )}
+
         <div ref={messageEndRef}></div>
       </Flex>
-      {isUserTyping && (
-        <Flex justifyContent={"flex-end"} alignItems="center" m={4} pr={8}>
-          <TypingIndicator />
-        </Flex>
-      )}
+
       <Flex flex={8} w="full" borderRadius={10}>
         <MessageInput setMessages={setMessages} />
       </Flex>

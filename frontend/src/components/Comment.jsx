@@ -49,26 +49,33 @@ export const Comment = ({ reply, lastReply }) => {
         )}
       </Link>
       <Flex gap={1} w={"full"} flexDirection={"column"}>
-        <Flex
-          w={"full"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          overflow="hidden"
-        >
+        <Flex alignItems={"center"} overflow="hidden">
           <Link
             as={RouterLink}
             to={`/${user.username}`}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
-            w="full"
             overflow="hidden"
           >
-            <Text fontSize="sm" fontWeight="bold" isTruncated>
+            <Text
+              fontSize="sm"
+              fontWeight="bold"
+              isTruncated
+              wordBreak="break-word"
+              overflowWrap="break-word"
+            >
               {user.username}
             </Text>
           </Link>
         </Flex>
-        <Text fontSize={{ base: "xs", sm: "sm" }}>{reply.text}</Text>
+        <Text
+          fontSize={{ base: "xs", sm: "sm" }}
+          isTruncated
+          wordBreak="break-word"
+          overflowWrap="break-word"
+        >
+          {reply.text}
+        </Text>
       </Flex>
 
       {!lastReply && <Divider my={2} mb={"10px"}></Divider>}

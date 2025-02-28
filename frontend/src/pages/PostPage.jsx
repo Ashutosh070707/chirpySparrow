@@ -81,13 +81,18 @@ export const PostPage = () => {
   if (!post || !user) return null;
 
   return (
-    <Flex w="full" justifyContent="center" minHeight="100vh">
+    <Flex
+      w="full"
+      justifyContent="center"
+      alignItems="center"
+      direction="column"
+      gap={2}
+    >
       <Flex
         w={{ base: "90%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
         mt={{ base: 5, sm: 10 }}
         // justifyContent="center"
         direction="column"
-        gap={3}
       >
         <Flex alignItems="center" w="full">
           <Link
@@ -181,46 +186,52 @@ export const PostPage = () => {
         <Flex gap={1}>
           <Actions post={post}></Actions>
         </Flex>
-
-        <Divider></Divider>
-
-        <Box w="full">
-          <Flex direction="column">
-            {post.replies.length > 0 && (
-              <Flex direction="column" gap={6}>
-                <Text fontSize={{ base: "lg", sm: "xl" }} fontWeight="bold">
-                  Replies:
-                </Text>
-                <Flex direction="column" gap={5} w="full">
-                  {post.replies.map((reply) => (
-                    <Comment
-                      key={reply._id}
-                      reply={reply}
-                      lastReply={
-                        reply._id === post.replies[post.replies.length - 1]._id
-                      }
-                    />
-                  ))}
-                </Flex>
+      </Flex>
+      <Divider
+        w={{ base: "90%", sm: "80%", md: "60%", lg: "55%", xl: "42%" }}
+      ></Divider>
+      <Flex w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}>
+        <Box
+          w="full"
+          h="400px" // Scrollable container
+          overflowY="auto"
+          className="custom-scrollbar"
+          p={2}
+        >
+          {post.replies.length > 0 && (
+            <Flex direction="column" gap={6}>
+              <Text fontSize={{ base: "md", sm: "lg" }} fontWeight="bold">
+                Replies:
+              </Text>
+              <Flex direction="column" gap={5} w="full">
+                {post.replies.map((reply) => (
+                  <Comment
+                    key={reply._id}
+                    reply={reply}
+                    lastReply={
+                      reply._id === post.replies[post.replies.length - 1]._id
+                    }
+                  />
+                ))}
               </Flex>
-            )}
-            {post.replies.length === 0 && (
-              <Flex justifyContent={"center"} alignItems="center">
-                <Text
-                  fontSize={{
-                    base: "md",
-                    sm: "md",
-                    md: "lg",
-                    lg: "lg",
-                    xl: "xl",
-                  }}
-                  color="gray.400"
-                >
-                  "No replies"
-                </Text>
-              </Flex>
-            )}
-          </Flex>
+            </Flex>
+          )}
+          {post.replies.length === 0 && (
+            <Flex justifyContent={"center"} alignItems="center">
+              <Text
+                fontSize={{
+                  base: "md",
+                  sm: "md",
+                  md: "lg",
+                  lg: "lg",
+                  xl: "xl",
+                }}
+                color="gray.400"
+              >
+                "No replies"
+              </Text>
+            </Flex>
+          )}
         </Box>
       </Flex>
     </Flex>

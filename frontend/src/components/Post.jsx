@@ -6,7 +6,7 @@ import { useShowToast } from "../../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
 import { useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
-import { DeletePost } from "./DeleteButton";
+import { PostActions } from "./DeleteButton";
 
 export const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
@@ -49,14 +49,14 @@ export const Post = ({ post, postedBy }) => {
                 <Avatar
                   name={user.name}
                   src={user.profilePic}
-                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "60px" }}
                 ></Avatar>
               )}
               {!user.profilePic && (
                 <Avatar
                   name={user.name}
                   src="https://example.com/default-avatar.png"
-                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "60px" }}
                 ></Avatar>
               )}
               <Flex
@@ -123,7 +123,7 @@ export const Post = ({ post, postedBy }) => {
             </Flex>
             {post.postedBy === loggedInUser._id && (
               <Flex justifyContent="center" alignItems="center" flex={1}>
-                <DeletePost post={post} />
+                <PostActions post={post} />
               </Flex>
             )}
           </Flex>

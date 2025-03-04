@@ -232,7 +232,7 @@ export const updateUser = async (req, res) => {
 
     let user = await User.findById(userId);
     if (!user) {
-      res.status("400").json({ error: "User not found." });
+      res.status(400).json({ error: "User not found." });
     }
 
     if (!name || !email || !username) {

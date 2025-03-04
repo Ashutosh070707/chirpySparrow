@@ -262,10 +262,11 @@ export const UserPage = () => {
       {/* Posts Container */}
       <Box
         w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        h="500px" // Scrollable container
+        h="800px" // Scrollable container
         overflowY="auto"
         className="custom-scrollbar"
         p={2}
+        mb={1}
       >
         {fetchingPost && (
           <Flex justifyContent="center">

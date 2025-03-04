@@ -177,3 +177,48 @@ export const getFeedPost = async (req, res) => {
     console.log("Error in getFeedPost", err.message);
   }
 };
+
+export const updatePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { newText, newImg, imageChanged } = req.body;
+
+    const olderPost = await Post.findById(postId);
+    if (!olderPost) {
+      return res.status(400).json({ error: "Post not found." });
+    }
+    if (!newText) {
+      return res.status(400).json({ error: "Text is required." });
+    }
+
+    let updatedImg = olderPost.img; // Default to old image
+    if (imageChanged) {
+      if (olderPost.img) {
+        await cloudinary.uploader.destroy(
+          olderPost.img.split("/").pop().split(".")[0]
+        );
+      }
+      if (newImg) {
+        if (olderPost.img) {
+          await cloudinary.uploader.destroy(
+            olderPost.img.split("/").pop().split(".")[0]
+          );
+        }
+        const uploadedResponse = await cloudinary.uploader.upload(newImg);
+        updatedImg = uploadedResponse.secure_url;
+      } else {
+        updatedImg = "";
+      }
+    }
+
+    olderPost.text = newText;
+    olderPost.img = updatedImg;
+    await olderPost.save();
+    res
+      .status(200)
+      .json({ message: "Post updated successfully.", post: olderPost });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.log("Error in update post.", err.message);
+  }
+};

@@ -93,6 +93,7 @@ export const PostPage = () => {
         mt={{ base: 5, sm: 10 }}
         // justifyContent="center"
         direction="column"
+        gap={2}
       >
         <Flex alignItems="center" w="full">
           <Link
@@ -107,14 +108,14 @@ export const PostPage = () => {
                 <Avatar
                   name={user.name}
                   src={user.profilePic}
-                  boxSize={{ base: "50px", sm: "50px", md: "60px", lg: "70px" }}
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
               {!user.profilePic && (
                 <Avatar
                   name={user.name}
                   src="https://example.com/default-avatar.png"
-                  boxSize={{ base: "50px", sm: "50px", md: "60px", lg: "70px" }}
+                  boxSize={{ base: "40px", sm: "50px", md: "60px", lg: "70px" }}
                 ></Avatar>
               )}
 

@@ -8,6 +8,7 @@ import {
   likeUnlikePost,
   replyToPost,
   getUserPosts,
+  updatePost,
 } from "../controllers/postController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -20,5 +21,6 @@ router.post("/create", protectRoute, createPost);
 router.delete("/delete/:id", protectRoute, deletePost);
 router.put("/like/:id", protectRoute, likeUnlikePost);
 router.put("/reply/:id", protectRoute, replyToPost);
+router.patch("/update/:id", protectRoute, updatePost);
 
 export default router;

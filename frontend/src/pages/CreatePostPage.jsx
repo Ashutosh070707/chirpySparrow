@@ -132,6 +132,7 @@ export const CreatePostPage = () => {
         </Flex>
         <FormControl>
           <Textarea
+            fontSize={{ base: "sm", sm: "md" }}
             h="200px"
             placeholder="Post content goes here..."
             onChange={handleTextChange}

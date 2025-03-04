@@ -6,11 +6,11 @@ import {
   IconButton,
   Flex,
   Spinner,
-  useBreakpointValue,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FiMoreVertical } from "react-icons/fi";
-import { FiTrash } from "react-icons/fi";
+import { FiMoreVertical, FiTrash } from "react-icons/fi";
+import { FaEdit } from "react-icons/fa";
 import { useShowToast } from "../../hooks/useShowToast";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
@@ -19,6 +19,7 @@ import {
 } from "../atoms/messagesAtom";
 import { useState } from "react";
 import { userPostsAtom } from "../atoms/userPostsAtom";
+import { EditPostModal } from "./EditPostModal";
 
 export const DeleteConversation = ({ conversation }) => {
   const showToast = useShowToast();
@@ -170,11 +171,12 @@ export const DeleteMessage = ({
   );
 };
 
-export const DeletePost = ({ post }) => {
+export const PostActions = ({ post }) => {
   const showToast = useShowToast();
   const setPosts = useSetRecoilState(userPostsAtom);
-
   const [deleting, setDeleting] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const handleDeletePost = async (e) => {
     if (deleting) return;
     setDeleting(true);
@@ -192,13 +194,12 @@ export const DeletePost = ({ post }) => {
       showToast("Success", "Post deleted successfully", "success");
       setPosts((prevPosts) => prevPosts.filter((p) => p._id !== post._id));
     } catch (error) {
-      showToast("Eror", error, "error");
+      showToast("Error", error, "error");
     } finally {
       setDeleting(false);
     }
   };
 
-  const iconSize = useBreakpointValue({ base: 16, sm: 20 });
   return (
     <Flex alignItems="center">
       {deleting ? (
@@ -229,9 +230,17 @@ export const DeletePost = ({ post }) => {
                 <Text fontSize="sm">Delete</Text>
               </Flex>
             </MenuItem>
+            <MenuItem onClick={onOpen} borderRadius="md" px={3} py={2}>
+              <Flex align="center" gap={2}>
+                <FaEdit color="green" size={16} />
+                <Text fontSize="sm">Edit</Text>
+              </Flex>
+            </MenuItem>
           </MenuList>
         </Menu>
       )}
+      {/* Render the Edit Modal */}
+      <EditPostModal post={post} isOpen={isOpen} onClose={onClose} />
     </Flex>
   );
 };

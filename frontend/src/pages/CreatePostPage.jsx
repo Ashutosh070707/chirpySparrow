@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { useShowToast } from "../../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
-import { usePreviewImg } from "../../hooks/usePreviewImg";
 import { useRef, useState } from "react";
 import React from "react";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
@@ -26,11 +25,11 @@ export const CreatePostPage = () => {
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [postText, setPostText] = useState("");
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
-  const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [improvingLoader, setImprovingLoader] = useState(false);
   const iconSize = useBreakpointValue({ base: 25, md: 28 });
+  const [imgUrl, setImgUrl] = useState(null);
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -41,6 +40,20 @@ export const CreatePostPage = () => {
     } else {
       setPostText(inputText);
       setRemainingChar(MAX_CHAR - inputText.length);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      showToast("Invalid file type", "Please select an image file.", "error");
+      setImgUrl(null);
     }
   };
 

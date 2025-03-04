@@ -77,7 +77,6 @@ export const EditPostModal = ({ post, isOpen, onClose }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onloadend = () => {

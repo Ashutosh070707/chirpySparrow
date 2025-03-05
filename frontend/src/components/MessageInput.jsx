@@ -1,9 +1,11 @@
 import {
+  Box,
   Button,
   Flex,
   Image,
   Input,
   InputGroup,
+  InputLeftElement,
   InputRightElement,
   Modal,
   ModalBody,
@@ -24,6 +26,7 @@ import { useShowToast } from "../../hooks/useShowToast";
 import { BsFillImageFill } from "react-icons/bs";
 import { usePreviewImg } from "../../hooks/usePreviewImg";
 import { useSocket } from "../../context/SocketContext.jsx";
+import { MdGif } from "react-icons/md";
 
 export const MessageInput = ({ setMessages }) => {
   const [messageText, setMessageText] = useState("");
@@ -36,6 +39,9 @@ export const MessageInput = ({ setMessages }) => {
   const { socket } = useSocket();
   const [improvingLoader, setImprovingLoader] = useState(false);
   const typingTimeoutRef = useRef(null);
+  const [fetchingGif, setFetchingGif] = useState(false);
+  const [gifs, setGifs] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     setMessageText("");
@@ -101,7 +107,10 @@ export const MessageInput = ({ setMessages }) => {
   const handleSendMessage = useCallback(
     async (e) => {
       e.preventDefault();
-      if (!messageText.trim() && !imgUrl) return;
+      if (!messageText.trim() && !imgUrl) {
+        showToast("Error", "Text is required", "error");
+        return;
+      }
       if (isSending || improvingLoader) return;
       setIsSending(true);
 
@@ -151,6 +160,33 @@ export const MessageInput = ({ setMessages }) => {
     [messageText, imgUrl, isSending, improvingLoader, selectedConversation]
   );
 
+  const handleGifPicker = async () => {
+    if (fetchingGif) return;
+    if (!searchText.trim()) {
+      showToast("Error", "Query is missing", "error");
+      return;
+    }
+    setFetchingGif(true);
+    try {
+      const encodedQuery = encodeURIComponent(searchText.trim());
+      const res = await fetch(`/api/messages/gifs/${encodedQuery}`);
+      if (!res.ok) throw new Error("Failed to fetch GIFs"); // Ensure request succeeded
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setGifs(data.gifs || []);
+      // console.log(gifs);
+      setSearchText("");
+    } catch (error) {
+      showToast("Error", error, "error");
+    } finally {
+      setFetchingGif(false);
+      setSearchText("");
+    }
+  };
+
   return (
     <Flex gap={3} alignItems={"center"} w="full">
       {/* Message Input Field */}
@@ -166,6 +202,10 @@ export const MessageInput = ({ setMessages }) => {
                 handleTyping();
               }}
             />
+            <InputLeftElement pt={1} pb={1}>
+              <MdGif size={30} cursor="pointer" onClick={handleGifPicker} />
+              <Box w="1px" h="full" m="2px" bgColor="gray.600"></Box>
+            </InputLeftElement>
             <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
               <IoSendSharp />
             </InputRightElement>
@@ -174,73 +214,56 @@ export const MessageInput = ({ setMessages }) => {
       </Flex>
 
       {/* Improve with AI Button */}
-      <Flex flex={4} alignItems="center">
+      <Flex flex={3} alignItems="center">
         <Button
-          aria-label="Improve with AI"
-          bgGradient="linear(to-r, pink.400, purple.500, blue.500)"
-          _hover={{
-            bgGradient: "linear(to-r, pink.300, purple.400, blue.400)",
-            transform: "scale(1.1)",
-          }}
-          _active={{ transform: "scale(0.95)" }}
-          boxShadow="0px 0px 10px rgba(255, 0, 255, 0.5)"
+          bgColor="white"
+          _hover={{ bg: "gray.200" }}
+          _active={{ bg: "gray.300" }}
           transition="all 0.2s ease-in-out"
           size="xs"
           borderRadius={100}
           onClick={improveWithAi}
-          disabled={improvingLoader}
+          isDisabled={improvingLoader}
         >
           {improvingLoader ? (
-            <Spinner size="sm" color="white" />
+            <Spinner size="sm" color="black" />
           ) : (
-            <IoSparkles color="white" />
+            <IoSparkles color="black" />
           )}
         </Button>
       </Flex>
 
       {/* Image Upload Button */}
-      <Flex flex={3}>
-        <Flex flex={5} cursor="pointer">
-          <BsFillImageFill size={22} onClick={() => imageRef.current.click()} />
-          <Input
-            type="file"
-            hidden
-            ref={imageRef}
-            onChange={handleImageChange}
-          />
-        </Flex>
-
-        {/* Image Preview Modal */}
-        <Modal isOpen={!!imgUrl} onClose={() => setImgUrl("")}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Preview</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                src={imgUrl}
-                maxW="100%"
-                maxH="400px"
-                objectFit="contain"
-              />
-              <Button
-                w="full"
-                colorScheme="blue"
-                onClick={handleSendMessage}
-                mt={4}
-                isLoading={isSending}
-              >
-                Send
-              </Button>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+      <Flex flex={3} cursor="pointer">
+        <BsFillImageFill size={22} onClick={() => imageRef.current.click()} />
+        <Input type="file" hidden ref={imageRef} onChange={handleImageChange} />
       </Flex>
+
+      {/* Image Preview Modal */}
+      <Modal isOpen={!!imgUrl} onClose={() => setImgUrl("")}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Preview</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Image src={imgUrl} maxW="100%" maxH="400px" objectFit="contain" />
+            <Button
+              w="full"
+              colorScheme="blue"
+              onClick={handleSendMessage}
+              mt={4}
+              isLoading={isSending}
+            >
+              Send
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };

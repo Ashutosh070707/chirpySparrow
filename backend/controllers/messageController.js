@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
 import { getRecipientSocketId } from "../socket/socket.js";
@@ -184,6 +187,21 @@ export const deleteMessage = async (req, res) => {
     });
 
     res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getGifs = async (req, res) => {
+  const { encodedQuery } = req.query;
+  try {
+    const BASE_URL = `https://tenor.googleapis.com/v2/search?q=${encodedQuery}&key=${process.env.TENOR_API_KEY}&client_key=chirpysparrow&limit=8`;
+
+    const response = await fetch(BASE_URL);
+    if (!response.ok) throw new Error("Failed to fetch GIFs");
+
+    const data = await response.json();
+    res.status(200).json({ gifs: data.results });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

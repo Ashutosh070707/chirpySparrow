@@ -4,13 +4,19 @@ const conversationSchema = new mongoose.Schema(
   {
     participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     lastMessage: {
-      text: String,
       sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      text: String,
+      gif: String,
       img: String,
       seen: {
         type: Boolean,
         default: false,
       },
+    },
+    unreadCount: {
+      type: Map,
+      of: Number, // Store unread messages count for each user
+      default: {},
     },
   },
   {

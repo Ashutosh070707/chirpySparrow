@@ -12,22 +12,17 @@ import {
   Image,
   Flex,
   Text,
-  Box,
   Tooltip,
-  keyframes,
+  Spinner,
 } from "@chakra-ui/react";
 import { useState, useRef, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { BsStars } from "react-icons/bs";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { userPostsAtom } from "../atoms/userPostsAtom";
 import { useShowToast } from "../../hooks/useShowToast";
+import { IoSparkles } from "react-icons/io5";
 
 const MAX_CHAR = 500;
-const bounceAnimation = keyframes`
-  0%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-5px); }
-`;
 
 export const EditPostModal = ({ post, isOpen, onClose }) => {
   const showToast = useShowToast();
@@ -52,7 +47,6 @@ export const EditPostModal = ({ post, isOpen, onClose }) => {
     base: "90%", // Small screens (mobile)
     sm: "90%",
   });
-  const iconSize = useBreakpointValue({ base: 10, sm: 14 });
 
   // 🔹 **Reset state when modal opens**
   useEffect(() => {
@@ -199,41 +193,22 @@ export const EditPostModal = ({ post, isOpen, onClose }) => {
               pl={1}
             >
               <Tooltip label="Improve" fontSize="sm" placement="right">
-                <Box
-                  as="button"
-                  onClick={improveWithAi}
-                  borderRadius="full"
+                <Button
                   bgColor="white"
-                  w={{ base: 6, sm: 7 }}
-                  h={{ base: 6, sm: 7 }}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  cursor="pointer"
-                  shadow="md"
                   _hover={{ bg: "gray.200" }}
                   _active={{ bg: "gray.300" }}
+                  transition="all 0.2s ease-in-out"
+                  size="xs"
+                  borderRadius={100}
+                  onClick={improveWithAi}
+                  isDisabled={improvingLoader}
                 >
-                  {!improvingLoader && (
-                    <BsStars size={iconSize} color="black" />
+                  {improvingLoader ? (
+                    <Spinner size="sm" color="black" />
+                  ) : (
+                    <IoSparkles color="black" />
                   )}
-                  {improvingLoader && (
-                    <Flex gap={1} alignItems="center" m={1}>
-                      {[1, 2, 3].map((dot) => (
-                        <Flex
-                          key={dot}
-                          w={{ base: "3px", sm: "4px" }}
-                          h={{ base: "3px", sm: "4px" }}
-                          bgColor="black"
-                          borderRadius="full"
-                          animation={`${bounceAnimation} 1.4s ease-in-out ${
-                            dot * 0.12
-                          }s infinite`}
-                        />
-                      ))}
-                    </Flex>
-                  )}
-                </Box>
+                </Button>
               </Tooltip>
 
               <Text

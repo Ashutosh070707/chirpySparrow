@@ -18,6 +18,10 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    gif: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

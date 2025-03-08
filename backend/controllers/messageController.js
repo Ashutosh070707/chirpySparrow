@@ -9,9 +9,18 @@ import { v2 as cloudinary } from "cloudinary";
 
 export const sendMessage = async (req, res) => {
   try {
-    const { recipientId, message } = req.body;
+    const { recipientId, message, gif } = req.body;
     let { img } = req.body;
     const senderId = req.user._id;
+
+    // Ensure only one input is present
+    const countSelected = [!!message, !!img, !!gif].filter(Boolean).length;
+    if (countSelected > 1) {
+      return res
+        .status(400)
+        .json({ error: "Only one input is allowed at a time" });
+    }
+
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, recipientId] },
     });
@@ -20,7 +29,9 @@ export const sendMessage = async (req, res) => {
       conversation = new Conversation({
         participants: [senderId, recipientId],
         lastMessage: {
-          text: message,
+          text: message || "",
+          gif: gif || "",
+          img: img || "",
           sender: senderId,
         },
       });
@@ -35,16 +46,19 @@ export const sendMessage = async (req, res) => {
     const newMessage = new Message({
       conversationId: conversation._id,
       sender: senderId,
-      text: message,
+      text: message || "",
       img: img || "",
+      gif: gif || "",
     });
+
     await Promise.all([
       newMessage.save(),
       conversation.updateOne({
         lastMessage: {
-          text: message,
+          text: message || "",
           sender: senderId,
           img: img,
+          gif: gif,
           seen: false,
         },
       }),
@@ -60,9 +74,10 @@ export const sendMessage = async (req, res) => {
       io.to(recipientSocketId).emit("conversationUpdated", {
         conversationId: conversation._id,
         lastMessage: {
-          text: message,
+          text: message || "",
           sender: senderId,
           img: img || "",
+          gif: gif || "",
           seen: false,
         },
       });
@@ -193,15 +208,15 @@ export const deleteMessage = async (req, res) => {
 };
 
 export const getGifs = async (req, res) => {
-  const { encodedQuery } = req.query;
+  const { encodedQuery } = req.params;
   try {
-    const BASE_URL = `https://tenor.googleapis.com/v2/search?q=${encodedQuery}&key=${process.env.TENOR_API_KEY}&client_key=chirpysparrow&limit=8`;
+    const BASE_URL = `https://tenor.googleapis.com/v2/search?q=${encodedQuery}&key=${process.env.TENOR_API_KEY}&client_key=chirpysparrow&limit=12`;
 
     const response = await fetch(BASE_URL);
     if (!response.ok) throw new Error("Failed to fetch GIFs");
 
     const data = await response.json();
-    res.status(200).json({ gifs: data.results });
+    res.status(200).json({ results: data.results });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

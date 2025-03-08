@@ -9,6 +9,7 @@ const messageSchema = new mongoose.Schema(
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     text: {
       type: String,
+      default: "",
     },
     seen: {
       type: Boolean,

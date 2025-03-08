@@ -74,6 +74,26 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                 </Box>
               </Flex>
             )}
+            {message.gif && (
+              <Flex w="full" justifyContent="flex-end" borderRadius={10}>
+                <Image
+                  src={message.gif}
+                  alt={"GIF"}
+                  maxH="200px"
+                  objectFit="cover"
+                  borderRadius="md"
+                  loading="lazy"
+                />
+                <Box
+                  alignSelf="flex-end"
+                  ml={"2px"}
+                  color={message.seen ? "blue.400" : ""}
+                  fontWeight="bold"
+                >
+                  <BsCheck2All size={16} />
+                </Box>
+              </Flex>
+            )}
             <Flex justifyContent="center" alignItems="center">
               <DeleteMessage
                 message={message}
@@ -118,13 +138,25 @@ export const Message = ({ message, ownMessage, setMessages }) => {
             )}
 
             {message.img && imgLoaded && (
-              <Flex w="full" borderRadius={10} justifyContent="flex-end">
+              <Flex w="full" borderRadius={10} justifyContent="flex-start">
                 <Image
                   src={message.img}
                   w="full"
                   maxHeight="200px"
                   objectFit="contain"
                   borderRadius={10}
+                />
+              </Flex>
+            )}
+            {message.gif && (
+              <Flex w="full" justifyContent="flex-start" borderRadius={10}>
+                <Image
+                  src={message.gif}
+                  alt={"GIF"}
+                  maxH="200px"
+                  objectFit="cover"
+                  borderRadius="md"
+                  loading="lazy"
                 />
               </Flex>
             )}

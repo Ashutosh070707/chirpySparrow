@@ -5,6 +5,8 @@ import {
   Divider,
   Flex,
   Input,
+  InputGroup,
+  InputRightElement,
   Link,
   Spinner,
   Text,
@@ -124,26 +126,33 @@ export const SearchUserPage = () => {
           onSubmit={
             searchText.length > 0 ? handleSubmit : (e) => e.preventDefault()
           }
+          style={{ width: "100%" }}
         >
-          <Flex alignItems="center" gap={2} w="full" mt={2}>
-            <Input
-              placeholder="Search here"
-              value={searchText}
-              onChange={(e) => {
-                setSearchText(e.target.value);
-                setSearchedUsers([]);
-              }}
-              spellCheck={false}
-              borderRadius={20}
-            />
-            <Button
-              type="submit"
-              size={{ base: "sm", sm: "md" }}
-              isLoading={searchingUser}
-              borderRadius={100}
-            >
-              <SearchIcon />
-            </Button>
+          <Flex alignItems="center" w="full" mt={2}>
+            <InputGroup>
+              <Input
+                placeholder="Search here"
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setSearchedUsers([]);
+                }}
+                spellCheck={false}
+                w="full"
+                borderRadius={100}
+              />
+              <InputRightElement h="full">
+                <Button
+                  type="submit"
+                  size="md"
+                  height="full"
+                  isLoading={searchingUser}
+                  borderRightRadius={100}
+                >
+                  <SearchIcon />
+                </Button>
+              </InputRightElement>
+            </InputGroup>
           </Flex>
         </form>
 

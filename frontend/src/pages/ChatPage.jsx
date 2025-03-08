@@ -5,6 +5,8 @@ import {
   Button,
   Flex,
   Input,
+  InputGroup,
+  InputRightElement,
   Skeleton,
   Text,
   useBreakpointValue,
@@ -239,7 +241,14 @@ export const ChatPage = () => {
   }, [socket, selectedConversation]);
 
   return (
-    <Flex w="full" h="100vh" justifyContent={"center"} alignItems="center">
+    <Flex
+      w="full"
+      h="100vh"
+      maxH="100vh"
+      overflow="hidden"
+      justifyContent={"center"}
+      alignItems="center"
+    >
       <Flex
         w={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
         h={{ base: "100%", sm: "100%", md: "100%", lg: "90%", xl: "90%" }}
@@ -251,7 +260,7 @@ export const ChatPage = () => {
         p={2}
       >
         {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
-          <Flex w="full">
+          <Flex w="full" h="full">
             {!backButton && (
               <Flex w="full" gap={3} p={3} flexDirection={"column"} h="full">
                 <Text
@@ -272,26 +281,29 @@ export const ChatPage = () => {
                     }
                   >
                     <Flex alignItems="center" gap={2} w="full">
-                      <Input
-                        placeholder="Search here"
-                        value={searchText}
-                        onChange={(e) => {
-                          setSearchText(e.target.value);
-                          setSearchedUsers([]);
-                        }}
-                        spellCheck={false}
-                        w="full"
-                      ></Input>
-                      <Button
-                        size={{ base: "sm", sm: "md" }}
-                        borderRadius={100}
-                        w={10}
-                        h={10}
-                        type="submit"
-                        isLoading={searchingUser}
-                      >
-                        <SearchIcon></SearchIcon>
-                      </Button>
+                      <InputGroup>
+                        <Input
+                          placeholder="Search here"
+                          value={searchText}
+                          onChange={(e) => {
+                            setSearchText(e.target.value);
+                            setSearchedUsers([]);
+                          }}
+                          spellCheck={false}
+                          w="full"
+                        ></Input>
+                        <InputRightElement h="full">
+                          <Button
+                            size={{ base: "sm", sm: "md" }}
+                            borderLeftRadius={0}
+                            h="full"
+                            type="submit"
+                            isLoading={searchingUser}
+                          >
+                            <SearchIcon></SearchIcon>
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
                     </Flex>
                   </form>
                 </Flex>
@@ -430,7 +442,10 @@ export const ChatPage = () => {
                 p={2}
                 h="full"
               >
-                <MessageContainer setBackButton={setBackButton} />
+                <MessageContainer
+                  setBackButton={setBackButton}
+                  style={{ height: "100%" }}
+                />
               </Flex>
             )}
           </Flex>
@@ -459,7 +474,7 @@ export const ChatPage = () => {
                       : (e) => e.preventDefault()
                   }
                 >
-                  <Flex alignItems="center" gap={2} w="full">
+                  {/* <Flex alignItems="center" gap={2} w="full">
                     <Input
                       placeholder="Search here"
                       value={searchText}
@@ -480,6 +495,31 @@ export const ChatPage = () => {
                     >
                       <SearchIcon></SearchIcon>
                     </Button>
+                  </Flex> */}
+                  <Flex alignItems="center" gap={2} w="full">
+                    <InputGroup>
+                      <Input
+                        placeholder="Search here"
+                        value={searchText}
+                        onChange={(e) => {
+                          setSearchText(e.target.value);
+                          setSearchedUsers([]);
+                        }}
+                        spellCheck={false}
+                        w="full"
+                      ></Input>
+                      <InputRightElement h="full">
+                        <Button
+                          size={{ base: "sm", sm: "md" }}
+                          borderLeftRadius={0}
+                          h="full"
+                          type="submit"
+                          isLoading={searchingUser}
+                        >
+                          <SearchIcon></SearchIcon>
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
                   </Flex>
                 </form>
               </Flex>

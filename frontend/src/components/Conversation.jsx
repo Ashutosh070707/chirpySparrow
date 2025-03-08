@@ -15,6 +15,7 @@ import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { useSocket } from "../../context/SocketContext";
+import { MdGif } from "react-icons/md";
 
 export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const colorMode = useColorMode();
@@ -149,9 +150,8 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
                   {lastMessage.text}
                 </Text>
               )}
-              {lastMessage.text.length === 0 && lastMessage.img !== "" && (
-                <BsFillImageFill size={16} />
-              )}
+              {lastMessage.img !== "" && <BsFillImageFill size={16} />}
+              {lastMessage.gif !== "" && <MdGif size={30} />}
             </Flex>
           )}
 

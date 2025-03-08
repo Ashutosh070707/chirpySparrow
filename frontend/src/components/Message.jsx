@@ -15,7 +15,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
     <Flex w="full">
       {ownMessage ? (
         <Flex justifyContent="flex-end" w="100%">
-          <Flex justifyContent="flex-end" maxW="90%" alignItems="center">
+          <Flex justifyContent="flex-end" maxW="75%" alignItems="center">
             {message.text && (
               <Flex
                 bg="green.800"

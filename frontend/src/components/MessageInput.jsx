@@ -40,7 +40,6 @@ export const MessageInput = ({ setMessages }) => {
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const showToast = useShowToast();
   const imageRef = useRef(null);
-  // const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const [imgUrl, setImgUrl] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const { socket } = useSocket();
@@ -250,6 +249,7 @@ export const MessageInput = ({ setMessages }) => {
 
   const handleGifPicker = (e) => {
     e.stopPropagation(); // Prevent event bubbling
+    e.preventDefault();
     if (isOpen) {
       onClose(); // Close the popover if already open
     } else {
@@ -257,6 +257,7 @@ export const MessageInput = ({ setMessages }) => {
     }
     setGifs([]);
     setSearchText("");
+    setSelectedGif(null);
     // setSelectedGif(null);
   };
 
@@ -273,6 +274,7 @@ export const MessageInput = ({ setMessages }) => {
         onClose();
         setGifs([]);
         setSearchText("");
+        setSelectedGif(null);
       }
     }
 
@@ -309,35 +311,21 @@ export const MessageInput = ({ setMessages }) => {
                 initialFocusRef={triggerRef}
               >
                 <PopoverTrigger>
-                  <Box onClick={handleGifPicker} cursor="pointer">
-                    <MdGif size={30} />
+                  <Box>
+                    <Box onClick={handleGifPicker} cursor="pointer">
+                      <MdGif size={30} />
+                    </Box>
                   </Box>
                 </PopoverTrigger>
-                <PopoverContent width="400px" ref={popoverRef}>
+                <PopoverContent width="380px" ref={popoverRef} bgColor="black">
                   <PopoverBody>
-                    {/* Your GIF picker content goes here */}
-                    <Flex direction="column" borderRadius={10} w="full" gap={2}>
-                      <Flex
-                        w="full"
-                        justifyContent="center"
-                        alignItems="center"
-                        borderRadius={10}
-                      >
-                        <Flex m={2}>
-                          <Button borderLeftRadius={100} p={3} size="xs">
-                            GIF
-                          </Button>
-                          <Box w="1px" h="full" bgColor="white"></Box>
-                          <Button size="xs" p={3} borderRadius={0}>
-                            Stickers
-                          </Button>
-                          <Box w="1px" h="full" bgColor="white"></Box>
-                          <Button size="xs" p={3} borderRightRadius={100}>
-                            Emoji
-                          </Button>
-                        </Flex>
-                      </Flex>
-
+                    <Flex
+                      direction="column"
+                      borderRadius={10}
+                      w="full"
+                      gap={2}
+                      mt={2}
+                    >
                       <Flex
                         w="full"
                         alignItems="center"
@@ -440,7 +428,6 @@ export const MessageInput = ({ setMessages }) => {
                                 isLoading={isSending}
                                 isDisabled={isSending}
                                 onClick={(e) => {
-                                  console.log(selectedGif);
                                   handleSendMessage(e);
                                 }}
                               >

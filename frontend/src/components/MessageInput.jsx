@@ -258,7 +258,6 @@ export const MessageInput = ({ setMessages }) => {
     setGifs([]);
     setSearchText("");
     setSelectedGif(null);
-    // setSelectedGif(null);
   };
 
   useEffect(() => {

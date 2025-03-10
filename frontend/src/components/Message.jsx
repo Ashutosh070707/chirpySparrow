@@ -15,7 +15,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
     <Flex w="full">
       {ownMessage ? (
         <Flex justifyContent="flex-end" w="100%">
-          <Flex justifyContent="flex-end" maxW="75%" alignItems="center">
+          <Flex justifyContent="flex-end" maxW="70%" alignItems="center">
             {message.text && (
               <Flex
                 bg="green.800"
@@ -94,7 +94,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                 </Box>
               </Flex>
             )}
-            <Flex justifyContent="center" alignItems="center">
+            <Flex justifyContent="center" alignItems="center" w="40px" h="40px">
               <DeleteMessage
                 message={message}
                 setMessages={setMessages}
@@ -105,14 +105,14 @@ export const Message = ({ message, ownMessage, setMessages }) => {
         </Flex>
       ) : (
         <Flex justifyContent="flex-start" w="100%">
-          <Flex justifyContent="flex-start" maxW="90%" alignItems="center">
+          <Flex justifyContent="flex-start" maxW="70%" alignItems="center">
             {message.text && (
               <Flex
                 bg="gray.400"
                 w="full"
                 p={2}
                 borderRadius="md"
-                justifyContent="flex-end"
+                justifyContent="flex-starte"
               >
                 <Text
                   color="black"

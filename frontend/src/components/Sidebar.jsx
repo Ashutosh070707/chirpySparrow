@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
@@ -19,20 +19,20 @@ import { useLogout } from "../../hooks/useLogout";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaInstagram } from "react-icons/fa";
-import { unreadMessageCountAtom } from "../atoms/unreadMessageCountAtom";
-import { conversationsAtom } from "../atoms/messagesAtom";
 import { useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
+import { newMessagesCountAtom } from "../atoms/newMessagesCountAtom";
+import { useShowToast } from "../../hooks/useShowToast";
 
 export const Sidebar = () => {
+  const location = useLocation(); // ✅ Get current route
   const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
-  // const [unreadMessageCount, setUnreadMessageCountAtom] = useRecoilState(
-  //   unreadMessageCountAtom
-  // );
-  // const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const [newMessagesCount, setNewMessagesCount] =
+    useRecoilState(newMessagesCountAtom);
   const { socket } = useSocket();
   const logout = useLogout();
+  const showToast = useShowToast();
   const showText = useBreakpointValue({
     base: false,
     sm: false,
@@ -41,17 +41,74 @@ export const Sidebar = () => {
     xl: true,
   });
 
-  // useEffect(() => {
-  //   if (!conversations.length) return;
-
-  //   socket?.on("newMessage", (message) => {
-  //     setUnreadMessageCountAtom((prev) => prev + 1);
-  //   });
-
-  //   return () => socket?.off("newMessage");
-  // }, [socket, conversations, setUnreadMessageCountAtom]);
   const iconSize = useBreakpointValue({ base: 25, md: 30 });
   const createIcon = useBreakpointValue({ base: 20, sm: 23 });
+
+  useEffect(() => {
+    if (!socket || !loggedInUser) return;
+
+    if (location.pathname === "/chat") {
+      // ✅ User is on the chat page, inform the backend
+      socket.emit("userInChatPage", loggedInUser._id);
+    }
+
+    return () => {
+      if (socket) {
+        socket.emit("userLeftChatPage", loggedInUser._id);
+      }
+    };
+  }, [socket, location.pathname, loggedInUser]);
+
+  useEffect(() => {
+    const getNewMessageCount = async () => {
+      try {
+        const res = await fetch(`/api/users/getNewMessageCount`);
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        setNewMessagesCount(data.count);
+      } catch (error) {
+        showToast("Error", "Failed to fetch newMessageCount", "error");
+      }
+    };
+
+    getNewMessageCount();
+  }, []);
+
+  const handleNewMessageCount = async () => {
+    try {
+      const res = await fetch(`/api/users/updateMessageCount`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setNewMessagesCount(0);
+    } catch (error) {
+      showToast("Error", "Failed to fetch handleNewMessageCount", "error");
+    }
+  };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (newCount) => {
+      setNewMessagesCount(newCount);
+    };
+
+    socket.on("updateMessageCount", handleNewMessage);
+
+    return () => {
+      socket.off("updateMessageCount", handleNewMessage);
+    };
+  }, [socket, setNewMessagesCount]);
 
   return (
     <Flex
@@ -143,31 +200,32 @@ export const Sidebar = () => {
             to={"/chat"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
-            // onClick={() => setUnreadMessageCountAtom(0)}
+            onClick={handleNewMessageCount}
           >
-            <Flex gap={4}>
+            <Flex gap={4} alignItems="center">
               <Flex position="relative">
                 <BsFillChatQuoteFill size={iconSize} />
-                {/* {unreadMessageCount > 0 && (
+                {newMessagesCount > 0 && (
                   <Badge
                     color="white"
                     bgColor="red.500"
                     borderRadius="full"
                     position="absolute"
-                    bottom="60%"
-                    left="65%"
+                    top="-4px"
+                    right="-4px"
+                    minW="20px"
+                    h="18px"
+                    maxW="25px"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
-                    fontSize="xs"
+                    fontSize="10px"
+                    fontWeight="bold"
+                    p="2px"
                   >
-                    {unreadMessageCount > 0 && (
-                      <Text m={"1px"}>
-                        {unreadMessageCount > 50 ? "50+" : unreadMessageCount}
-                      </Text>
-                    )}
+                    {newMessagesCount > 50 ? "50+" : newMessagesCount}
                   </Badge>
-                )} */}
+                )}
               </Flex>
 
               {showText && (

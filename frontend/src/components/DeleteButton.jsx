@@ -135,7 +135,7 @@ export const DeleteMessage = ({
     }
   };
   return (
-    <Flex alignItems="center">
+    <Flex alignItems="center" justifyContent="center">
       {deleting ? (
         <Flex justifyContent="center" alignItems="center">
           <Spinner size="xs" />

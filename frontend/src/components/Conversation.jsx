@@ -24,7 +24,10 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
     selectedConversationAtom
   );
   const { socket } = useSocket();
-  const user = conversation.participants[0];
+  // const user = conversation.participants[0];
+  const user = conversation.participants.find(
+    (p) => p._id !== loggedInUser._id
+  );
   const lastMessage = conversation.lastMessage;
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
@@ -62,7 +65,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [socket, selectedConversation._id]);
+  }, [socket, selectedConversation?._id]);
 
   return (
     <Flex
@@ -72,7 +75,7 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
       gap={3}
       _hover={{
         cursor: "pointer",
-        bg: useColorModeValue("gray.600", "gray.dark"),
+        bg: useColorModeValue("gray.600", "gray.900"),
         color: "white",
       }}
       w="full"
@@ -145,13 +148,17 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
                 </Box>
               ) : null}
 
-              {lastMessage.text.length > 0 && (
-                <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
-                  {lastMessage.text}
-                </Text>
+              {lastMessage.sender && (
+                <Flex w="full">
+                  {lastMessage.text.length > 0 && (
+                    <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
+                      {lastMessage.text}
+                    </Text>
+                  )}
+                  {!!lastMessage.img && <BsFillImageFill size={16} />}
+                  {!!lastMessage.gif && <MdGif size={30} />}
+                </Flex>
               )}
-              {lastMessage.img !== "" && <BsFillImageFill size={16} />}
-              {lastMessage.gif !== "" && <MdGif size={30} />}
             </Flex>
           )}
 

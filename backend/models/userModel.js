@@ -65,7 +65,7 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    unreadMessageCount: {
+    newMessageCount: {
       type: Number,
       default: 0, // Stores total unread messages received by the user
     },

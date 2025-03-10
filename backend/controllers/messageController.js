@@ -4,8 +4,10 @@ dotenv.config();
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
 import { getRecipientSocketId } from "../socket/socket.js";
-import { io } from "../socket/socket.js";
+import { io, activeChatUsers } from "../socket/socket.js";
+// import { io } from "../socket/socket.js";
 import { v2 as cloudinary } from "cloudinary";
+import User from "../models/userModel.js";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -19,6 +21,16 @@ export const sendMessage = async (req, res) => {
       return res
         .status(400)
         .json({ error: "Only one input is allowed at a time" });
+    }
+
+    // Upload image before proceeding
+    if (img) {
+      try {
+        const uploadedResponse = await cloudinary.uploader.upload(img);
+        img = uploadedResponse.secure_url;
+      } catch (error) {
+        return res.status(500).json({ error: "Image upload failed" });
+      }
     }
 
     let conversation = await Conversation.findOne({
@@ -37,11 +49,6 @@ export const sendMessage = async (req, res) => {
       });
     }
     await conversation.save();
-
-    if (img) {
-      const uploadedResponse = await cloudinary.uploader.upload(img);
-      img = uploadedResponse.secure_url;
-    }
 
     const newMessage = new Message({
       conversationId: conversation._id,
@@ -81,6 +88,20 @@ export const sendMessage = async (req, res) => {
           seen: false,
         },
       });
+    }
+
+    if (!activeChatUsers?.has(recipientId)) {
+      const user = await User.findByIdAndUpdate(
+        recipientId,
+        { $inc: { newMessageCount: 1 } },
+        { new: true } // Ensure updated value is returned
+      );
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit(
+          "updateMessageCount",
+          user.newMessageCount
+        );
+      }
     }
 
     res.status(200).json(newMessage);

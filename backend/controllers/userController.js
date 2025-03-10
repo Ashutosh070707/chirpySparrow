@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
-// import { trie } from "../utils/algorithms/trie.js";
 
 export const signupUser = async (req, res) => {
   try {
@@ -26,16 +25,6 @@ export const signupUser = async (req, res) => {
       bio: "",
     });
     await newUser.save();
-
-    // Insert the user into the Trie
-    const userData = {
-      _id: newUser._id,
-      username: newUser.username,
-      name: newUser.name,
-      email: newUser.email,
-      profilePic: newUser.profilePic,
-    };
-    // trie.insert(newUser.username, userData); // Insert into Trie
 
     if (newUser) {
       generateTokenandSetCookie(newUser._id, res);
@@ -67,16 +56,6 @@ export const loginUser = async (req, res) => {
 
     if (!user || !isPasswordCorrect)
       return res.status(400).json({ error: "Invalid username or password." });
-
-    // Insert the user into Trie if not already present (in case it's missed)
-    const userData = {
-      _id: user._id,
-      username: user.username,
-      name: user.name,
-      email: user.email,
-      profilePic: user.profilePic,
-    };
-    // trie.insert(user.username, userData); // Insert into Trie if necessary
 
     if (user.isFrozen) {
       user.isFrozen = false;
@@ -341,5 +320,33 @@ export const freezeAccount = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log("Error in freezeAccount", err.message);
+  }
+};
+
+export const getNewMessageCount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not Found" });
+    }
+    res.status(200).json({ count: user.newMessageCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.log("Error in getNewMessageCount", err.message);
+  }
+};
+
+export const setNewMessageCount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not Found" });
+    }
+    user.newMessageCount = 0;
+    await user.save();
+    res.status(200).json({ count: user.newMessageCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.log("Error in setNewMessageCount", err.message);
   }
 };

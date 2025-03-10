@@ -23,6 +23,15 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // replyTo: {
+    //   type: {
+    //     messageId: { type: mongoose.Schema.Types.ObjectId, ref: "Message" }, // Stores the original message ID
+    //     text: { type: String, default: "" },
+    //     img: { type: String, default: "" },
+    //     gif: { type: String, default: "" },
+    //   },
+    //   default: null,
+    // },
   },
   {
     timestamps: true,

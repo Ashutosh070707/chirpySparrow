@@ -139,9 +139,14 @@ export const ChatPage = () => {
         return;
       }
       // if loggedInUser is already in a conversation with the searched user
-      const consersationAlreadyExists = conversations.find(
-        (conversation) => conversation.participants[0]._id === user._id
+      // const consersationAlreadyExists = conversations.find(
+      //   (conversation) => conversation.participants[0]._id === user._id
+      // );
+
+      const consersationAlreadyExists = conversations.find((conversation) =>
+        conversation.participants.some((p) => p._id === user._id)
       );
+
       if (consersationAlreadyExists) {
         setSelectedConversation({
           _id: consersationAlreadyExists._id,
@@ -159,6 +164,7 @@ export const ChatPage = () => {
           text: "",
           sender: "",
           img: "",
+          gif: "",
           seen: false,
         },
         _id: Date.now(),
@@ -170,6 +176,9 @@ export const ChatPage = () => {
             profilePic: user.profilePic,
           },
         ],
+        unreadCount: {
+          [loggedInUser._id]: 0, // Ensure unread count is tracked properly
+        },
       };
       setConversations((prevConvs) => [...prevConvs, mockConversation]);
     } catch (error) {
@@ -400,32 +409,30 @@ export const ChatPage = () => {
                             justifyContent={"flex-start"}
                             alignItems="center"
                             key={conversation._id}
-                            gap={2}
                             w="full"
                           >
-                            <Flex w="full">
-                              <Flex w="90%">
-                                <Conversation
-                                  key={conversation._id}
-                                  isOnline={onlineUsers.includes(
-                                    conversation.participants[0]._id
-                                  )}
+                            <Flex w="95%" justifyContent={"flex-start"}>
+                              <Conversation
+                                key={conversation._id}
+                                isOnline={onlineUsers.includes(
+                                  conversation.participants[0]._id
+                                )}
+                                conversation={conversation}
+                                setBackButton={setBackButton}
+                              />
+                            </Flex>
+                            {!conversation.mock && (
+                              <Flex
+                                justifyContent="center"
+                                alignItems="center"
+                                w="5%"
+                                h="full"
+                              >
+                                <DeleteConversation
                                   conversation={conversation}
-                                  setBackButton={setBackButton}
                                 />
                               </Flex>
-                              {!conversation.mock && (
-                                <Flex
-                                  justifyContent="center"
-                                  alignItems="center"
-                                  w="10%"
-                                >
-                                  <DeleteConversation
-                                    conversation={conversation}
-                                  />
-                                </Flex>
-                              )}
-                            </Flex>
+                            )}
                           </Flex>
                         );
                       })}
@@ -474,28 +481,6 @@ export const ChatPage = () => {
                       : (e) => e.preventDefault()
                   }
                 >
-                  {/* <Flex alignItems="center" gap={2} w="full">
-                    <Input
-                      placeholder="Search here"
-                      value={searchText}
-                      onChange={(e) => {
-                        setSearchText(e.target.value);
-                        setSearchedUsers([]);
-                      }}
-                      spellCheck={false}
-                      w="full"
-                    ></Input>
-                    <Button
-                      size="md"
-                      borderRadius={100}
-                      w={10}
-                      h={10}
-                      type="submit"
-                      isLoading={searchingUser}
-                    >
-                      <SearchIcon></SearchIcon>
-                    </Button>
-                  </Flex> */}
                   <Flex alignItems="center" gap={2} w="full">
                     <InputGroup>
                       <Input

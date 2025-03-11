@@ -12,17 +12,23 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
-import { selectedConversationAtom } from "../atoms/messagesAtom";
+import {
+  conversationsAtom,
+  selectedConversationAtom,
+} from "../atoms/messagesAtom";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { useSocket } from "../../context/SocketContext";
 import { MdGif } from "react-icons/md";
+import { useShowToast } from "../../hooks/useShowToast";
 
 export const Conversation = ({ conversation, isOnline, setBackButton }) => {
+  const showToast = useShowToast();
   const colorMode = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [selectedConversation, setSelectedConversation] = useRecoilState(
     selectedConversationAtom
   );
+  const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const { socket } = useSocket();
   // const user = conversation.participants[0];
   const user = conversation.participants.find(
@@ -31,6 +37,12 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const lastMessage = conversation.lastMessage;
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
+  // const [unreadMessageCount, setUnreadMessageCount] = useState(
+  //   conversation.unreadCount[loggedInUser._id] || 0
+  // );
+
+  // Get the unread count directly from the conversation object every time
+  const unreadMessageCount = conversation.unreadCount?.[loggedInUser._id] || 0;
 
   useEffect(() => {
     socket?.on("userTyping", ({ conversationId }) => {
@@ -67,12 +79,110 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
     };
   }, [socket, selectedConversation?._id]);
 
+  useEffect(() => {
+    if (!socket) return;
+    const handleUnreadMessageCount = async ({
+      conversationId,
+      unreadCount,
+    }) => {
+      if (
+        conversation._id === conversationId &&
+        selectedConversation?._id !== conversationId
+      ) {
+        // Update the unreadCount in the global conversations state
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv._id === conversationId
+              ? {
+                  ...conv,
+                  unreadCount: {
+                    ...conv.unreadCount,
+                    [loggedInUser._id]: unreadCount,
+                  },
+                }
+              : conv
+          )
+        );
+      } else if (
+        conversation._id === conversationId &&
+        selectedConversation?._id === conversationId
+      ) {
+        try {
+          const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              conversationId: conversationId,
+              userId: loggedInUser._id,
+            }),
+          });
+          const data = await res.json();
+          if (data.error) {
+            showToast("Error", data.error, "error");
+            return;
+          }
+        } catch (error) {
+          showToast("Error", error.message, "error");
+        }
+      }
+    };
+    socket?.on("updateUnreadCount", handleUnreadMessageCount);
+
+    return () => {
+      socket?.off("updateUnreadCount", handleUnreadMessageCount);
+    };
+  }, [
+    socket,
+    conversation._id,
+    selectedConversation,
+    loggedInUser._id,
+    setConversations,
+  ]);
+
+  const resetUnreadMessageCount = async () => {
+    try {
+      const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: conversation._id,
+          userId: loggedInUser._id,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+
+      // Update the unreadCount in the global conversations state
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === conversation._id
+            ? {
+                ...conv,
+                unreadCount: {
+                  ...conv.unreadCount,
+                  [loggedInUser._id]: 0,
+                },
+              }
+            : conv
+        )
+      );
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
+
   return (
     <Flex
       borderRadius={10}
       alignItems="center"
       p={2}
-      gap={3}
       _hover={{
         cursor: "pointer",
         bg: useColorModeValue("gray.600", "gray.900"),
@@ -89,27 +199,27 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           mock: conversation.mock,
         });
         setBackButton(true);
+        resetUnreadMessageCount();
       }}
       bg={
         selectedConversation?._id === conversation._id
           ? colorMode === "light"
             ? "gray.400"
-            : "gray.dark"
+            : "gray.700"
           : ""
       }
+      justifyContent={"flex-start"}
     >
-      <Flex gap={3} w="full">
-        <Flex flex={8}>
+      <Flex gap={3} w="full" justifyContent={"flex-start"}>
+        <Flex flexShrink={0} minW="10%" maxW="20%">
           <WrapItem>
             <Avatar
               name={user.name}
               src={user.profilePic || "https://example.com/default-avatar.png"}
               boxSize={{ base: "40px", sm: "50px" }}
             >
-              {isOnline ? (
+              {isOnline && (
                 <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
-              ) : (
-                ""
               )}
             </Avatar>
           </WrapItem>
@@ -117,17 +227,16 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
 
         <Flex
           direction={"column"}
-          flex={92}
+          flex={1}
           gap={1}
           overflow="hidden"
           justifyContent="center"
         >
-          <Flex alignItems="center" w="full" overflow="hidden">
+          <Flex alignItems="center" w="95%" overflow="hidden">
             <Text
               fontSize={"sm"}
               fontWeight={"bold"}
               isTruncated
-              maxW="100%" // Ensures it respects parent width
               whiteSpace="nowrap"
             >
               {user.name}
@@ -149,14 +258,14 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
               ) : null}
 
               {lastMessage.sender && (
-                <Flex w="full">
-                  {lastMessage.text.length > 0 && (
-                    <Text fontSize={"xs"} color="gray.400" isTruncated w="85%">
+                <Flex w="full" overflow="hidden">
+                  {lastMessage?.text?.length > 0 && (
+                    <Text fontSize={"xs"} color="gray.400" isTruncated w="90%">
                       {lastMessage.text}
                     </Text>
                   )}
                   {!!lastMessage.img && <BsFillImageFill size={16} />}
-                  {!!lastMessage.gif && <MdGif size={30} />}
+                  {!!lastMessage.gif && <MdGif size={25} />}
                 </Flex>
               )}
             </Flex>
@@ -187,7 +296,80 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
             </Flex>
           )}
         </Flex>
+
+        {unreadMessageCount > 0 && (
+          <Flex
+            w="6%"
+            flexShrink={0}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Box
+              bgColor="#0BDA51"
+              borderRadius="50%" // Ensures a perfect circle
+              minW="20px" // Prevents shrinking
+              minH="20px"
+              display={"flex"}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Flex
+                w="full"
+                h="full"
+                borderRadius="full"
+                justifyContent="center"
+                alignItems="center"
+                fontSize={unreadMessageCount > 50 ? "9px" : "10px"}
+                color="black"
+                fontWeight="bold"
+              >
+                {unreadMessageCount > 50 ? "50+" : unreadMessageCount}
+              </Flex>
+            </Box>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );
 };
+
+// useEffect(() => {
+//   if (!socket) return;
+//   const handleUnreadMessageCount = ({ conversationId, unreadCount }) => {
+//     if (
+//       conversation._id === conversationId &&
+//       selectedConversation?._id !== conversationId
+//     ) {
+//       setUnreadMessageCount(unreadCount);
+//     }
+//   };
+
+//   socket?.on("updateUnreadCount", handleUnreadMessageCount);
+
+//   return () => {
+//     socket?.off("updateUnreadCount", handleUnreadMessageCount);
+//   };
+// }, [socket, conversation._id, selectedConversation]);
+
+// const resetUnreadMessageCount = async () => {
+//   try {
+//     const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
+//       method: "POST",
+//       headers: {
+//         "Content-type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         conversationId: conversation._id,
+//         userId: loggedInUser._id,
+//       }),
+//     });
+//     const data = await res.json();
+//     if (data.error) {
+//       showToast("Error", data.error, "error");
+//       return;
+//     }
+//     setUnreadMessageCount(0);
+//   } catch (error) {
+//     showToast("Error", error.message, "error");
+//   }
+// };

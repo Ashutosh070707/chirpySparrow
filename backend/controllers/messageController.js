@@ -5,7 +5,6 @@ import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
 import { getRecipientSocketId } from "../socket/socket.js";
 import { io, activeChatUsers } from "../socket/socket.js";
-// import { io } from "../socket/socket.js";
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/userModel.js";
 
@@ -45,9 +44,22 @@ export const sendMessage = async (req, res) => {
           gif: gif || "",
           img: img || "",
           sender: senderId,
+          seen: false, ////////////////// New added
         },
+        unreadCount: new Map([[recipientId, 1]]),
       });
+    } else {
+      conversation.unreadCount = new Map(
+        Object.entries(conversation.unreadCount)
+      );
+
+      conversation.unreadCount.set(
+        recipientId,
+        (conversation.unreadCount.get(recipientId) || 0) + 1
+      );
     }
+    // ✅ Fix: Convert unreadCount back to object before saving
+    conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
     await conversation.save();
 
     const newMessage = new Message({
@@ -71,7 +83,6 @@ export const sendMessage = async (req, res) => {
       }),
     ]);
 
-    // In your sendMessage controller, after updating the conversation
     const recipientSocketId = getRecipientSocketId(recipientId);
     if (recipientSocketId) {
       // Emit newMessage as before
@@ -88,6 +99,13 @@ export const sendMessage = async (req, res) => {
           seen: false,
         },
       });
+
+      // if (activeChatUsers?.has(recipientId)) {
+      io.to(recipientSocketId).emit("updateUnreadCount", {
+        conversationId: conversation._id,
+        unreadCount: conversation.unreadCount.get(recipientId) || 0,
+      });
+      // }
     }
 
     if (!activeChatUsers?.has(recipientId)) {
@@ -238,6 +256,31 @@ export const getGifs = async (req, res) => {
 
     const data = await response.json();
     res.status(200).json({ results: data.results });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const resetUnreadMessageCount = async (req, res) => {
+  const { conversationId, userId } = req.body;
+  try {
+    // Use findByIdAndUpdate for a single database operation
+    // const result = await Conversation.findByIdAndUpdate(
+    //   conversationId,
+    //   { [`unreadCount.${userId}`]: 0 },
+    //   { new: true }
+    // );
+    const result = await Conversation.findByIdAndUpdate(
+      conversationId,
+      { $set: { [`unreadCount.${userId}`]: 0 } }, // ✅ Correct update query
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    res.status(200).json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

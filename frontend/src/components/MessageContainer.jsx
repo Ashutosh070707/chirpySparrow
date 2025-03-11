@@ -182,6 +182,50 @@ export const MessageContainer = ({ setBackButton }) => {
   //   }
   // };
 
+  const resetUnreadMessageCount = async () => {
+    try {
+      const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: selectedConversation._id,
+          userId: loggedInUser._id,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+
+      // Update the unreadCount in the global conversations state
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === selectedConversation._id
+            ? {
+                ...conv,
+                unreadCount: {
+                  ...conv.unreadCount,
+                  [loggedInUser._id]: 0,
+                },
+              }
+            : conv
+        )
+      );
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      // When MessageContainer unmounts, reset unread messages
+      resetUnreadMessageCount();
+    };
+  }, []);
+
   const scrollToBottom = () => {
     if (messageEndRef.current) {
       setTimeout(() => {

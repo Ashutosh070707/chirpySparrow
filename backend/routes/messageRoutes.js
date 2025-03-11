@@ -7,12 +7,14 @@ import {
   deleteConversation,
   deleteMessage,
   getGifs,
+  resetUnreadMessageCount,
 } from "../controllers/messageController.js";
 
 const router = express.Router();
 
 router.get("/conversations", protectRoute, getConversations);
 router.post("/", protectRoute, sendMessage);
+router.post("/resetUnreadMessageCount", resetUnreadMessageCount);
 router.get("/gifs/:encodedQuery", getGifs);
 router.get("/:otherUserId", protectRoute, getMessages);
 router.delete("/:conversationId", protectRoute, deleteConversation);

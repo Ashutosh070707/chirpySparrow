@@ -239,11 +239,12 @@ export const MessageInput = ({ setMessages }) => {
         showToast("Info", "No GIFs found for your search", "info");
       }
       setGifs(data.results || []);
+      setSearchText("");
+      setSelectedGif(null);
     } catch (error) {
       showToast("Error", error, "error");
     } finally {
       setFetchingGif(false);
-      // setSearchText("");
     }
   };
 

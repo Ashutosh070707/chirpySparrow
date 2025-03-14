@@ -18,6 +18,11 @@ const conversationSchema = new mongoose.Schema(
       of: Number, // Store unread messages count for each user
       default: {},
     },
+    deletedBy: {
+      type: Map,
+      of: Boolean, // Store which user deleted the conversation
+      default: {},
+    },
   },
   {
     timestamps: true,

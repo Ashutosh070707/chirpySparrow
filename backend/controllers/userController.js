@@ -323,7 +323,7 @@ export const freezeAccount = async (req, res) => {
   }
 };
 
-export const getNewMessageCount = async (req, res) => {
+export const getNewMessagesCount = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -336,7 +336,7 @@ export const getNewMessageCount = async (req, res) => {
   }
 };
 
-export const setNewMessageCount = async (req, res) => {
+export const setNewMessagesCount = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {

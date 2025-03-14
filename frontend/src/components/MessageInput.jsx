@@ -19,7 +19,6 @@ import {
   PopoverBody,
   Spinner,
   useDisclosure,
-  Text,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { IoSendSharp, IoSparkles } from "react-icons/io5";
@@ -103,7 +102,6 @@ export const MessageInput = ({ setMessages }) => {
     };
   }, []);
 
-  // Improve Message with AI
   const improveWithAi = useCallback(async () => {
     if (improvingLoader || isSending || !messageText.trim()) {
       showToast("Error", "No text found", "error");
@@ -130,7 +128,6 @@ export const MessageInput = ({ setMessages }) => {
     }
   }, [messageText, improvingLoader, isSending, showToast]);
 
-  // Handle Sending Message
   const handleSendMessage = useCallback(
     async (e) => {
       e.preventDefault();
@@ -252,9 +249,9 @@ export const MessageInput = ({ setMessages }) => {
     e.stopPropagation(); // Prevent event bubbling
     e.preventDefault();
     if (isOpen) {
-      onClose(); // Close the popover if already open
+      onClose();
     } else {
-      onOpen(); // Open the popover if closed
+      onOpen();
     }
     setGifs([]);
     setSearchText("");
@@ -263,7 +260,6 @@ export const MessageInput = ({ setMessages }) => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      // Close popover if clicked outside OR on InputRightElement
       if (
         isOpen &&
         popoverRef.current &&
@@ -284,7 +280,6 @@ export const MessageInput = ({ setMessages }) => {
 
   return (
     <Flex gap={3} alignItems={"center"} w="full">
-      {/* Message Input Field */}
       <Flex flex={90}>
         <form onSubmit={handleSendMessage} style={{ flex: 95, width: "100%" }}>
           <InputGroup>
@@ -375,7 +370,6 @@ export const MessageInput = ({ setMessages }) => {
                           </InputGroup>
                         </Flex>
                       </Flex>
-                      {/* Example GIF grid or search */}
                       <Flex w="full" h="250px" borderRadius={10}>
                         {!fetchingGif && selectedGif && (
                           <Flex
@@ -491,7 +485,6 @@ export const MessageInput = ({ setMessages }) => {
         </form>
       </Flex>
 
-      {/* Improve with AI Button */}
       <Flex flex={3} alignItems="center">
         <Button
           bgColor="white"
@@ -511,13 +504,11 @@ export const MessageInput = ({ setMessages }) => {
         </Button>
       </Flex>
 
-      {/* Image Upload Button */}
       <Flex flex={3} cursor="pointer">
         <BsFillImageFill size={22} onClick={() => imageRef.current.click()} />
         <Input type="file" hidden ref={imageRef} onChange={handleImageChange} />
       </Flex>
 
-      {/* Image Preview Modal */}
       <Modal isOpen={!!imgUrl} onClose={() => setImgUrl("")}>
         <ModalOverlay />
         <ModalContent>

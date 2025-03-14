@@ -4,9 +4,135 @@ dotenv.config();
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
 import { getRecipientSocketId } from "../socket/socket.js";
-import { io, activeChatUsers } from "../socket/socket.js";
+import {
+  io,
+  activeChatUsers,
+  userActiveConversations,
+} from "../socket/socket.js";
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/userModel.js";
+
+// export const sendMessage = async (req, res) => {
+//   try {
+//     const { recipientId, message, gif } = req.body;
+//     let { img } = req.body;
+//     const senderId = req.user._id;
+
+//     const countSelected = [!!message, !!img, !!gif].filter(Boolean).length;
+//     if (countSelected > 1) {
+//       return res
+//         .status(400)
+//         .json({ error: "Only one input is allowed at a time" });
+//     }
+//     if (img) {
+//       try {
+//         const uploadedResponse = await cloudinary.uploader.upload(img);
+//         img = uploadedResponse.secure_url;
+//       } catch (error) {
+//         return res.status(500).json({ error: "Image upload failed" });
+//       }
+//     }
+
+//     let conversation = await Conversation.findOne({
+//       participants: { $all: [senderId, recipientId] },
+//     });
+
+//     if (!conversation) {
+//       conversation = new Conversation({
+//         participants: [senderId, recipientId],
+//         lastMessage: {
+//           text: message || "",
+//           gif: gif || "",
+//           img: img || "",
+//           sender: senderId,
+//           seen: false,
+//         },
+//         unreadCount: new Map([[recipientId, 1]]),
+//         deletedBy: new Map(),
+//       });
+
+//       userActiveConversations.set(senderId, conversation._id);
+//     } else {
+//       if (userActiveConversations.get(recipientId) !== conversation._id) {
+//         conversation.unreadCount = new Map(
+//           Object.entries(conversation.unreadCount)
+//         );
+//         conversation.unreadCount.set(
+//           recipientId,
+//           (conversation.unreadCount.get(recipientId) || 0) + 1
+//         );
+//       }
+//     }
+
+//     // Remove the sender from `deletedBy` if they were there
+//     if (conversation.deletedBy?.[senderId]) {
+//       delete conversation.deletedBy[senderId];
+//     }
+
+//     conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
+//     await conversation.save();
+
+//     const newMessage = new Message({
+//       conversationId: conversation._id,
+//       sender: senderId,
+//       text: message || "",
+//       img: img || "",
+//       gif: gif || "",
+//     });
+
+//     await Promise.all([
+//       newMessage.save(),
+//       conversation.updateOne({
+//         lastMessage: {
+//           text: message || "",
+//           sender: senderId,
+//           img: img,
+//           gif: gif,
+//           seen: false,
+//         },
+//       }),
+//     ]);
+
+//     const recipientSocketId = getRecipientSocketId(recipientId);
+//     if (recipientSocketId) {
+//       io.to(recipientSocketId).emit("newMessage", newMessage);
+
+//       io.to(recipientSocketId).emit("conversationUpdated", {
+//         conversationId: conversation._id,
+//         lastMessage: {
+//           text: message || "",
+//           sender: senderId,
+//           img: img || "",
+//           gif: gif || "",
+//           seen: false,
+//         },
+//       });
+
+//       io.to(recipientSocketId).emit("updateUnreadCount", {
+//         conversationId: conversation._id,
+//         unreadCount: conversation.unreadCount.get(recipientId) || 0,
+//       });
+//     }
+
+//     if (!activeChatUsers?.has(recipientId)) {
+//       const user = await User.findByIdAndUpdate(
+//         recipientId,
+//         { $inc: { newMessageCount: 1 } },
+//         { new: true } // Ensure updated value is returned
+//       );
+//       if (recipientSocketId) {
+//         io.to(recipientSocketId).emit(
+//           "updateMessageCount",
+//           user.newMessageCount
+//         );
+//       }
+//     }
+
+//     res.status(200).json(newMessage);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 export const sendMessage = async (req, res) => {
   try {
@@ -14,15 +140,12 @@ export const sendMessage = async (req, res) => {
     let { img } = req.body;
     const senderId = req.user._id;
 
-    // Ensure only one input is present
     const countSelected = [!!message, !!img, !!gif].filter(Boolean).length;
     if (countSelected > 1) {
       return res
         .status(400)
         .json({ error: "Only one input is allowed at a time" });
     }
-
-    // Upload image before proceeding
     if (img) {
       try {
         const uploadedResponse = await cloudinary.uploader.upload(img);
@@ -44,22 +167,36 @@ export const sendMessage = async (req, res) => {
           gif: gif || "",
           img: img || "",
           sender: senderId,
-          seen: false, ////////////////// New added
+          seen: false,
         },
         unreadCount: new Map([[recipientId, 1]]),
+        deletedBy: new Map(),
       });
     } else {
-      conversation.unreadCount = new Map(
-        Object.entries(conversation.unreadCount)
+      if (conversation.deletedBy.has(senderId.toString())) {
+        conversation.deletedBy.delete(senderId.toString());
+      }
+
+      const recipientHasDeleted = conversation.deletedBy.has(
+        recipientId.toString()
       );
 
-      conversation.unreadCount.set(
-        recipientId,
-        (conversation.unreadCount.get(recipientId) || 0) + 1
-      );
+      if (recipientHasDeleted) {
+        conversation.deletedBy.delete(recipientId.toString());
+        conversation.unreadCount.set(recipientId.toString(), 0);
+      }
+
+      if (
+        userActiveConversations.get(recipientId.toString()) !==
+        conversation._id.toString()
+      ) {
+        const currentCount =
+          conversation.unreadCount.get(recipientId.toString()) || 0;
+        conversation.unreadCount.set(recipientId.toString(), currentCount + 1);
+      }
     }
-    // ✅ Fix: Convert unreadCount back to object before saving
-    conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
+
+    // Save the conversation with updated values
     await conversation.save();
 
     const newMessage = new Message({
@@ -76,8 +213,8 @@ export const sendMessage = async (req, res) => {
         lastMessage: {
           text: message || "",
           sender: senderId,
-          img: img,
-          gif: gif,
+          img: img || "",
+          gif: gif || "",
           seen: false,
         },
       }),
@@ -85,10 +222,8 @@ export const sendMessage = async (req, res) => {
 
     const recipientSocketId = getRecipientSocketId(recipientId);
     if (recipientSocketId) {
-      // Emit newMessage as before
       io.to(recipientSocketId).emit("newMessage", newMessage);
 
-      // Add this new emit for conversation update
       io.to(recipientSocketId).emit("conversationUpdated", {
         conversationId: conversation._id,
         lastMessage: {
@@ -100,23 +235,21 @@ export const sendMessage = async (req, res) => {
         },
       });
 
-      // if (activeChatUsers?.has(recipientId)) {
       io.to(recipientSocketId).emit("updateUnreadCount", {
         conversationId: conversation._id,
-        unreadCount: conversation.unreadCount.get(recipientId) || 0,
+        unreadCount: conversation.unreadCount.get(recipientId.toString()) || 0,
       });
-      // }
     }
 
     if (!activeChatUsers?.has(recipientId)) {
       const user = await User.findByIdAndUpdate(
         recipientId,
         { $inc: { newMessageCount: 1 } },
-        { new: true } // Ensure updated value is returned
+        { new: true }
       );
       if (recipientSocketId) {
         io.to(recipientSocketId).emit(
-          "updateMessageCount",
+          "updateNewMessagesCount",
           user.newMessageCount
         );
       }
@@ -155,13 +288,17 @@ export const getConversations = async (req, res) => {
       participants: userId,
     }).populate({ path: "participants", select: "name username profilePic" });
 
-    // remove the current user from the participants list
-    conversations.forEach((conversation) => {
+    // Filter out conversations that the user has deleted
+    const filteredConversations = conversations.filter(
+      (conversation) => !conversation.deletedBy?.get(userId.toString())
+    );
+
+    filteredConversations.forEach((conversation) => {
       conversation.participants = conversation.participants.filter(
         (participant) => participant._id.toString() !== userId.toString()
       );
     });
-    res.status(200).json(conversations);
+    res.status(200).json(filteredConversations);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -169,24 +306,29 @@ export const getConversations = async (req, res) => {
 
 export const deleteConversation = async (req, res) => {
   const { conversationId } = req.params;
+  const userId = req.user._id.toString();
   try {
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) {
       return res.status(404).json({ message: "Conversation not found" });
     }
 
-    const messages = await Message.find({ conversationId });
-    for (const message of messages) {
-      if (message.img) {
-        // Delete the image from Cloudinary
-        await cloudinary.uploader.destroy(
-          message.img.split("/").pop().split(".")[0]
-        );
-      }
-    }
+    conversation.deletedBy.set(userId, true);
+    conversation.unreadCount.set(userId, 0);
+    await conversation.save();
 
-    await Message.deleteMany({ conversationId });
-    await Conversation.findByIdAndDelete(conversationId);
+    if (conversation.deletedBy.size === 2) {
+      const messages = await Message.find({ conversationId });
+      for (const message of messages) {
+        if (message.img) {
+          await cloudinary.uploader.destroy(
+            message.img.split("/").pop().split(".")[0]
+          );
+        }
+      }
+      await Message.deleteMany({ conversationId });
+      await Conversation.findByIdAndDelete(conversationId);
+    }
     res.status(200).json({ message: "Conversation deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -208,10 +350,8 @@ export const deleteMessage = async (req, res) => {
       );
     }
 
-    // Delete the message
     await Message.findByIdAndDelete(messageId);
 
-    // Fetch the latest message after deletion
     const latestMessage = await Message.findOne({
       conversationId: selectedConversationId,
     }).sort({ createdAt: -1 });
@@ -220,15 +360,16 @@ export const deleteMessage = async (req, res) => {
       ? {
           text: latestMessage.text,
           img: latestMessage.img,
+          gif: latestMessage.gif,
           sender: latestMessage.sender,
+          seen: latestMessage.seen,
         }
-      : { text: "", img: "" };
+      : { text: "", img: "", gif: "" };
 
     await Conversation.findByIdAndUpdate(selectedConversationId, {
       $set: { lastMessage: updatedLastMessage },
     });
 
-    // Emit delete event to both users
     io.to(getRecipientSocketId(message.sender)).emit("messageDeleted", {
       messageId,
       selectedConversationId,
@@ -264,15 +405,9 @@ export const getGifs = async (req, res) => {
 export const resetUnreadMessageCount = async (req, res) => {
   const { conversationId, userId } = req.body;
   try {
-    // Use findByIdAndUpdate for a single database operation
-    // const result = await Conversation.findByIdAndUpdate(
-    //   conversationId,
-    //   { [`unreadCount.${userId}`]: 0 },
-    //   { new: true }
-    // );
     const result = await Conversation.findByIdAndUpdate(
       conversationId,
-      { $set: { [`unreadCount.${userId}`]: 0 } }, // ✅ Correct update query
+      { $set: { [`unreadCount.${userId}`]: 0 } },
       { new: true }
     );
 

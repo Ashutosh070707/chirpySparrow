@@ -52,7 +52,6 @@ export const ChatPage = () => {
     xl: "xl",
   });
 
-  /////////////////////////////////////////////////////////////////////////////  searchuser - functionality
   const handleSearchUser = async () => {
     if (!searchText.trim()) return;
     setSearchingUser(true);
@@ -76,35 +75,31 @@ export const ChatPage = () => {
       setSearchingUser(false);
     }
   };
-  // Debounce the search function
   const debouncedSearch = debounce(handleSearchUser, 400);
 
   useEffect(() => {
     if (!searchText.trim()) {
-      prevSearchText.current = ""; // Clear previous search text when input is empty
+      prevSearchText.current = "";
       return;
     }
 
-    // Only trigger the search if the search text has changed
     if (searchText !== prevSearchText.current) {
       debouncedSearch();
-      prevSearchText.current = searchText; // Update prevSearchText
+      prevSearchText.current = searchText;
     }
 
-    // Cleanup to cancel pending debounced calls on unmount or searchText change
     return () => debouncedSearch.cancel();
   }, [searchText, debouncedSearch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (searchText.length > 0) {
+    if (searchText.trim().length > 0) {
       handleSearchUser();
     }
     setSearchText("");
-    prevSearchText.current = ""; // Reset after search submission
+    prevSearchText.current = "";
   };
 
-  ////////////////////////////////////////////////////////////////  fetchingConversations and adding conversations array functionality
   useEffect(() => {
     const getConversations = async () => {
       setSelectedConversation({
@@ -138,11 +133,6 @@ export const ChatPage = () => {
         showToast("Error", "You cannot message yourself", "error");
         return;
       }
-      // if loggedInUser is already in a conversation with the searched user
-      // const consersationAlreadyExists = conversations.find(
-      //   (conversation) => conversation.participants[0]._id === user._id
-      // );
-
       const consersationAlreadyExists = conversations.find((conversation) =>
         conversation.participants.some((p) => p._id === user._id)
       );
@@ -177,8 +167,9 @@ export const ChatPage = () => {
           },
         ],
         unreadCount: {
-          [loggedInUser._id]: 0, // Ensure unread count is tracked properly
+          [loggedInUser._id]: 0,
         },
+        deletedBy: {},
       };
       setConversations((prevConvs) => [...prevConvs, mockConversation]);
     } catch (error) {
@@ -186,7 +177,6 @@ export const ChatPage = () => {
     }
   };
 
-  ///////////////////////////////////////////////////////////////////////   socket.io functionality
   useEffect(() => {
     const handleMessagesSeen = ({ conversationId }) => {
       setConversations((prev) => {
@@ -204,7 +194,7 @@ export const ChatPage = () => {
     socket?.on("messagesSeen", handleMessagesSeen);
 
     return () => {
-      socket?.off("messagesSeen", handleMessagesSeen); // Cleanup listener on unmount
+      socket?.off("messagesSeen", handleMessagesSeen);
     };
   }, [socket, setConversations]);
 

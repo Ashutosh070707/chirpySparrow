@@ -9,8 +9,8 @@ import {
   getSuggestedUsers,
   freezeAccount,
   getSearchedUser,
-  getNewMessageCount,
-  setNewMessageCount,
+  getNewMessagesCount,
+  setNewMessagesCount,
 } from "../controllers/userController.js";
 
 import protectRoute from "../middlewares/protectRoute.js";
@@ -20,8 +20,8 @@ const router = express.Router();
 router.get("/profile/:query", protectRoute, getUserProfile);
 router.post("/searching/:username", protectRoute, getSearchedUser);
 router.get("/suggested", protectRoute, getSuggestedUsers);
-router.get("/getNewMessageCount", protectRoute, getNewMessageCount);
-router.put("/updateMessageCount", protectRoute, setNewMessageCount);
+router.get("/getNewMessagesCount", protectRoute, getNewMessagesCount);
+router.put("/setNewMessagesCount", protectRoute, setNewMessagesCount);
 router.post("/signup", signupUser);
 router.post("/login", loginUser);
 router.post("/logout", protectRoute, logoutUser);

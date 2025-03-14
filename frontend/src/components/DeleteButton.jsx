@@ -28,6 +28,7 @@ export const DeleteConversation = ({ conversation }) => {
     selectedConversationAtom
   );
   const [deleting, setDeleting] = useState(false);
+
   const handleDeleteConversation = async () => {
     if (deleting) return;
     setDeleting(true);

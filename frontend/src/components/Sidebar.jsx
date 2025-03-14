@@ -7,7 +7,7 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
@@ -23,9 +23,11 @@ import { useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { newMessagesCountAtom } from "../atoms/newMessagesCountAtom";
 import { useShowToast } from "../../hooks/useShowToast";
+import { selectedConversationAtom } from "../atoms/messagesAtom";
 
 export const Sidebar = () => {
-  const location = useLocation(); // ✅ Get current route
+  const location = useLocation();
+  const setSelectedConversation = useSetRecoilState(selectedConversationAtom);
   const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [newMessagesCount, setNewMessagesCount] =
@@ -48,21 +50,29 @@ export const Sidebar = () => {
     if (!socket || !loggedInUser) return;
 
     if (location.pathname === "/chat") {
-      // ✅ User is on the chat page, inform the backend
       socket.emit("userInChatPage", loggedInUser._id);
+      socket.emit("userLeftConversation", loggedInUser._id);
     }
+    setSelectedConversation({
+      _id: "",
+      userId: "",
+      username: "",
+      userProfilePic: "",
+      name: "",
+    });
 
     return () => {
       if (socket) {
         socket.emit("userLeftChatPage", loggedInUser._id);
+        socket.emit("userLeftConversation", loggedInUser._id);
       }
     };
   }, [socket, location.pathname, loggedInUser]);
 
   useEffect(() => {
-    const getNewMessageCount = async () => {
+    const getNewMessagesCount = async () => {
       try {
-        const res = await fetch(`/api/users/getNewMessageCount`);
+        const res = await fetch(`/api/users/getNewMessagesCount`);
         const data = await res.json();
         if (data.error) {
           showToast("Error", data.error, "error");
@@ -70,16 +80,16 @@ export const Sidebar = () => {
         }
         setNewMessagesCount(data.count);
       } catch (error) {
-        showToast("Error", "Failed to fetch newMessageCount", "error");
+        showToast("Error", "Failed to fetch newMessagesCount", "error");
       }
     };
 
-    getNewMessageCount();
+    getNewMessagesCount();
   }, []);
 
-  const handleNewMessageCount = async () => {
+  const handleNewMessagesCount = async () => {
     try {
-      const res = await fetch(`/api/users/updateMessageCount`, {
+      const res = await fetch(`/api/users/setNewMessagesCount`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +102,7 @@ export const Sidebar = () => {
       }
       setNewMessagesCount(0);
     } catch (error) {
-      showToast("Error", "Failed to fetch handleNewMessageCount", "error");
+      showToast("Error", "Failed to fetch handleNewMessagesCount", "error");
     }
   };
 
@@ -103,10 +113,10 @@ export const Sidebar = () => {
       setNewMessagesCount(newCount);
     };
 
-    socket.on("updateMessageCount", handleNewMessage);
+    socket.on("updateNewMessagesCount", handleNewMessage);
 
     return () => {
-      socket.off("updateMessageCount", handleNewMessage);
+      socket.off("updateNewMessagesCount", handleNewMessage);
     };
   }, [socket, setNewMessagesCount]);
 
@@ -200,7 +210,7 @@ export const Sidebar = () => {
             to={"/chat"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
-            onClick={handleNewMessageCount}
+            onClick={handleNewMessagesCount}
           >
             <Flex gap={4} alignItems="center">
               <Flex position="relative">
@@ -208,7 +218,7 @@ export const Sidebar = () => {
                 {newMessagesCount > 0 && (
                   <Badge
                     color="white"
-                    bgColor="red.500"
+                    bgColor="red"
                     borderRadius="full"
                     position="absolute"
                     top="-4px"

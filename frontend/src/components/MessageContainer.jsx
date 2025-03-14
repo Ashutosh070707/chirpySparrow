@@ -19,14 +19,13 @@ import {
 } from "../atoms/messagesAtom.js";
 import { useSocket } from "../../context/SocketContext.jsx";
 import { useShowToast } from "../../hooks/useShowToast";
-import messageSound from "../../assets/sounds/notification.mp3";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom.js";
 import { FaArrowLeft } from "react-icons/fa";
 import { TypingIndicator } from "./TypingIndicator";
 
 export const MessageContainer = ({ setBackButton }) => {
   const showToast = useShowToast();
-  const [selectedConversation, setselectedConversation] = useRecoilState(
+  const [selectedConversation, setSelectedConversation] = useRecoilState(
     selectedConversationAtom
   );
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -46,10 +45,9 @@ export const MessageContainer = ({ setBackButton }) => {
   });
   const isOnline = onlineUsers.includes(selectedConversation?.userId);
 
-  ///////////////////////////////////////////////////////////////////  socket.io functionality
-
   useEffect(() => {
-    socket?.on("userTyping", ({ conversationId }) => {
+    if (!socket) return;
+    const handleUserTyping = ({ conversationId }) => {
       if (selectedConversation._id === conversationId) {
         setIsUserTyping(true);
 
@@ -63,20 +61,23 @@ export const MessageContainer = ({ setBackButton }) => {
           setIsUserTyping(false);
         }, 2000);
       }
-    });
+    };
 
-    socket?.on("userStoppedTyping", ({ conversationId }) => {
+    const handleUserStoppedTyping = ({ conversationId }) => {
       if (selectedConversation._id === conversationId) {
         setIsUserTyping(false);
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
       }
-    });
+    };
+
+    socket?.on("userTyping", handleUserTyping);
+    socket?.on("userStoppedTyping", handleUserStoppedTyping);
 
     return () => {
-      socket?.off("userTyping");
-      socket?.off("userStoppedTyping");
+      socket?.off("userTyping", handleUserTyping);
+      socket?.off("userStoppedTyping", handleUserStoppedTyping);
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
@@ -84,14 +85,11 @@ export const MessageContainer = ({ setBackButton }) => {
   }, [socket, selectedConversation._id]);
 
   useEffect(() => {
-    socket?.on("newMessage", (message) => {
+    if (!socket) return;
+    const handleNewMessage = (message) => {
       if (selectedConversation?._id === message.conversationId) {
         setMessages((prevMessages) => [...prevMessages, message]);
       }
-      // if (!document.hasFocus()) {
-      //   const sound = new Audio(messageSound);
-      //   sound.play();
-      // }
 
       setConversations((prev) => {
         const updatedConversations = prev.map((conversation) => {
@@ -109,9 +107,10 @@ export const MessageContainer = ({ setBackButton }) => {
         });
         return updatedConversations;
       });
-    });
+    };
+    socket?.on("newMessage", handleNewMessage);
 
-    return () => socket?.off("newMessage");
+    return () => socket?.off("newMessage", handleNewMessage);
   }, [socket, selectedConversation, setConversations]);
 
   useEffect(() => {
@@ -141,90 +140,36 @@ export const MessageContainer = ({ setBackButton }) => {
     return () => {
       socket?.off("messagesSeen", handleMessagesSeen); // Cleanup listener on unmount
     };
-  }, [socket, loggedInUser._id, messages, selectedConversation, setMessages]);
+  }, [socket, selectedConversation, messages, setMessages, loggedInUser._id]);
 
   useEffect(() => {
-    socket?.on(
-      "messageDeleted",
-      ({ messageId, selectedConversationId, updatedLastMessage }) => {
-        if (selectedConversation._id === selectedConversationId) {
-          setMessages((prevMessages) =>
-            prevMessages.filter((msg) => msg._id !== messageId)
-          );
+    if (!socket) return;
+    const handleMessageDeleted = ({
+      messageId,
+      selectedConversationId,
+      updatedLastMessage,
+    }) => {
+      if (selectedConversation._id === selectedConversationId) {
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg._id !== messageId)
+        );
 
-          setConversations((prev) =>
-            prev.map((conversation) =>
-              conversation._id === selectedConversationId
-                ? {
-                    ...conversation,
-                    lastMessage: updatedLastMessage,
-                  }
-                : conversation
-            )
-          );
-        }
+        setConversations((prev) =>
+          prev.map((conversation) =>
+            conversation._id === selectedConversationId
+              ? {
+                  ...conversation,
+                  lastMessage: updatedLastMessage,
+                }
+              : conversation
+          )
+        );
       }
-    );
+    };
+    socket?.on("messageDeleted", handleMessageDeleted);
 
     return () => socket?.off("messageDeleted");
   }, [socket, selectedConversation]);
-
-  //////////////////////////////////////////////////////////  getMessages logic and scroll to the bottom of messagecontainer logic
-
-  // const scrollToBottom = () => {
-  //   if (messageEndRef.current) {
-  //     setTimeout(() => {
-  //       messageEndRef.current.scrollIntoView({
-  //         behavior: "smooth",
-  //         block: "end",
-  //       });
-  //     }, 500); // Small delay to ensure content is rendered
-  //   }
-  // };
-
-  const resetUnreadMessageCount = async () => {
-    try {
-      const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          conversationId: selectedConversation._id,
-          userId: loggedInUser._id,
-        }),
-      });
-      const data = await res.json();
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-
-      // Update the unreadCount in the global conversations state
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === selectedConversation._id
-            ? {
-                ...conv,
-                unreadCount: {
-                  ...conv.unreadCount,
-                  [loggedInUser._id]: 0,
-                },
-              }
-            : conv
-        )
-      );
-    } catch (error) {
-      showToast("Error", error.message, "error");
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      // When MessageContainer unmounts, reset unread messages
-      resetUnreadMessageCount();
-    };
-  }, []);
 
   const scrollToBottom = () => {
     if (messageEndRef.current) {
@@ -268,59 +213,7 @@ export const MessageContainer = ({ setBackButton }) => {
 
   return (
     <Flex borderRadius="md" flexDirection="column" h="full" gap={1} p={1}>
-      {/* <Flex w="full" alignItems={"center"} gap={2} flex={10} overflow="hidden">
-        {(screenSize == "xs" || screenSize == "sm" || screenSize == "md") && (
-          <Button
-            size={{ base: "xs", sm: "sm" }}
-            borderRadius={"full"}
-            // w={10}
-            // h={10}
-            onClick={() => {
-              setBackButton(false);
-              setselectedConversation({
-                _id: "",
-                userId: "",
-                username: "",
-                userProfilePic: "",
-                name: "",
-              });
-            }}
-          >
-            <FaArrowLeft />
-          </Button>
-        )}
-
-        <Avatar
-          name={selectedConversation.name}
-          src={
-            selectedConversation.userProfilePic ||
-            "https://example.com/default-avatar.png"
-          }
-          boxSize={{
-            base: "40px",
-            sm: "50px",
-          }}
-        >
-          {isOnline ? (
-            <AvatarBadge boxSize="1em" bg="green.300"></AvatarBadge>
-          ) : (
-            ""
-          )}
-        </Avatar>
-        <Text
-          display="flex"
-          alignItems="center"
-          fontSize={"sm"}
-          fontWeight={"bold"}
-          isTruncated
-          maxW="100%" // Ensures it respects parent width
-          whiteSpace="nowrap"
-        >
-          {selectedConversation.name}
-        </Text>
-      </Flex> */}
       <Flex w="full" alignItems="center" gap={2} flex={10} overflow="hidden">
-        {/* Back Button (Only on Small Screens) */}
         {(screenSize === "xs" ||
           screenSize === "sm" ||
           screenSize === "md") && (
@@ -328,8 +221,11 @@ export const MessageContainer = ({ setBackButton }) => {
             size={{ base: "xs", sm: "sm" }}
             borderRadius="full"
             onClick={() => {
+              if (socket) {
+                socket.emit("userLeftConversation", loggedInUser._id);
+              }
               setBackButton(false);
-              setselectedConversation({
+              setSelectedConversation({
                 _id: "",
                 userId: "",
                 username: "",
@@ -342,7 +238,6 @@ export const MessageContainer = ({ setBackButton }) => {
           </Button>
         )}
 
-        {/* Avatar */}
         <Avatar
           name={selectedConversation.name}
           src={
@@ -355,7 +250,6 @@ export const MessageContainer = ({ setBackButton }) => {
           {isOnline && <AvatarBadge boxSize="1em" bg="green.300" />}
         </Avatar>
 
-        {/* User Name (Proper Truncation) */}
         <Flex flex={1} minW={0} overflow="hidden">
           <Text
             fontSize="sm"

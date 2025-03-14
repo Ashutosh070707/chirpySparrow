@@ -15,6 +15,7 @@ const io = new Server(server, {
 
 const userSocketMap = {}; //userId: socketId
 const activeChatUsers = new Set(); // Track users currently on "/chat"
+const userActiveConversations = new Map();
 
 export const getRecipientSocketId = (recipientId) => {
   return userSocketMap[recipientId] || null;
@@ -37,6 +38,20 @@ io.on("connection", (socket) => {
   // ✅ Handle User Leaving Chat Page
   socket.on("userLeftChatPage", (userId) => {
     if (userId) activeChatUsers.delete(userId);
+  });
+
+  // ✅ Track which conversation a user is actively viewing
+  socket.on("userViewingConversation", ({ userId, conversationId }) => {
+    if (userId && conversationId) {
+      userActiveConversations.set(userId, conversationId);
+    }
+  });
+
+  // ✅ Handle when the user leaves the conversation
+  socket.on("userLeftConversation", (userId) => {
+    if (userActiveConversations.has(userId)) {
+      userActiveConversations.delete(userId);
+    }
   });
 
   socket.on("typing", ({ conversationId, userId }) => {
@@ -73,9 +88,10 @@ io.on("connection", (socket) => {
     if (socket.userId) {
       delete userSocketMap[socket.userId];
       activeChatUsers.delete(socket.userId);
+      userActiveConversations.delete(socket.userId);
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
   });
 });
 
-export { io, server, app, activeChatUsers };
+export { io, server, app, activeChatUsers, userActiveConversations };

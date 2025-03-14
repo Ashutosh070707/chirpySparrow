@@ -3,7 +3,6 @@ import {
   AvatarBadge,
   Box,
   Flex,
-  Image,
   Text,
   useColorMode,
   useColorModeValue,
@@ -30,18 +29,13 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   );
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const { socket } = useSocket();
-  // const user = conversation.participants[0];
   const user = conversation.participants.find(
     (p) => p._id !== loggedInUser._id
   );
   const lastMessage = conversation.lastMessage;
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
-  // const [unreadMessageCount, setUnreadMessageCount] = useState(
-  //   conversation.unreadCount[loggedInUser._id] || 0
-  // );
 
-  // Get the unread count directly from the conversation object every time
   const unreadMessageCount = conversation.unreadCount?.[loggedInUser._id] || 0;
 
   useEffect(() => {
@@ -89,7 +83,6 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
         conversation._id === conversationId &&
         selectedConversation?._id !== conversationId
       ) {
-        // Update the unreadCount in the global conversations state
         setConversations((prev) =>
           prev.map((conv) =>
             conv._id === conversationId
@@ -103,29 +96,6 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
               : conv
           )
         );
-      } else if (
-        conversation._id === conversationId &&
-        selectedConversation?._id === conversationId
-      ) {
-        try {
-          const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-              conversationId: conversationId,
-              userId: loggedInUser._id,
-            }),
-          });
-          const data = await res.json();
-          if (data.error) {
-            showToast("Error", data.error, "error");
-            return;
-          }
-        } catch (error) {
-          showToast("Error", error.message, "error");
-        }
       }
     };
     socket?.on("updateUnreadCount", handleUnreadMessageCount);
@@ -159,7 +129,6 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
         return;
       }
 
-      // Update the unreadCount in the global conversations state
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === conversation._id
@@ -190,6 +159,12 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
       }}
       w="full"
       onClick={() => {
+        if (socket) {
+          socket.emit("userViewingConversation", {
+            userId: loggedInUser._id,
+            conversationId: conversation._id,
+          });
+        }
         setSelectedConversation({
           _id: conversation._id,
           userId: user._id,
@@ -306,8 +281,8 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           >
             <Box
               bgColor="#0BDA51"
-              borderRadius="50%" // Ensures a perfect circle
-              minW="20px" // Prevents shrinking
+              borderRadius="50%"
+              minW="20px"
               minH="20px"
               display={"flex"}
               justifyContent="center"
@@ -332,44 +307,3 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
     </Flex>
   );
 };
-
-// useEffect(() => {
-//   if (!socket) return;
-//   const handleUnreadMessageCount = ({ conversationId, unreadCount }) => {
-//     if (
-//       conversation._id === conversationId &&
-//       selectedConversation?._id !== conversationId
-//     ) {
-//       setUnreadMessageCount(unreadCount);
-//     }
-//   };
-
-//   socket?.on("updateUnreadCount", handleUnreadMessageCount);
-
-//   return () => {
-//     socket?.off("updateUnreadCount", handleUnreadMessageCount);
-//   };
-// }, [socket, conversation._id, selectedConversation]);
-
-// const resetUnreadMessageCount = async () => {
-//   try {
-//     const res = await fetch(`/api/messages/resetUnreadMessageCount`, {
-//       method: "POST",
-//       headers: {
-//         "Content-type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         conversationId: conversation._id,
-//         userId: loggedInUser._id,
-//       }),
-//     });
-//     const data = await res.json();
-//     if (data.error) {
-//       showToast("Error", data.error, "error");
-//       return;
-//     }
-//     setUnreadMessageCount(0);
-//   } catch (error) {
-//     showToast("Error", error.message, "error");
-//   }
-// };

@@ -14,18 +14,27 @@ export const HomePage = () => {
   const observer = useRef();
   const showToast = useShowToast();
   const POSTS_PER_PAGE = 10;
+  const loadingRef = useRef(false);
 
   const getFeedPosts = useCallback(
     async (pageNum) => {
+      // Prevent simultaneous fetch requests
+      if (loadingRef.current) return;
+
+      loadingRef.current = true;
+
       if (pageNum === 1) {
         setInitialLoading(true);
         setFeedPosts([]);
-      } else setLoading(true);
+      } else {
+        setLoading(true);
+      }
 
       try {
         const res = await fetch(
           `/api/posts/feed?page=${pageNum}&limit=${POSTS_PER_PAGE}`
         );
+
         const data = await res.json();
 
         if (data.error) {
@@ -33,16 +42,29 @@ export const HomePage = () => {
           return;
         }
 
+        // Check if we got fewer posts than requested (indicates end of data)
         if (data.length < POSTS_PER_PAGE) {
           setHasMore(false);
         }
 
-        setFeedPosts((prev) => (pageNum === 1 ? data : [...prev, ...data]));
+        // Update the feed posts
+        setFeedPosts((prev) => {
+          // For first page, replace everything
+          if (pageNum === 1) return data;
+
+          // For subsequent pages, append new posts
+          // Make sure we don't add duplicates
+          const existingIds = new Set(prev.map((post) => post._id));
+          const newPosts = data.filter((post) => !existingIds.has(post._id));
+
+          return [...prev, ...newPosts];
+        });
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
         setLoading(false);
         setInitialLoading(false);
+        loadingRef.current = false;
       }
     },
     [showToast, setFeedPosts]
@@ -54,18 +76,34 @@ export const HomePage = () => {
 
   const lastPostElementRef = useCallback(
     (node) => {
-      if (loading || !hasMore) return;
+      // Don't observe if we're loading or there's no more content
+      if (loading || initialLoading || !hasMore) return;
+
+      // Disconnect previous observer
       if (observer.current) observer.current.disconnect();
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1);
+      // Create new IntersectionObserver
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          // Only trigger if the element is intersecting AND we're not already loading
+          if (entries[0].isIntersecting && !loadingRef.current) {
+            // Add a small delay to prevent accidental double triggers
+            setTimeout(() => {
+              setPage((prevPage) => prevPage + 1);
+            }, 100);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.1, // Trigger when at least 10% of the target is visible
         }
-      });
+      );
 
+      // Start observing the new last element
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore]
+    [loading, initialLoading, hasMore]
   );
 
   useEffect(() => {

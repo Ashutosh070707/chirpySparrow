@@ -33,7 +33,13 @@ function App() {
               <Sidebar />
             </Box>
           )}
-          <Box h="100vh" overflowY="auto" flex={1} className="custom-scrollbar">
+          <Box
+            h="100vh"
+            overflowY="auto"
+            flex={1}
+            className="custom-scrollbar"
+            bgColor={"black"}
+          >
             <Routes>
               <Route
                 path="/"

@@ -24,6 +24,7 @@ import { useSocket } from "../../context/SocketContext";
 import { newMessagesCountAtom } from "../atoms/newMessagesCountAtom";
 import { useShowToast } from "../../hooks/useShowToast";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
+import { FaDove } from "react-icons/fa";
 
 export const Sidebar = () => {
   const location = useLocation();
@@ -126,11 +127,12 @@ export const Sidebar = () => {
       position="sticky"
       top="0"
       left="0"
-      bg={colorMode === "dark" ? "gray.800" : "white"}
+      bgColor="black"
       w="full"
       minH="100vh"
       maxH="100vh"
       borderRight="1px"
+      borderColor="gray"
       className="custom-scrollbar"
       pt={6}
       pb={20}
@@ -143,11 +145,19 @@ export const Sidebar = () => {
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
           >
-            {!showText && <FaInstagram size={iconSize} />}
+            {!showText && <FaDove size={iconSize} color="orange" />}
             {showText && (
-              <Text fontSize="xl" fontWeight="bold">
-                ChirpySparrow
-              </Text>
+              <Flex gap={2}>
+                <FaDove size={26} color="orange" />
+                <Text fontSize="xl" fontWeight="bold">
+                  ChirpySparrow
+                </Text>
+                <FaDove
+                  size={26}
+                  color="orange"
+                  style={{ transform: "scaleX(-1)" }}
+                />
+              </Flex>
             )}
           </Link>
         </Box>

@@ -52,6 +52,7 @@ export const MessageInput = ({ setMessages }) => {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   const triggerRef = useRef(null);
   const popoverRef = useRef(null);
+  const inputRef = useRef(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -131,28 +132,31 @@ export const MessageInput = ({ setMessages }) => {
   const handleSendMessage = useCallback(
     async (e) => {
       e.preventDefault();
+      if (isSending || improvingLoader) return;
+
       const gifUrl = selectedGif
         ? selectedGif.media_formats?.gif?.url ||
           selectedGif.media_formats?.mp4?.url ||
           selectedGif.media_formats?.webp?.url ||
           ""
         : "";
-      if (!messageText.trim() && !imgUrl && !gifUrl) {
-        showToast("Error", "Please add some content to send", "error");
-        return;
-      }
-      if (isSending || improvingLoader) return;
-      const countSelected = [!!messageText.trim(), !!imgUrl, !!gifUrl].filter(
+      const selectedCount = [!!messageText.trim(), !!imgUrl, !!gifUrl].filter(
         Boolean
       ).length;
 
-      if (countSelected > 1) {
+      if (selectedCount === 0) {
+        showToast("Error", "Please add some content to send", "error");
+        return;
+      }
+
+      if (selectedCount > 1) {
         showToast("Error", "Only one input is allowed at a time", "error");
         setImgUrl("");
         setMessageText("");
         setSelectedGif(null);
         return;
       }
+
       setIsSending(true);
 
       try {
@@ -196,6 +200,13 @@ export const MessageInput = ({ setMessages }) => {
         setImgUrl("");
         setSelectedGif(null);
         onClose();
+
+        // Delay focus to ensure state updates first
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 100);
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -259,6 +270,12 @@ export const MessageInput = ({ setMessages }) => {
   };
 
   useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
     function handleClickOutside(event) {
       if (
         isOpen &&
@@ -284,6 +301,7 @@ export const MessageInput = ({ setMessages }) => {
         <form onSubmit={handleSendMessage} style={{ flex: 95, width: "100%" }}>
           <InputGroup>
             <Input
+              ref={inputRef}
               w={"full"}
               placeholder="Type a message"
               value={messageText}
@@ -292,6 +310,12 @@ export const MessageInput = ({ setMessages }) => {
                 handleTyping();
               }}
               isDisabled={isSending}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e);
+                }
+              }}
             />
             <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
               <IoSendSharp />

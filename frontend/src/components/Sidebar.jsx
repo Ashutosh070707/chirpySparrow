@@ -44,8 +44,7 @@ export const Sidebar = () => {
     xl: true,
   });
 
-  const iconSize = useBreakpointValue({ base: 25, md: 30 });
-  const createIcon = useBreakpointValue({ base: 20, sm: 23 });
+  const createIcon = useBreakpointValue({ base: 20, lg: 21 });
 
   useEffect(() => {
     if (!socket || !loggedInUser) return;
@@ -145,15 +144,18 @@ export const Sidebar = () => {
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
           >
-            {!showText && <FaDove size={iconSize} color="orange" />}
+            {!showText && <FaDove size={25} color="orange" />}
             {showText && (
-              <Flex gap={2}>
-                <FaDove size={26} color="orange" />
-                <Text fontSize="xl" fontWeight="bold">
+              <Flex gap={1}>
+                <FaDove size={25} color="orange" />
+                <Text
+                  fontSize={{ base: "md", md: "md", lg: "md", xl: "lg" }}
+                  fontWeight={"bold"}
+                >
                   ChirpySparrow
                 </Text>
                 <FaDove
-                  size={26}
+                  size={25}
                   color="orange"
                   style={{ transform: "scaleX(-1)" }}
                 />
@@ -169,9 +171,9 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <AiFillHome size={iconSize}></AiFillHome>
+              <AiFillHome size={25}></AiFillHome>
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Home
                 </Text>
               )}
@@ -184,9 +186,9 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <FaSearch size={iconSize} />
+              <FaSearch size={25} />
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Search
                 </Text>
               )}
@@ -208,7 +210,7 @@ export const Sidebar = () => {
                 <HiPlus size={createIcon} />
               </Flex>
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Create
                 </Text>
               )}
@@ -224,7 +226,7 @@ export const Sidebar = () => {
           >
             <Flex gap={4} alignItems="center">
               <Flex position="relative">
-                <BsFillChatQuoteFill size={iconSize} />
+                <BsFillChatQuoteFill size={25} />
                 {newMessagesCount > 0 && (
                   <Badge
                     color="white"
@@ -249,7 +251,7 @@ export const Sidebar = () => {
               </Flex>
 
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Message
                 </Text>
               )}
@@ -262,9 +264,9 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <RxAvatar size={iconSize}></RxAvatar>
+              <RxAvatar size={25}></RxAvatar>
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Profile
                 </Text>
               )}
@@ -278,9 +280,9 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <MdOutlineSettings size={iconSize} />
+              <MdOutlineSettings size={25} />
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Settings
                 </Text>
               )}
@@ -295,9 +297,9 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <FiLogOut size={iconSize} />
+              <FiLogOut size={25} />
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "xl" }}>
+                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
                   Logout
                 </Text>
               )}

@@ -76,20 +76,33 @@ export const DeleteConversation = ({ conversation }) => {
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bg: "transparent" }} // Prevents hover background
-            _active={{ bg: "transparent" }} // Prevents click background
-            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
+            // _hover={{ bg: "gray.700" }}
+            // _active={{ bg: "gray.600" }}
+            // _focus={{ boxShadow: "none", bg: "gray.700" }}
           />
-          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+          <MenuList
+            w="160px"
+            minW="160px"
+            p={2}
+            borderRadius="lg"
+            bg="gray.900"
+            boxShadow="lg"
+            border="1px solid"
+            borderColor="gray.700"
+          >
             <MenuItem
               onClick={handleDeleteConversation}
               borderRadius="md"
               px={3}
               py={2}
+              bg="gray.900"
+              _hover={{ bg: "red.600", color: "white" }}
             >
               <Flex align="center" gap={2}>
-                <FiTrash color="red" size={16} />
-                <Text fontSize="sm">Delete</Text>
+                <FiTrash color="white" size={16} />
+                <Text fontSize="sm" color="white">
+                  Delete
+                </Text>
               </Flex>
             </MenuItem>
           </MenuList>
@@ -149,20 +162,34 @@ export const DeleteMessage = ({
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bg: "transparent" }} // Prevents hover background
-            _active={{ bg: "transparent" }} // Prevents click background
-            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
+            // _hover={{ bg: "gray.700" }}
+            // _active={{ bg: "gray.600" }}
+            // _focus={{ boxShadow: "none", bg: "gray.700" }}
           />
-          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+          <MenuList
+            w="160px"
+            minW="160px"
+            p={2}
+            borderRadius="lg"
+            bg="gray.900"
+            boxShadow="lg"
+            border="1px solid"
+            borderColor="gray.700"
+          >
             <MenuItem
               onClick={handleDeleteMessage}
               borderRadius="md"
               px={3}
               py={2}
+              bg="gray.900"
+              _hover={{ bg: "red.600", color: "white" }}
+              transition="all 0.2s ease"
             >
               <Flex align="center" gap={2}>
-                <FiTrash color="red" size={16} />
-                <Text fontSize="sm">Delete</Text>
+                <FiTrash color="white" size={16} />
+                <Text fontSize="sm" color="white">
+                  Delete
+                </Text>
               </Flex>
             </MenuItem>
           </MenuList>
@@ -215,26 +242,48 @@ export const PostActions = ({ post }) => {
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            _hover={{ bg: "transparent" }} // Prevents hover background
-            _active={{ bg: "transparent" }} // Prevents click background
-            _focus={{ boxShadow: "none", bg: "transparent" }} // Removes focus outline & background
+            // _hover={{ bg: "gray.700" }}
+            // _active={{ bg: "gray.600" }}
+            // _focus={{ boxShadow: "none", bg: "gray.700" }}
           />
-          <MenuList w="140px" minW="140px" p={2} borderRadius="md">
+          <MenuList
+            w="160px"
+            minW="160px"
+            p={2}
+            borderRadius="lg"
+            bg="gray.900"
+            boxShadow="lg"
+            border="1px solid"
+            borderColor="gray.700"
+          >
             <MenuItem
               onClick={handleDeletePost}
               borderRadius="md"
               px={3}
               py={2}
+              bg="gray.900"
+              _hover={{ bg: "red.600", color: "white" }}
             >
               <Flex align="center" gap={2}>
-                <FiTrash color="red" size={16} />
-                <Text fontSize="sm">Delete</Text>
+                <FiTrash color="white" size={16} />
+                <Text fontSize="sm" color="white">
+                  Delete
+                </Text>
               </Flex>
             </MenuItem>
-            <MenuItem onClick={onOpen} borderRadius="md" px={3} py={2}>
+            <MenuItem
+              onClick={onOpen}
+              borderRadius="md"
+              px={3}
+              py={2}
+              bg="gray.900"
+              _hover={{ bg: "green.600", color: "white" }}
+            >
               <Flex align="center" gap={2}>
-                <FaEdit color="green" size={16} />
-                <Text fontSize="sm">Edit</Text>
+                <FaEdit color="white" size={16} />
+                <Text fontSize="sm" color="white">
+                  Edit
+                </Text>
               </Flex>
             </MenuItem>
           </MenuList>

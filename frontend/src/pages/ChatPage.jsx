@@ -254,7 +254,7 @@ export const ChatPage = () => {
         gap={2}
         borderRadius={{ base: 0, sm: 0, md: 0, lg: 10, xl: 10 }}
         border={
-          screenSize == "lg" || screenSize == "xl" ? "1px solid white" : "none"
+          screenSize == "lg" || screenSize == "xl" ? "2px solid gray" : "none"
         }
         p={2}
       >
@@ -621,7 +621,7 @@ export const ChatPage = () => {
               </Flex>
             </Flex>
             <Flex w="2%" justifyContent="center">
-              <Box w="3px" h="full" bgColor={"gray"} borderRadius={10}></Box>
+              <Box w="2px" h="full" bgColor={"gray"} borderRadius={10}></Box>
             </Flex>
 
             <Flex w="65%" borderRadius={10} direction="column" p={2} h="full">

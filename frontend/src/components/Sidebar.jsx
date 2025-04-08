@@ -146,16 +146,17 @@ export const Sidebar = () => {
           >
             {!showText && <FaDove size={25} color="orange" />}
             {showText && (
-              <Flex gap={1}>
-                <FaDove size={25} color="orange" />
+              <Flex gap={1.5}>
+                <FaDove size={24} color="orange" />
                 <Text
                   fontSize={{ base: "md", md: "md", lg: "md", xl: "lg" }}
                   fontWeight={"bold"}
+                  fontFamily={"Comic Sans MS, Comic Sans, cursive"}
                 >
                   ChirpySparrow
                 </Text>
                 <FaDove
-                  size={25}
+                  size={24}
                   color="orange"
                   style={{ transform: "scaleX(-1)" }}
                 />

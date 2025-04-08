@@ -1,6 +1,7 @@
 import { Flex, Image, Text, useColorMode } from "@chakra-ui/react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
+import { FaDove } from "react-icons/fa";
 
 export const LoginSignupHeader = () => {
   const { colorMode, toggleColorMode } = useColorMode(); // hook - coming from chakra UI.
@@ -9,12 +10,13 @@ export const LoginSignupHeader = () => {
     <>
       <Flex justifyContent={"center"} alignItems={"center"} mt={8} mb={6}>
         <Flex alignItems="center" gap={15}>
-          <Image
+          {/* <Image
             src="/chirpySparrow.png"
             w="60px"
             h="60px"
             borderRadius={10}
-          ></Image>
+          ></Image> */}
+          <FaDove size={32} color="orange" />
           <Text
             fontSize="4xl"
             fontWeight="bold"
@@ -22,6 +24,11 @@ export const LoginSignupHeader = () => {
           >
             ChirpySparrow
           </Text>
+          <FaDove
+            size={32}
+            color="orange"
+            style={{ transform: "scaleX(-1)" }}
+          />
         </Flex>
       </Flex>
     </>

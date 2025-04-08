@@ -298,9 +298,12 @@ export const Sidebar = () => {
             _hover={{ textDecoration: "none" }}
           >
             <Flex gap={4}>
-              <FiLogOut size={25} />
+              <FiLogOut color="red" size={25} />
               {showText && (
-                <Text fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}>
+                <Text
+                  color="red"
+                  fontSize={{ base: "lg", md: "lg", lg: "lg", xl: "lg" }}
+                >
                   Logout
                 </Text>
               )}

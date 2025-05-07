@@ -7,7 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 export const signupUser = async (req, res) => {
   try {
-    const { name, username, password, email } = req.body;
+    const { fullName, username, email, password } = req.body;
     const user = await User.findOne({ $or: [{ email }, { username }] });
 
     if (user) {
@@ -17,7 +17,7 @@ export const signupUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      name,
+      name: fullName,
       email,
       username,
       password: hashedPassword,
@@ -30,7 +30,7 @@ export const signupUser = async (req, res) => {
       generateTokenandSetCookie(newUser._id, res);
       res.status(201).json({
         _id: newUser._id,
-        name: newUser.name,
+        name: newUser.fullName,
         email: newUser.email,
         username: newUser.username,
         profilePic: newUser.profilePic,

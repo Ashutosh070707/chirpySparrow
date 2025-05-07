@@ -9,7 +9,6 @@ import {
   InputRightElement,
   Stack,
   Button,
-  Heading,
   Text,
   useColorModeValue,
   Link,
@@ -29,13 +28,23 @@ export function SignUpCard() {
   const setLoggedInUser = useSetRecoilState(loggedInUserAtom);
   const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState({
-    name: "",
+    fullName: "",
     username: "",
     email: "",
     password: "",
   });
 
   const handleSignup = async () => {
+    if (loading) return;
+    if (
+      !inputs.fullName.trim() ||
+      !inputs.username.trim() ||
+      !inputs.email.trim() ||
+      !inputs.password.trim()
+    ) {
+      showToast("Error", "Please fill all required fields", "error");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/users/signup", {
@@ -43,7 +52,12 @@ export function SignUpCard() {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify(inputs),
+        body: JSON.stringify({
+          fullName: inputs.fullName.trim(),
+          username: inputs.username.trim(),
+          email: inputs.email.trim(),
+          password: inputs.password.trim(),
+        }),
       });
       const data = await res.json();
       if (data.error) {
@@ -56,123 +70,130 @@ export function SignUpCard() {
       showToast("Error in signupCard", data.error, "error");
     } finally {
       setLoading(false);
+      setInputs({
+        fullName: "",
+        username: "",
+        email: "",
+        password: "",
+      });
     }
   };
 
   return (
-    <Flex alignItems={"center"} justifyContent={"center"}>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={8} px={6}>
-        <Stack align={"center"}>
-          <Heading
-            fontSize={"2xl"}
-            textAlign={"center"}
-            fontFamily={"Comic Sans MS, Comic Sans, cursive"}
-          >
-            Sign up
-          </Heading>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.dark")}
-          boxShadow={"lg"}
-          p={8}
-        >
-          <Stack spacing={4}>
-            <HStack>
-              <Box>
-                <FormControl isRequired>
-                  <FormLabel>Full name</FormLabel>
-                  <Input
-                    type="text"
-                    onChange={(e) => {
-                      setInputs({ ...inputs, name: e.target.value });
-                    }}
-                    value={inputs.name}
-                    autoComplete="off"
-                  />
-                </FormControl>
-              </Box>
-              <Box>
-                <FormControl isRequired>
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    type="text"
-                    onChange={(e) => {
-                      setInputs({ ...inputs, username: e.target.value });
-                    }}
-                    value={inputs.username}
-                    autoComplete="off"
-                  />
-                </FormControl>
-              </Box>
-            </HStack>
-            <FormControl isRequired>
-              <FormLabel>Email address</FormLabel>
+    <Flex
+      alignItems={"center"}
+      justifyContent={"center"}
+      mt={8}
+      mx={"auto"}
+      maxW={"md"}
+    >
+      <Box
+        rounded={"lg"}
+        bgColor="#1e1e1e"
+        border="1px solid gray"
+        p={{ base: 6, sm: 8 }}
+        w={{
+          sm: "380px",
+          base: "95%",
+        }}
+      >
+        <Stack spacing={2}>
+          {/* <HStack> */}
+          {/* <Box> */}
+          <FormControl isRequired>
+            <FormLabel fontSize={{ base: "sm", sm: "md" }}>Full name</FormLabel>
+            <Input
+              type="text"
+              onChange={(e) => {
+                setInputs({ ...inputs, fullName: e.target.value });
+              }}
+              value={inputs.fullName}
+              autoComplete="off"
+            />
+          </FormControl>
+          {/* </Box> */}
+          {/* <Box> */}
+          <FormControl isRequired>
+            <FormLabel fontSize={{ base: "sm", sm: "md" }}>Username</FormLabel>
+            <Input
+              type="text"
+              onChange={(e) => {
+                setInputs({ ...inputs, username: e.target.value });
+              }}
+              value={inputs.username}
+              autoComplete="off"
+            />
+          </FormControl>
+          {/* </Box> */}
+          {/* </HStack> */}
+          <FormControl isRequired>
+            <FormLabel fontSize={{ base: "sm", sm: "md" }}>
+              Email address
+            </FormLabel>
+            <Input
+              type="email"
+              onChange={(e) => {
+                setInputs({ ...inputs, email: e.target.value });
+              }}
+              value={inputs.email}
+              autoComplete="off"
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel fontSize={{ base: "sm", sm: "md" }}>Password</FormLabel>
+            <InputGroup>
               <Input
-                type="email"
+                type={showPassword ? "text" : "password"}
                 onChange={(e) => {
-                  setInputs({ ...inputs, email: e.target.value });
+                  setInputs({ ...inputs, password: e.target.value });
                 }}
-                value={inputs.email}
+                value={inputs.password}
                 autoComplete="off"
               />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  onChange={(e) => {
-                    setInputs({ ...inputs, password: e.target.value });
-                  }}
-                  value={inputs.password}
-                  autoComplete="off"
-                />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => {
-                      showPassword
-                        ? setShowPassword(false)
-                        : setShowPassword(true);
-                    }}
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-            <Stack spacing={10} pt={2}>
-              <Button
-                loadingText="Logging in"
-                size="lg"
-                bg={useColorModeValue("gray.600", "gray.700")}
-                color={"white"}
-                _hover={{
-                  bg: useColorModeValue("gray.700", "gray.800"),
-                }}
-                onClick={handleSignup}
-                isLoading={loading}
-              >
-                Sign up
-              </Button>
-            </Stack>
-            <Stack pt={6}>
-              <Text align={"center"}>
-                Already a user?{" "}
-                <Link
-                  color={"blue.400"}
+              <InputRightElement h={"full"}>
+                <Button
+                  variant={"ghost"}
                   onClick={() => {
-                    setAuthScreen("login");
+                    showPassword
+                      ? setShowPassword(false)
+                      : setShowPassword(true);
                   }}
                 >
-                  Login
-                </Link>
-              </Text>
-            </Stack>
+                  {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
+          <Stack spacing={10} pt={2}>
+            <Button
+              size="lg"
+              bg={useColorModeValue("gray.600", "gray.700")}
+              color={"white"}
+              _hover={{
+                bg: useColorModeValue("gray.700", "gray.800"),
+              }}
+              onClick={handleSignup}
+              isLoading={loading}
+              fontSize={{ base: "md", sm: "lg" }}
+            >
+              Sign up
+            </Button>
           </Stack>
-        </Box>
-      </Stack>
+          <Stack pt={6}>
+            <Text align={"center"} fontSize={{ base: "sm", sm: "md" }}>
+              Already an user?{" "}
+              <Link
+                color={"blue.400"}
+                onClick={() => {
+                  setAuthScreen("login");
+                }}
+              >
+                Login
+              </Link>
+            </Text>
+          </Stack>
+        </Stack>
+      </Box>
     </Flex>
   );
 }

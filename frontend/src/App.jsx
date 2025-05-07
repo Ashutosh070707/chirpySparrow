@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <Box h="100vh" overflow="hidden">
-        <Flex direction="row">
+        <Flex>
           {loggedInUser && (
             <Box
               w={{ base: "12%", sm: "10%", md: "10%", lg: "18%", xl: "16%" }}
@@ -71,8 +71,12 @@ function App() {
                   loggedInUser ? <CreatePostPage /> : <Navigate to={"/auth"} />
                 }
               ></Route>
-
-              <Route path="/:username/post/:pid" element={<PostPage />}></Route>
+              <Route
+                path="/:username/post/:pid"
+                element={
+                  loggedInUser ? <PostPage /> : <Navigate to={"/auth"} />
+                }
+              ></Route>
               <Route
                 path="/chat"
                 element={
@@ -103,7 +107,10 @@ function App() {
                   loggedInUser ? <FreezeAccount /> : <Navigate to={"/auth"} />
                 }
               ></Route>
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route
+                path="*"
+                element={loggedInUser ? <HomePage /> : <Navigate to="/auth" />}
+              />
             </Routes>
           </Box>
         </Flex>

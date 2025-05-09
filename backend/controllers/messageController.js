@@ -12,131 +12,9 @@ import {
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/userModel.js";
 
-// export const sendMessage = async (req, res) => {
-//   try {
-//     const { recipientId, message, gif } = req.body;
-//     let { img } = req.body;
-//     const senderId = req.user._id;
-
-//     const countSelected = [!!message, !!img, !!gif].filter(Boolean).length;
-//     if (countSelected > 1) {
-//       return res
-//         .status(400)
-//         .json({ error: "Only one input is allowed at a time" });
-//     }
-//     if (img) {
-//       try {
-//         const uploadedResponse = await cloudinary.uploader.upload(img);
-//         img = uploadedResponse.secure_url;
-//       } catch (error) {
-//         return res.status(500).json({ error: "Image upload failed" });
-//       }
-//     }
-
-//     let conversation = await Conversation.findOne({
-//       participants: { $all: [senderId, recipientId] },
-//     });
-
-//     if (!conversation) {
-//       conversation = new Conversation({
-//         participants: [senderId, recipientId],
-//         lastMessage: {
-//           text: message || "",
-//           gif: gif || "",
-//           img: img || "",
-//           sender: senderId,
-//           seen: false,
-//         },
-//         unreadCount: new Map([[recipientId, 1]]),
-//         deletedBy: new Map(),
-//       });
-
-//       userActiveConversations.set(senderId, conversation._id);
-//     } else {
-//       if (userActiveConversations.get(recipientId) !== conversation._id) {
-//         conversation.unreadCount = new Map(
-//           Object.entries(conversation.unreadCount)
-//         );
-//         conversation.unreadCount.set(
-//           recipientId,
-//           (conversation.unreadCount.get(recipientId) || 0) + 1
-//         );
-//       }
-//     }
-
-//     // Remove the sender from `deletedBy` if they were there
-//     if (conversation.deletedBy?.[senderId]) {
-//       delete conversation.deletedBy[senderId];
-//     }
-
-//     conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
-//     await conversation.save();
-
-//     const newMessage = new Message({
-//       conversationId: conversation._id,
-//       sender: senderId,
-//       text: message || "",
-//       img: img || "",
-//       gif: gif || "",
-//     });
-
-//     await Promise.all([
-//       newMessage.save(),
-//       conversation.updateOne({
-//         lastMessage: {
-//           text: message || "",
-//           sender: senderId,
-//           img: img,
-//           gif: gif,
-//           seen: false,
-//         },
-//       }),
-//     ]);
-
-//     const recipientSocketId = getRecipientSocketId(recipientId);
-//     if (recipientSocketId) {
-//       io.to(recipientSocketId).emit("newMessage", newMessage);
-
-//       io.to(recipientSocketId).emit("conversationUpdated", {
-//         conversationId: conversation._id,
-//         lastMessage: {
-//           text: message || "",
-//           sender: senderId,
-//           img: img || "",
-//           gif: gif || "",
-//           seen: false,
-//         },
-//       });
-
-//       io.to(recipientSocketId).emit("updateUnreadCount", {
-//         conversationId: conversation._id,
-//         unreadCount: conversation.unreadCount.get(recipientId) || 0,
-//       });
-//     }
-
-//     if (!activeChatUsers?.has(recipientId)) {
-//       const user = await User.findByIdAndUpdate(
-//         recipientId,
-//         { $inc: { newMessageCount: 1 } },
-//         { new: true } // Ensure updated value is returned
-//       );
-//       if (recipientSocketId) {
-//         io.to(recipientSocketId).emit(
-//           "updateMessageCount",
-//           user.newMessageCount
-//         );
-//       }
-//     }
-
-//     res.status(200).json(newMessage);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 export const sendMessage = async (req, res) => {
   try {
-    const { recipientId, message, gif } = req.body;
+    const { recipientId, message, gif, replySnapshot } = req.body;
     let { img } = req.body;
     const senderId = req.user._id;
 
@@ -205,6 +83,7 @@ export const sendMessage = async (req, res) => {
       text: message || "",
       img: img || "",
       gif: gif || "",
+      replySnapshot: replySnapshot,
     });
 
     await Promise.all([
@@ -317,18 +196,27 @@ export const deleteConversation = async (req, res) => {
     conversation.unreadCount.set(userId, 0);
     await conversation.save();
 
-    if (conversation.deletedBy.size === 2) {
+    // Check if all participants have deleted the conversation
+    const allDeleted = conversation.participants.every((participantId) => {
+      const id = participantId.toString();
+      return (
+        conversation.deletedBy.has(id) &&
+        conversation.deletedBy.get(id) === true
+      );
+    });
+
+    if (allDeleted) {
       const messages = await Message.find({ conversationId });
       for (const message of messages) {
         if (message.img) {
-          await cloudinary.uploader.destroy(
-            message.img.split("/").pop().split(".")[0]
-          );
+          const publicId = message.img.split("/").pop().split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
         }
       }
       await Message.deleteMany({ conversationId });
       await Conversation.findByIdAndDelete(conversationId);
     }
+
     res.status(200).json({ message: "Conversation deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -337,12 +225,23 @@ export const deleteConversation = async (req, res) => {
 
 export const deleteMessage = async (req, res) => {
   const { messageId, selectedConversationId, recipientId } = req.body;
+  const userId = req.user._id.toString();
 
   try {
     const message = await Message.findById(messageId);
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
     }
+    const conversation = await Conversation.findById(
+      message.conversationId.toString()
+    );
+    if (!conversation) {
+      return res
+        .status(404)
+        .json({ message: "Conversation of this message not exist." });
+    }
+    message.deletedBy.set(userId, true);
+    await message.save();
 
     if (message.img) {
       await cloudinary.uploader.destroy(

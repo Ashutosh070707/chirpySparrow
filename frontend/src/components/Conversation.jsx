@@ -174,7 +174,10 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           mock: conversation.mock,
         });
         setBackButton(true);
-        resetUnreadMessageCount();
+        // resetUnreadMessageCount();
+        if (!conversation.mock) {
+          resetUnreadMessageCount();
+        }
       }}
       bg={
         selectedConversation?._id === conversation._id

@@ -10,9 +10,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { FiMoreVertical, FiTrash } from "react-icons/fi";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaReply } from "react-icons/fa";
 import { useShowToast } from "../../hooks/useShowToast";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   conversationsAtom,
   selectedConversationAtom,
@@ -20,6 +20,8 @@ import {
 import { useState } from "react";
 import { userPostsAtom } from "../atoms/userPostsAtom";
 import { EditPostModal } from "./EditPostModal";
+import { replyingToMessageAtom } from "../atoms/replyingToMessageAtom";
+import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 
 export const DeleteConversation = ({ conversation }) => {
   const showToast = useShowToast();
@@ -74,11 +76,10 @@ export const DeleteConversation = ({ conversation }) => {
             as={IconButton}
             icon={<FiMoreVertical size={16} />}
             variant="ghost"
-            aria-label="Options"
             borderRadius="full"
-            // _hover={{ bg: "gray.700" }}
-            // _active={{ bg: "gray.600" }}
-            // _focus={{ boxShadow: "none", bg: "gray.700" }}
+            _hover={{ bg: "transparent" }}
+            _active={{ bg: "transparent" }}
+            _expanded={{ bg: "transparent" }}
           />
           <MenuList
             w="160px"
@@ -112,14 +113,13 @@ export const DeleteConversation = ({ conversation }) => {
   );
 };
 
-export const DeleteMessage = ({
-  message,
-  setMessages,
-  selectedConversation,
-}) => {
+export const DeleteMessage = ({ message, selectedConversation, place }) => {
   const showToast = useShowToast();
   const [deleting, setDeleting] = useState(false);
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const setReplyingToMessage = useSetRecoilState(replyingToMessageAtom);
+  const loggedInUser = useRecoilValue(loggedInUserAtom);
+
   const handleDeleteMessage = async () => {
     if (deleting) return;
     setDeleting(true);
@@ -148,6 +148,7 @@ export const DeleteMessage = ({
       setDeleting(false);
     }
   };
+
   return (
     <Flex alignItems="center" justifyContent="center">
       {deleting ? (
@@ -155,16 +156,17 @@ export const DeleteMessage = ({
           <Spinner size="xs" />
         </Flex>
       ) : (
-        <Menu placement="bottom-end">
+        <Menu placement={place}>
           <MenuButton
+            size="xxs"
             as={IconButton}
             icon={<FiMoreVertical size={16} />}
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            // _hover={{ bg: "gray.700" }}
-            // _active={{ bg: "gray.600" }}
-            // _focus={{ boxShadow: "none", bg: "gray.700" }}
+            _hover={{ bg: "transparent" }}
+            _active={{ bg: "transparent" }}
+            _expanded={{ bg: "transparent" }}
           />
           <MenuList
             w="160px"
@@ -176,19 +178,44 @@ export const DeleteMessage = ({
             border="1px solid"
             borderColor="gray.700"
           >
+            {message.sender === loggedInUser._id && (
+              <MenuItem
+                onClick={handleDeleteMessage}
+                borderRadius="md"
+                px={3}
+                py={2}
+                bg="gray.900"
+                _hover={{ bg: "red.600", color: "white" }}
+                transition="all 0.2s ease"
+              >
+                <Flex align="center" gap={2}>
+                  <FiTrash color="white" size={16} />
+                  <Text fontSize="sm" color="white">
+                    Delete
+                  </Text>
+                </Flex>
+              </MenuItem>
+            )}
             <MenuItem
-              onClick={handleDeleteMessage}
+              onClick={() => {
+                setReplyingToMessage({
+                  sender: message.sender,
+                  text: message.text,
+                  img: message.img,
+                  gif: message.gif,
+                });
+              }}
               borderRadius="md"
               px={3}
               py={2}
               bg="gray.900"
-              _hover={{ bg: "red.600", color: "white" }}
+              _hover={{ bg: "blue.600", color: "white" }}
               transition="all 0.2s ease"
             >
               <Flex align="center" gap={2}>
-                <FiTrash color="white" size={16} />
+                <FaReply color="white" size={16} />
                 <Text fontSize="sm" color="white">
-                  Delete
+                  Reply
                 </Text>
               </Flex>
             </MenuItem>
@@ -242,9 +269,9 @@ export const PostActions = ({ post }) => {
             variant="ghost"
             aria-label="Options"
             borderRadius="full"
-            // _hover={{ bg: "gray.700" }}
-            // _active={{ bg: "gray.600" }}
-            // _focus={{ boxShadow: "none", bg: "gray.700" }}
+            _hover={{ bg: "transparent" }}
+            _active={{ bg: "transparent" }}
+            _expanded={{ bg: "transparent" }}
           />
           <MenuList
             w="160px"

@@ -19,6 +19,7 @@ import {
   PopoverBody,
   Spinner,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { IoSendSharp, IoSparkles } from "react-icons/io5";
@@ -32,11 +33,18 @@ import { BsFillImageFill } from "react-icons/bs";
 import { useSocket } from "../../context/SocketContext.jsx";
 import { MdGif } from "react-icons/md";
 import { SearchIcon } from "@chakra-ui/icons";
+import { CloseButton } from "@chakra-ui/react";
+import { replyingToMessageAtom } from "../atoms/replyingToMessageAtom.js";
+import { loggedInUserAtom } from "../atoms/loggedInUserAtom.js";
 
 export const MessageInput = ({ setMessages }) => {
   const [messageText, setMessageText] = useState("");
+  const loggedInUser = useRecoilValue(loggedInUserAtom);
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const [replyingToMessage, setReplyingToMessage] = useRecoilState(
+    replyingToMessageAtom
+  );
   const showToast = useShowToast();
   const imageRef = useRef(null);
   const [imgUrl, setImgUrl] = useState(null);
@@ -168,6 +176,7 @@ export const MessageInput = ({ setMessages }) => {
             message: messageText,
             img: imgUrl,
             gif: gifUrl,
+            replySnapshot: replyingToMessage,
           }),
         });
 
@@ -211,6 +220,14 @@ export const MessageInput = ({ setMessages }) => {
         showToast("Error", error.message, "error");
       } finally {
         setIsSending(false);
+        if (replyingToMessage.sender) {
+          setReplyingToMessage({
+            sender_id: "",
+            text: "",
+            img: "",
+            gif: "",
+          });
+        }
       }
     },
     [
@@ -297,7 +314,118 @@ export const MessageInput = ({ setMessages }) => {
 
   return (
     <Flex gap={3} alignItems={"center"} w="full">
-      <Flex flex={90}>
+      <Flex flex={90} direction="column">
+        {replyingToMessage.sender && (
+          <Box position="relative" w="full">
+            <CloseButton
+              size="sm"
+              position="absolute"
+              top={1}
+              right={1}
+              zIndex={1}
+              onClick={() =>
+                setReplyingToMessage({
+                  sender_id: "",
+                  text: "",
+                  img: "",
+                  gif: "",
+                })
+              }
+            />
+            <Flex
+              bgColor={"gray.900"}
+              w="full"
+              borderRadius={5}
+              minH={"45px"}
+              maxH="100px"
+              mb={1}
+              overflow="hidden"
+            >
+              <Flex flex={1} bgColor="green.500" borderLeftRadius={20} />
+              <Flex flex={99} w="full" borderRadius={5}>
+                {replyingToMessage.text && (
+                  <Flex w="full" direction="column">
+                    <Text
+                      fontSize="sm"
+                      color="orange.200"
+                      p={2}
+                      pl={3}
+                      pb={0}
+                      m={0}
+                      // border="1px solid orange"
+                    >
+                      {replyingToMessage.sender === loggedInUser._id
+                        ? "You"
+                        : "Other"}
+                    </Text>
+                    <Text
+                      m={0}
+                      pl={3}
+                      pt={1}
+                      pb={2}
+                      fontSize={"xs"}
+                      wordBreak="break-word"
+                      overflowWrap="break-word"
+                      color="gray.400"
+                      w="90%"
+                    >
+                      {replyingToMessage.text.length > 296
+                        ? replyingToMessage.text.slice(0, 296) + "..."
+                        : replyingToMessage.text}
+                    </Text>
+                  </Flex>
+                )}
+                {replyingToMessage.img && (
+                  <Flex justifyContent="space-between" w="full">
+                    <Flex alignItems="center" direction="column" h="full">
+                      <Flex p={2}>
+                        <Text fontSize="sm" color="orange.200" p={0} m={0}>
+                          {replyingToMessage.sender === loggedInUser._id
+                            ? "You"
+                            : "Other"}
+                        </Text>
+                      </Flex>
+                      <Flex p={2}>
+                        <BsFillImageFill size={16} />
+                      </Flex>
+                    </Flex>
+                    <Image
+                      src={replyingToMessage.img}
+                      h="full"
+                      objectFit="contain"
+                      borderRadius={5}
+                    />
+                  </Flex>
+                )}
+                {replyingToMessage.gif && (
+                  <Flex w="full" justifyContent="space-between">
+                    <Flex alignItems="center" direction="column" h="full">
+                      <Flex p={2}>
+                        <Text fontSize="sm" color="orange.200" p={0} m={0}>
+                          {replyingToMessage.sender === loggedInUser._id
+                            ? "You"
+                            : "Other"}
+                        </Text>
+                      </Flex>
+                      <Flex p={2} pt={1}>
+                        <MdGif size={30} />
+                      </Flex>
+                    </Flex>
+                    <Flex justifyContent="flex-end">
+                      <Image
+                        src={replyingToMessage.gif}
+                        h="full"
+                        objectFit="contain"
+                        borderRadius={5}
+                      />
+                    </Flex>
+                  </Flex>
+                )}
+              </Flex>
+            </Flex>
+          </Box>
+        )}
+
         <form onSubmit={handleSendMessage} style={{ flex: 95, width: "100%" }}>
           <InputGroup>
             <Input

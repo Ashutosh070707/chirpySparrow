@@ -16,7 +16,7 @@ export const sendMessage = async (req, res) => {
   try {
     const { recipientId, message, gif, replySnapshot } = req.body;
     let { img } = req.body;
-    const senderId = req.user._id;
+    const senderId = req.user._id.toString();
 
     const countSelected = [!!message, !!img, !!gif].filter(Boolean).length;
     if (countSelected > 1) {
@@ -24,6 +24,7 @@ export const sendMessage = async (req, res) => {
         .status(400)
         .json({ error: "Only one input is allowed at a time" });
     }
+
     if (img) {
       try {
         const uploadedResponse = await cloudinary.uploader.upload(img);
@@ -40,13 +41,6 @@ export const sendMessage = async (req, res) => {
     if (!conversation) {
       conversation = new Conversation({
         participants: [senderId, recipientId],
-        lastMessage: {
-          text: message || "",
-          gif: gif || "",
-          img: img || "",
-          sender: senderId,
-          seen: false,
-        },
         unreadCount: new Map([[recipientId, 1]]),
         deletedBy: new Map(),
       });
@@ -54,16 +48,10 @@ export const sendMessage = async (req, res) => {
       if (conversation.deletedBy.has(senderId.toString())) {
         conversation.deletedBy.delete(senderId.toString());
       }
-
-      const recipientHasDeleted = conversation.deletedBy.has(
-        recipientId.toString()
-      );
-
-      if (recipientHasDeleted) {
+      if (conversation.deletedBy.has(recipientId.toString())) {
         conversation.deletedBy.delete(recipientId.toString());
         conversation.unreadCount.set(recipientId.toString(), 0);
       }
-
       if (
         userActiveConversations.get(recipientId.toString()) !==
         conversation._id.toString()
@@ -74,9 +62,6 @@ export const sendMessage = async (req, res) => {
       }
     }
 
-    // Save the conversation with updated values
-    await conversation.save();
-
     const newMessage = new Message({
       conversationId: conversation._id,
       sender: senderId,
@@ -86,18 +71,20 @@ export const sendMessage = async (req, res) => {
       replySnapshot: replySnapshot,
     });
 
-    await Promise.all([
-      newMessage.save(),
-      conversation.updateOne({
-        lastMessage: {
-          text: message || "",
-          sender: senderId,
-          img: img || "",
-          gif: gif || "",
-          seen: false,
-        },
-      }),
-    ]);
+    await newMessage.save();
+
+    const lastMsg = {
+      text: message || "",
+      sender: senderId,
+      img: img || "",
+      gif: gif || "",
+      seen: false,
+    };
+
+    conversation.lastMessagePerUser.set(senderId.toString(), lastMsg);
+    conversation.lastMessagePerUser.set(recipientId.toString(), lastMsg);
+
+    await conversation.save();
 
     const recipientSocketId = getRecipientSocketId(recipientId);
     if (recipientSocketId) {
@@ -105,13 +92,9 @@ export const sendMessage = async (req, res) => {
 
       io.to(recipientSocketId).emit("conversationUpdated", {
         conversationId: conversation._id,
-        lastMessage: {
-          text: message || "",
-          sender: senderId,
-          img: img || "",
-          gif: gif || "",
-          seen: false,
-        },
+        lastMessage: conversation.lastMessagePerUser.get(
+          recipientId.toString()
+        ),
       });
 
       io.to(recipientSocketId).emit("updateUnreadCount", {
@@ -142,7 +125,7 @@ export const sendMessage = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   const { otherUserId } = req.params;
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
   try {
     const conversation = await Conversation.findOne({
       participants: { $all: [userId, otherUserId] },
@@ -150,11 +133,129 @@ export const getMessages = async (req, res) => {
 
     if (!conversation)
       return res.status(500).json({ error: "Conversation not found." });
+
     const messages = await Message.find({
       conversationId: conversation._id,
+      [`deletedBy.${userId}`]: { $ne: true },
     }).sort({ createdAt: 1 });
 
     res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  const { messageId, selectedConversationId, recipientId } = req.body;
+  const userId = req.user._id.toString(); // loggedInUserId
+
+  try {
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    const conversation = await Conversation.findById(message.conversationId);
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    message.deletedBy.set(userId, true);
+    await message.save();
+
+    const allDeleted = conversation.participants.every((participantId) => {
+      const id = participantId.toString();
+      return message.deletedBy.has(id) && message.deletedBy.get(id) === true;
+    });
+
+    if (allDeleted) {
+      if (message.img) {
+        await cloudinary.uploader.destroy(
+          message.img.split("/").pop().split(".")[0]
+        );
+      }
+      await Message.findByIdAndDelete(messageId);
+      const latestVisibleMessageForLoggedInUser = await Message.findOne({
+        conversationId: selectedConversationId,
+        [`deletedBy.${userId}`]: { $ne: true },
+      }).sort({ createdAt: -1 });
+      const latestVisibleMessageForOtherUser = await Message.findOne({
+        conversationId: selectedConversationId,
+        [`deletedBy.${recipientId}`]: { $ne: true },
+      }).sort({ createdAt: -1 });
+
+      const updatedLastMessageforLoggedInUser =
+        latestVisibleMessageForLoggedInUser
+          ? {
+              text: latestVisibleMessageForLoggedInUser.text,
+              img: latestVisibleMessageForLoggedInUser.img,
+              gif: latestVisibleMessageForLoggedInUser.gif,
+              sender: latestVisibleMessageForLoggedInUser.sender,
+              seen: latestVisibleMessageForLoggedInUser.seen,
+            }
+          : { text: "", img: "", gif: "" };
+      const updatedLastMessageforOtherUser = latestVisibleMessageForOtherUser
+        ? {
+            text: latestVisibleMessageForOtherUser.text,
+            img: latestVisibleMessageForOtherUser.img,
+            gif: latestVisibleMessageForOtherUser.gif,
+            sender: latestVisibleMessageForOtherUser.sender,
+            seen: latestVisibleMessageForOtherUser.seen,
+          }
+        : { text: "", img: "", gif: "" };
+
+      conversation.lastMessagePerUser.set(
+        userId,
+        updatedLastMessageforLoggedInUser
+      );
+      conversation.lastMessagePerUser.set(
+        recipientId,
+        updatedLastMessageforOtherUser
+      );
+
+      io.to(getRecipientSocketId(userId)).emit("messageDeleted", {
+        messageId,
+        selectedConversationId,
+        updatedLastMessage: updatedLastMessageforLoggedInUser,
+        userId,
+      });
+
+      io.to(getRecipientSocketId(recipientId)).emit("messageDeleted", {
+        messageId,
+        selectedConversationId,
+        updatedLastMessage: updatedLastMessageforOtherUser,
+        userId,
+      });
+    } else {
+      const latestVisibleMessageForLoggedInUser = await Message.findOne({
+        conversationId: selectedConversationId,
+        [`deletedBy.${userId}`]: { $ne: true },
+      }).sort({ createdAt: -1 });
+      const updatedLastMessageforLoggedInUser =
+        latestVisibleMessageForLoggedInUser
+          ? {
+              text: latestVisibleMessageForLoggedInUser.text,
+              img: latestVisibleMessageForLoggedInUser.img,
+              gif: latestVisibleMessageForLoggedInUser.gif,
+              sender: latestVisibleMessageForLoggedInUser.sender,
+              seen: latestVisibleMessageForLoggedInUser.seen,
+            }
+          : { text: "", img: "", gif: "" };
+
+      conversation.lastMessagePerUser.set(
+        userId,
+        updatedLastMessageforLoggedInUser
+      );
+      io.to(getRecipientSocketId(userId)).emit("messageDeleted", {
+        messageId,
+        selectedConversationId,
+        updatedLastMessage: updatedLastMessageforLoggedInUser,
+        userId,
+      });
+    }
+
+    await conversation.save();
+    res.status(200).json({ message: "Message deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -167,7 +268,6 @@ export const getConversations = async (req, res) => {
       participants: userId,
     }).populate({ path: "participants", select: "name username profilePic" });
 
-    // Filter out conversations that the user has deleted
     const filteredConversations = conversations.filter(
       (conversation) => !conversation.deletedBy?.get(userId.toString())
     );
@@ -196,6 +296,11 @@ export const deleteConversation = async (req, res) => {
     conversation.unreadCount.set(userId, 0);
     await conversation.save();
 
+    await Message.updateMany(
+      { conversationId },
+      { $set: { [`deletedBy.${userId}`]: true } }
+    );
+
     // Check if all participants have deleted the conversation
     const allDeleted = conversation.participants.every((participantId) => {
       const id = participantId.toString();
@@ -218,69 +323,6 @@ export const deleteConversation = async (req, res) => {
     }
 
     res.status(200).json({ message: "Conversation deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const deleteMessage = async (req, res) => {
-  const { messageId, selectedConversationId, recipientId } = req.body;
-  const userId = req.user._id.toString();
-
-  try {
-    const message = await Message.findById(messageId);
-    if (!message) {
-      return res.status(404).json({ message: "Message not found" });
-    }
-    const conversation = await Conversation.findById(
-      message.conversationId.toString()
-    );
-    if (!conversation) {
-      return res
-        .status(404)
-        .json({ message: "Conversation of this message not exist." });
-    }
-    message.deletedBy.set(userId, true);
-    await message.save();
-
-    if (message.img) {
-      await cloudinary.uploader.destroy(
-        message.img.split("/").pop().split(".")[0]
-      );
-    }
-
-    await Message.findByIdAndDelete(messageId);
-
-    const latestMessage = await Message.findOne({
-      conversationId: selectedConversationId,
-    }).sort({ createdAt: -1 });
-
-    const updatedLastMessage = latestMessage
-      ? {
-          text: latestMessage.text,
-          img: latestMessage.img,
-          gif: latestMessage.gif,
-          sender: latestMessage.sender,
-          seen: latestMessage.seen,
-        }
-      : { text: "", img: "", gif: "" };
-
-    await Conversation.findByIdAndUpdate(selectedConversationId, {
-      $set: { lastMessage: updatedLastMessage },
-    });
-
-    io.to(getRecipientSocketId(message.sender)).emit("messageDeleted", {
-      messageId,
-      selectedConversationId,
-      updatedLastMessage,
-    });
-    io.to(getRecipientSocketId(recipientId)).emit("messageDeleted", {
-      messageId,
-      selectedConversationId,
-      updatedLastMessage,
-    });
-
-    res.status(200).json({ message: "Message deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

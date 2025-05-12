@@ -11,7 +11,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SkeletonCircle } from "@chakra-ui/react";
 import { Conversation } from "../components/Conversation.jsx";
 import { GiConversation } from "react-icons/gi";
@@ -38,12 +38,10 @@ export const ChatPage = () => {
   const [searchingUser, setSearchingUser] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(true);
   const { socket, onlineUsers } = useSocket();
-
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [searchedUsers, setSearchedUsers] = useState([]);
   const prevSearchText = useRef("");
   const [backButton, setBackButton] = useState(false);
-
   const screenSize = useBreakpointValue({
     base: "sm",
     sm: "sm",
@@ -75,6 +73,7 @@ export const ChatPage = () => {
       setSearchingUser(false);
     }
   };
+
   const debouncedSearch = debounce(handleSearchUser, 400);
 
   useEffect(() => {
@@ -150,12 +149,21 @@ export const ChatPage = () => {
 
       const mockConversation = {
         mock: true,
-        lastMessage: {
-          text: "",
-          sender: "",
-          img: "",
-          gif: "",
-          seen: false,
+        // lastMessage: {
+        //   text: "",
+        //   sender: "",
+        //   img: "",
+        //   gif: "",
+        //   seen: false,
+        // },
+        lastMessagePerUser: {
+          [loggedInUser._id]: {
+            text: "",
+            sender: "",
+            img: "",
+            gif: "",
+            seen: false,
+          },
         },
         _id: Date.now(),
         participants: [
@@ -180,14 +188,21 @@ export const ChatPage = () => {
   useEffect(() => {
     const handleMessagesSeen = ({ conversationId }) => {
       setConversations((prev) => {
-        return prev.map((conversation) =>
-          conversation._id === conversationId
-            ? {
-                ...conversation,
-                lastMessage: { ...conversation.lastMessage, seen: true },
-              }
-            : conversation
-        );
+        return prev.map((conversation) => {
+          if (conversation._id === conversationId) {
+            return {
+              ...conversation,
+              lastMessagePerUser: {
+                ...(conversation.lastMessagePerUser || {}),
+                [loggedInUser._id]: {
+                  ...conversation.lastMessagePerUser[loggedInUser._id],
+                  seen: true,
+                },
+              },
+            };
+          }
+          return conversation;
+        });
       });
     };
 
@@ -201,16 +216,18 @@ export const ChatPage = () => {
   useEffect(() => {
     socket?.on("conversationUpdated", ({ conversationId, lastMessage }) => {
       setConversations((prev) => {
-        const updatedConversations = prev.map((conversation) => {
+        return prev.map((conversation) => {
           if (conversation._id === conversationId) {
             return {
               ...conversation,
-              lastMessage: lastMessage,
+              lastMessagePerUser: {
+                ...(conversation.lastMessagePerUser || {}),
+                [loggedInUser._id]: lastMessage,
+              },
             };
           }
           return conversation;
         });
-        return updatedConversations;
       });
     });
 
@@ -223,16 +240,23 @@ export const ChatPage = () => {
     socket?.on(
       "messageDeleted",
       ({ messageId, selectedConversationId, updatedLastMessage }) => {
-        setConversations((prev) =>
-          prev.map((conversation) =>
-            conversation._id === selectedConversationId
-              ? {
-                  ...conversation,
-                  lastMessage: updatedLastMessage,
-                }
-              : conversation
-          )
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg._id !== messageId)
         );
+        setConversations((prev) => {
+          return prev.map((conversation) => {
+            if (conversation._id === selectedConversationId) {
+              return {
+                ...conversation,
+                lastMessagePerUser: {
+                  ...(conversation.lastMessagePerUser || {}),
+                  [loggedInUser._id]: updatedLastMessage,
+                },
+              };
+            }
+            return conversation;
+          });
+        });
       }
     );
 

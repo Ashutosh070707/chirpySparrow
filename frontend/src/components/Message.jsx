@@ -19,7 +19,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
     <Flex w="full">
       {ownMessage ? (
         <Flex justifyContent="flex-end" w="100%">
-          <Flex justifyContent="flex-end" maxW="70%" alignItems="center">
+          <Flex justifyContent="flex-end" maxW="60%" alignItems="center">
             <Flex>
               {message.text && (
                 <Flex
@@ -32,7 +32,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                 >
                   {message.replySnapshot.sender && (
                     <Flex
-                      bgColor={"gray.800"}
+                      bgColor={"green.800"}
                       w="full"
                       borderRadius={5}
                       minH={"45px"}
@@ -49,7 +49,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                         {message.replySnapshot.text && (
                           <Flex w="full" direction="column">
                             <Text
-                              fontSize="sm"
+                              fontSize="xs"
                               color="orange.200"
                               p={2}
                               pl={3}
@@ -87,7 +87,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                             >
                               <Flex p={2}>
                                 <Text
-                                  fontSize="sm"
+                                  fontSize="xs"
                                   color="orange.200"
                                   p={0}
                                   m={0}
@@ -119,7 +119,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                             >
                               <Flex p={2}>
                                 <Text
-                                  fontSize="sm"
+                                  fontSize="xs"
                                   color="orange.200"
                                   p={0}
                                   m={0}
@@ -191,7 +191,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                   >
                     {message.replySnapshot.sender && (
                       <Flex
-                        bgColor={"gray.800"}
+                        bgColor={"green.800"}
                         w="full"
                         borderRadius={5}
                         minH={"45px"}
@@ -208,7 +208,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                           {message.replySnapshot.text && (
                             <Flex w="full" direction="column">
                               <Text
-                                fontSize="sm"
+                                fontSize="xs"
                                 color="orange.200"
                                 p={2}
                                 pl={3}
@@ -247,7 +247,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -279,7 +279,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -347,7 +347,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                   >
                     {message.replySnapshot.sender && (
                       <Flex
-                        bgColor={"gray.800"}
+                        bgColor={"green.800"}
                         w="full"
                         borderRadius={5}
                         minH={"45px"}
@@ -364,7 +364,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                           {message.replySnapshot.text && (
                             <Flex w="full" direction="column">
                               <Text
-                                fontSize="sm"
+                                fontSize="xs"
                                 color="orange.200"
                                 p={2}
                                 pl={3}
@@ -403,7 +403,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -435,7 +435,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -505,7 +505,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
         </Flex>
       ) : (
         <Flex justifyContent="flex-start" w="100%">
-          <Flex justifyContent="flex-start" maxW="70%" alignItems="center">
+          <Flex justifyContent="flex-start" maxW="60%" alignItems="center">
             <Flex justifyContent="center" alignItems="center">
               <DeleteMessage
                 place="right-end"
@@ -539,7 +539,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                         bgColor="green.500"
                         borderLeftRadius={"md"}
                       />
-                      <Flex flex={99} w="full" borderRadius={5}>
+                      <Flex flex={99} w="full" borderRadius={5} p={1}>
                         {message.replySnapshot.text && (
                           <Flex w="full" direction="column">
                             <Text
@@ -581,7 +581,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                             >
                               <Flex p={2}>
                                 <Text
-                                  fontSize="sm"
+                                  fontSize="xs"
                                   color="orange.200"
                                   p={0}
                                   m={0}
@@ -613,7 +613,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                             >
                               <Flex p={2}>
                                 <Text
-                                  fontSize="sm"
+                                  fontSize="xs"
                                   color="orange.200"
                                   p={0}
                                   m={0}
@@ -689,7 +689,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                           bgColor="green.500"
                           borderLeftRadius={20}
                         />
-                        <Flex flex={99} w="full" borderRadius={5}>
+                        <Flex flex={99} w="full" borderRadius={5} p={1}>
                           {message.replySnapshot.text && (
                             <Flex w="full" direction="column">
                               <Text
@@ -732,7 +732,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -764,7 +764,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -830,7 +830,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                           bgColor="green.500"
                           borderLeftRadius={20}
                         />
-                        <Flex flex={99} w="full" borderRadius={5}>
+                        <Flex flex={99} w="full" borderRadius={5} p={1}>
                           {message.replySnapshot.text && (
                             <Flex w="full" direction="column">
                               <Text
@@ -873,7 +873,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}
@@ -905,7 +905,7 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               >
                                 <Flex p={2}>
                                   <Text
-                                    fontSize="sm"
+                                    fontSize="xs"
                                     color="orange.200"
                                     p={0}
                                     m={0}

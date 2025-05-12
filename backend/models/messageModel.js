@@ -23,7 +23,6 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    // Only snapshot data for reply
     replySnapshot: {
       sender: {
         type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +36,7 @@ const messageSchema = new mongoose.Schema(
     },
     deletedBy: {
       type: Map,
-      of: Boolean, // Store which user deleted the conversation
+      of: Boolean,
       default: {},
     },
   },

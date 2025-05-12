@@ -8,7 +8,7 @@ import {
   useColorModeValue,
   WrapItem,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BsCheck2All, BsFillImageFill } from "react-icons/bs";
 import {
@@ -32,7 +32,13 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
   const user = conversation.participants.find(
     (p) => p._id !== loggedInUser._id
   );
-  const lastMessage = conversation.lastMessage;
+  const lastMessage = conversation.lastMessagePerUser[loggedInUser._id] || {
+    sender: null,
+    text: "",
+    gif: "",
+    img: "",
+    seen: false,
+  };
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
 
@@ -174,7 +180,6 @@ export const Conversation = ({ conversation, isOnline, setBackButton }) => {
           mock: conversation.mock,
         });
         setBackButton(true);
-        // resetUnreadMessageCount();
         if (!conversation.mock) {
           resetUnreadMessageCount();
         }

@@ -116,7 +116,6 @@ export const DeleteConversation = ({ conversation }) => {
 export const DeleteMessage = ({ message, selectedConversation, place }) => {
   const showToast = useShowToast();
   const [deleting, setDeleting] = useState(false);
-  const [conversations, setConversations] = useRecoilState(conversationsAtom);
   const setReplyingToMessage = useSetRecoilState(replyingToMessageAtom);
   const loggedInUser = useRecoilValue(loggedInUserAtom);
 
@@ -171,31 +170,32 @@ export const DeleteMessage = ({ message, selectedConversation, place }) => {
           <MenuList
             w="160px"
             minW="160px"
-            p={2}
+            p={1}
             borderRadius="lg"
             bg="gray.900"
             boxShadow="lg"
             border="1px solid"
             borderColor="gray.700"
           >
-            {message.sender === loggedInUser._id && (
-              <MenuItem
-                onClick={handleDeleteMessage}
-                borderRadius="md"
-                px={3}
-                py={2}
-                bg="gray.900"
-                _hover={{ bg: "red.600", color: "white" }}
-                transition="all 0.2s ease"
-              >
-                <Flex align="center" gap={2}>
-                  <FiTrash color="white" size={16} />
-                  <Text fontSize="sm" color="white">
-                    Delete
-                  </Text>
-                </Flex>
-              </MenuItem>
-            )}
+            <MenuItem
+              onClick={handleDeleteMessage}
+              borderRadius="md"
+              px={3}
+              py={2}
+              bg="gray.900"
+              _hover={{ bg: "red.600", color: "white" }}
+              transition="all 0.2s ease"
+            >
+              <Flex align="center" gap={2}>
+                <FiTrash color="white" size={16} />
+                <Text fontSize="sm" color="white">
+                  {message.sender === loggedInUser._id
+                    ? "Delete"
+                    : "Delete from me"}
+                </Text>
+              </Flex>
+            </MenuItem>
+
             <MenuItem
               onClick={() => {
                 setReplyingToMessage({

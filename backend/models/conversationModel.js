@@ -3,24 +3,27 @@ import mongoose from "mongoose";
 const conversationSchema = new mongoose.Schema(
   {
     participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    lastMessage: {
-      sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      text: String,
-      gif: String,
-      img: String,
-      seen: {
-        type: Boolean,
-        default: false,
-      },
+
+    lastMessagePerUser: {
+      type: Map,
+      of: new mongoose.Schema({
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        text: String,
+        gif: String,
+        img: String,
+        seen: { type: Boolean, default: false },
+      }),
+      default: {},
     },
+
     unreadCount: {
       type: Map,
-      of: Number, // Store unread messages count for each user
+      of: Number,
       default: {},
     },
     deletedBy: {
       type: Map,
-      of: Boolean, // Store which user deleted the conversation
+      of: Boolean,
       default: {},
     },
   },
@@ -31,3 +34,14 @@ const conversationSchema = new mongoose.Schema(
 
 const Conversation = mongoose.model("Conversation", conversationSchema);
 export default Conversation;
+
+// lastMessage: {
+//   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+//   text: String,
+//   gif: String,
+//   img: String,
+//   seen: {
+//     type: Boolean,
+//     default: false,
+//   },
+// },

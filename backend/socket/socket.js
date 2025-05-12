@@ -71,13 +71,24 @@ io.on("connection", (socket) => {
   socket.on("markMessagesAsSeen", async ({ conversationId, userId }) => {
     try {
       await Message.updateMany(
-        { conversationId: conversationId, seen: false },
+        {
+          conversationId: conversationId,
+          [`deletedBy.${userId}`]: { $ne: true },
+          seen: false,
+        },
         { $set: { seen: true } }
       );
-      await Conversation.updateOne(
-        { _id: conversationId },
-        { $set: { "lastMessage.seen": true } }
-      );
+
+      const conversation = await Conversation.findById(conversationId);
+      if (conversation) {
+        const lastMsg = conversation.lastMessagePerUser.get(userId.toString());
+        if (lastMsg) {
+          lastMsg.seen = true;
+          conversation.lastMessagePerUser.set(userId.toString(), lastMsg);
+          await conversation.save();
+        }
+      }
+
       io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
     } catch (error) {
       console.log(error);

@@ -15,21 +15,21 @@ export const SocketContextProvider = ({ children }) => {
   const user = useRecoilValue(loggedInUserAtom);
 
   useEffect(() => {
-    //for development
-    const socket = io("http://localhost:5000", {
-      query: {
-        userId: user?._id,
-      },
-    });
-
-    // for deployment
-    if (!user?._id) return;
-
-    // const socket = io("/", {
+    //for development:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // const socket = io("http://localhost:5000", {
     //   query: {
     //     userId: user?._id,
     //   },
     // });
+
+    // for deployment::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    if (!user?._id) return;
+
+    const socket = io("/", {
+      query: {
+        userId: user?._id,
+      },
+    });
     setSocket(socket);
     socket.on("getOnlineUsers", (users) => {
       setOnlineUsers(users);

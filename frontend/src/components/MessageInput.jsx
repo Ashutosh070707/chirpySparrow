@@ -148,6 +148,23 @@ export const MessageInput = ({ setMessages }) => {
           selectedGif.media_formats?.webp?.url ||
           ""
         : "";
+
+      const trimmedText = messageText.trim();
+      let isLinkMessage = false;
+      let finalMessage = trimmedText;
+
+      // Detect if user is sending a link using the custom rule
+      if (trimmedText.startsWith("@@@")) {
+        const possibleLink = trimmedText.slice(3).trim();
+        if (possibleLink.length === 0) {
+          showToast("Error", "Link cannot be empty after 3@", "error");
+          return;
+        }
+        const hasProtocol = /^(https?:\/\/)/i.test(possibleLink);
+        finalMessage = hasProtocol ? possibleLink : `https://${possibleLink}`;
+        isLinkMessage = true;
+      }
+
       const selectedCount = [!!messageText.trim(), !!imgUrl, !!gifUrl].filter(
         Boolean
       ).length;
@@ -173,10 +190,12 @@ export const MessageInput = ({ setMessages }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             recipientId: selectedConversation.userId,
-            message: messageText,
+            message: finalMessage,
+            // message: messageText,
             img: imgUrl,
             gif: gifUrl,
             replySnapshot: replyingToMessage,
+            isLink: isLinkMessage,
           }),
         });
 
@@ -226,6 +245,7 @@ export const MessageInput = ({ setMessages }) => {
             text: "",
             img: "",
             gif: "",
+            isLink: false,
           });
         }
       }
@@ -329,6 +349,7 @@ export const MessageInput = ({ setMessages }) => {
                   text: "",
                   img: "",
                   gif: "",
+                  isLink: false,
                 })
               }
             />
@@ -352,7 +373,6 @@ export const MessageInput = ({ setMessages }) => {
                       pl={3}
                       pb={0}
                       m={0}
-                      // border="1px solid orange"
                     >
                       {replyingToMessage.sender === loggedInUser._id
                         ? "You"
@@ -369,9 +389,22 @@ export const MessageInput = ({ setMessages }) => {
                       color="gray.400"
                       w="90%"
                     >
-                      {replyingToMessage.text.length > 296
-                        ? replyingToMessage.text.slice(0, 296) + "..."
-                        : replyingToMessage.text}
+                      {replyingToMessage.isLink ? (
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#63b3ed",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {replyingToMessage.text}
+                        </a>
+                      ) : replyingToMessage.text.length > 250 ? (
+                        replyingToMessage.text.slice(0, 250) + "..."
+                      ) : (
+                        replyingToMessage.text
+                      )}
                     </Text>
                   </Flex>
                 )}

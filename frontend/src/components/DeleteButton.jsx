@@ -203,6 +203,7 @@ export const DeleteMessage = ({ message, selectedConversation, place }) => {
                   text: message.text,
                   img: message.img,
                   gif: message.gif,
+                  isLink: message.isLink,
                 });
               }}
               borderRadius="md"

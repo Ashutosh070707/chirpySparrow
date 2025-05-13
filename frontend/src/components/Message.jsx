@@ -71,10 +71,22 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               color="gray.400"
                               w="90%"
                             >
-                              {message.replySnapshot.text.length > 220
-                                ? message.replySnapshot.text.slice(0, 220) +
-                                  "..."
-                                : message.replySnapshot.text}
+                              {message.replySnapshot.isLink ? (
+                                <a
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    color: "#63b3ed",
+                                    textDecoration: "underline",
+                                  }}
+                                >
+                                  {message.replySnapshot.text}
+                                </a>
+                              ) : message.replySnapshot.text.length > 220 ? (
+                                message.replySnapshot.text.slice(0, 220) + "..."
+                              ) : (
+                                message.replySnapshot.text
+                              )}
                             </Text>
                           </Flex>
                         )}
@@ -154,7 +166,21 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                       overflowWrap="break-word"
                       fontSize="sm"
                     >
-                      {message.text}
+                      {message.isLink ? (
+                        <a
+                          href={message.text}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#63b3ed",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {message.text}
+                        </a>
+                      ) : (
+                        message.text
+                      )}
                     </Text>
                     <Box
                       alignSelf="flex-end"
@@ -231,10 +257,23 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                                 color="gray.400"
                                 w="90%"
                               >
-                                {message.replySnapshot.text.length > 190
-                                  ? message.replySnapshot.text.slice(0, 190) +
-                                    "..."
-                                  : message.replySnapshot.text}
+                                {message.replySnapshot.isLink ? (
+                                  <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#63b3ed",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    {message.replySnapshot.text}
+                                  </a>
+                                ) : message.replySnapshot.text.length > 190 ? (
+                                  message.replySnapshot.text.slice(0, 190) +
+                                  "..."
+                                ) : (
+                                  message.replySnapshot.text
+                                )}
                               </Text>
                             </Flex>
                           )}
@@ -387,10 +426,23 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                                 color="gray.400"
                                 w="90%"
                               >
-                                {message.replySnapshot.text.length > 190
-                                  ? message.replySnapshot.text.slice(0, 190) +
-                                    "..."
-                                  : message.replySnapshot.text}
+                                {message.replySnapshot.isLink ? (
+                                  <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#63b3ed",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    {message.replySnapshot.text}
+                                  </a>
+                                ) : message.replySnapshot.text.length > 190 ? (
+                                  message.replySnapshot.text.slice(0, 190) +
+                                  "..."
+                                ) : (
+                                  message.replySnapshot.text
+                                )}
                               </Text>
                             </Flex>
                           )}
@@ -565,10 +617,22 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                               color="gray.400"
                               w="90%"
                             >
-                              {message.replySnapshot.text.length > 220
-                                ? message.replySnapshot.text.slice(0, 220) +
-                                  "..."
-                                : message.replySnapshot.text}
+                              {message.replySnapshot.isLink ? (
+                                <a
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    color: "#63b3ed",
+                                    textDecoration: "underline",
+                                  }}
+                                >
+                                  {message.replySnapshot.text}
+                                </a>
+                              ) : message.replySnapshot.text.length > 220 ? (
+                                message.replySnapshot.text.slice(0, 220) + "..."
+                              ) : (
+                                message.replySnapshot.text
+                              )}
                             </Text>
                           </Flex>
                         )}
@@ -647,7 +711,21 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                       overflowWrap="break-word"
                       fontSize="sm"
                     >
-                      {message.text}
+                      {message.isLink ? (
+                        <a
+                          href={message.text}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#63b3ed",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {message.text}
+                        </a>
+                      ) : (
+                        message.text
+                      )}
                     </Text>
                   </Flex>
                 </Flex>
@@ -716,10 +794,23 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                                 color="gray.400"
                                 w="90%"
                               >
-                                {message.replySnapshot.text.length > 190
-                                  ? message.replySnapshot.text.slice(0, 190) +
-                                    "..."
-                                  : message.replySnapshot.text}
+                                {message.replySnapshot.isLink ? (
+                                  <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#63b3ed",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    {message.replySnapshot.text}
+                                  </a>
+                                ) : message.replySnapshot.text.length > 190 ? (
+                                  message.replySnapshot.text.slice(0, 190) +
+                                  "..."
+                                ) : (
+                                  message.replySnapshot.text
+                                )}
                               </Text>
                             </Flex>
                           )}
@@ -857,10 +948,23 @@ export const Message = ({ message, ownMessage, setMessages }) => {
                                 color="gray.400"
                                 w="90%"
                               >
-                                {message.replySnapshot.text.length > 190
-                                  ? message.replySnapshot.text.slice(0, 190) +
-                                    "..."
-                                  : message.replySnapshot.text}
+                                {message.replySnapshot.isLink ? (
+                                  <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#63b3ed",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    {message.replySnapshot.text}
+                                  </a>
+                                ) : message.replySnapshot.text.length > 190 ? (
+                                  message.replySnapshot.text.slice(0, 190) +
+                                  "..."
+                                ) : (
+                                  message.replySnapshot.text
+                                )}
                               </Text>
                             </Flex>
                           )}

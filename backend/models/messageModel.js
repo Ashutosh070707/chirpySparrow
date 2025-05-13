@@ -32,12 +32,17 @@ const messageSchema = new mongoose.Schema(
       text: { type: String, default: "" },
       img: { type: String, default: "" },
       gif: { type: String, default: "" },
+      isLink: { type: Boolean, default: false },
       _id: false, // Prevent Mongoose from adding _id to subdoc
     },
     deletedBy: {
       type: Map,
       of: Boolean,
       default: {},
+    },
+    isLink: {
+      type: Boolean,
+      default: false,
     },
   },
   {

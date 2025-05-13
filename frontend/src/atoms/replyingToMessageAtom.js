@@ -7,5 +7,6 @@ export const replyingToMessageAtom = atom({
     text: "",
     image: "",
     gif: "",
+    isLink: false,
   },
 });

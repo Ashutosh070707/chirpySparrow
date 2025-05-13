@@ -14,7 +14,7 @@ import User from "../models/userModel.js";
 
 export const sendMessage = async (req, res) => {
   try {
-    const { recipientId, message, gif, replySnapshot } = req.body;
+    const { recipientId, message, gif, replySnapshot, isLink } = req.body;
     let { img } = req.body;
     const senderId = req.user._id.toString();
 
@@ -69,6 +69,7 @@ export const sendMessage = async (req, res) => {
       img: img || "",
       gif: gif || "",
       replySnapshot: replySnapshot,
+      isLink: isLink || false,
     });
 
     await newMessage.save();

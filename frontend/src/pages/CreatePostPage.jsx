@@ -127,7 +127,7 @@ export const CreatePostPage = () => {
         direction="column"
         borderRadius={10}
         mt={{ base: "6%", sm: "10%", md: "10%", lg: "6%", xl: "6%" }}
-        gap={5}
+        gap={4}
       >
         <Flex justifyContent="center" alignItems="center" mb="1%">
           <Text
@@ -146,7 +146,7 @@ export const CreatePostPage = () => {
         <FormControl>
           <Textarea
             fontSize={{ base: "sm", sm: "md" }}
-            h="200px"
+            h="250px"
             placeholder="Post content goes here..."
             onChange={handleTextChange}
             value={postText}
@@ -168,6 +168,10 @@ export const CreatePostPage = () => {
               onClick={improveWithAi}
               disabled={improvingLoader}
               border="1px solid gray"
+              _hover={{
+                background: "none",
+                backgroundColor: "transparent",
+              }}
             >
               {improvingLoader && (
                 <Flex gap={1} alignItems="center">
@@ -197,6 +201,7 @@ export const CreatePostPage = () => {
             ></Input>
 
             <BiImageAdd
+              cursor="pointer"
               size={iconSize}
               onClick={() => imageRef.current.click()}
             />

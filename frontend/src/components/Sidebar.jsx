@@ -120,6 +120,12 @@ export const Sidebar = () => {
     };
   }, [socket, setNewMessagesCount]);
 
+  const handleLogout = async () => {
+    if (!window.confirm("Are you sure you want to logout?")) return;
+    await logout();
+    showToast("Success", "You have been logged out", "success");
+  };
+
   return (
     <Flex
       direction={"column"}
@@ -164,12 +170,22 @@ export const Sidebar = () => {
             )}
           </Link>
         </Box>
-        <Flex direction={"column"} alignItems={"flex-start"} gap={10}>
+        <Flex
+          direction={"column"}
+          alignItems={"center"}
+          gap={10}
+          w="90%"
+          p={"3%"}
+        >
           <Link
             as={RouterLink}
             to="/"
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            w="full"
+            alignItems="center"
+            pl="20%"
+            display="flex"
           >
             <Flex gap={4}>
               <AiFillHome size={25}></AiFillHome>
@@ -185,6 +201,10 @@ export const Sidebar = () => {
             to={"/search"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4}>
               <FaSearch size={25} />
@@ -200,6 +220,10 @@ export const Sidebar = () => {
             to={"/create"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4}>
               <Flex
@@ -224,6 +248,10 @@ export const Sidebar = () => {
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
             onClick={handleNewMessagesCount}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4} alignItems="center">
               <Flex position="relative">
@@ -263,6 +291,10 @@ export const Sidebar = () => {
             to={`/${loggedInUser.username}`}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4}>
               <RxAvatar size={25}></RxAvatar>
@@ -279,6 +311,10 @@ export const Sidebar = () => {
             to={"/settings"}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4}>
               <MdOutlineSettings size={25} />
@@ -293,9 +329,14 @@ export const Sidebar = () => {
           <Link
             as={RouterLink}
             to={"/auth"}
-            onClick={() => logout()}
+            onClick={handleLogout}
+            // onClick={() => logout()}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
+            alignItems="center"
+            display="flex"
+            pl="20%"
+            w="full"
           >
             <Flex gap={4}>
               <FiLogOut color="red" size={25} />

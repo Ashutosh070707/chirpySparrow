@@ -2,11 +2,11 @@ import { Button, Flex, Text } from "@chakra-ui/react";
 import { useShowToast } from "../../hooks/useShowToast";
 import { useLogout } from "../../hooks/useLogout";
 
-export const FreezeAccountPage = () => {
+export const DeleteAccountPage = () => {
   const showToast = useShowToast();
   const logout = useLogout();
-  const freezeAccount = async () => {
-    if (!window.confirm("Are you sure you want to freeze your account?"))
+  const deleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to delete your account?"))
       return;
 
     try {
@@ -21,7 +21,7 @@ export const FreezeAccountPage = () => {
       }
       if (data.success) {
         await logout();
-        showToast("Succes", "Your account has been frozen", "success");
+        showToast("Succes", "Your account has been deleted", "success");
       }
     } catch (error) {
       showToast("Error", error.message, "error");
@@ -47,24 +47,26 @@ export const FreezeAccountPage = () => {
             }}
             fontWeight={"bold"}
           >
-            Freeze Account
+            Delete Account
           </Text>
         </Flex>
         <Flex justifyContent={"space-between"} w="full">
-          <Flex direction="column" gap={3}>
+          <Flex direction="column" gap={3} w="80%">
             <Text fontSize={{ base: "md", sm: "lg" }} fontWeight={"bold"}>
-              Freeze Your Account :
+              Delete Your Account :
             </Text>
             <Text fontSize={{ base: "sm", sm: "md" }}>
-              You can unfreeze your account anytime by logging in.
+              Deleting your account is permanent and cannot be undone. All your
+              posts, comments, likes, and other activity will be permanently
+              removed and cannot be restored.
             </Text>
           </Flex>
           <Button
             size={{ base: "sm", sm: "md" }}
             bgColor="red.500"
-            onClick={freezeAccount}
+            onClick={deleteAccount}
           >
-            Freeze
+            Delete
           </Button>
         </Flex>
       </Flex>

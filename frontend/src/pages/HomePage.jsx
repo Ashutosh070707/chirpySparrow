@@ -1,4 +1,11 @@
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Skeleton,
+  SkeletonCircle,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Post } from "../components/Post.jsx";
 import { useRecoilState } from "recoil";
@@ -125,7 +132,7 @@ export const HomePage = () => {
           sm: "80%",
           md: "60%",
           lg: "55%",
-          xl: "42%",
+          xl: "40%",
         }}
         alignItems="center"
         mt="2%"
@@ -133,7 +140,31 @@ export const HomePage = () => {
         <Box>
           {initialLoading && (
             <Flex justifyContent="center" alignItems="center" mt={4}>
-              <Spinner size={{ base: "md", sm: "xl" }} />
+              {/* <Spinner size={{ base: "md", sm: "xl" }} /> */}
+              <Flex direction="column" w="full" gap={5}>
+                {[...Array(7)].map((_, i) => (
+                  <Flex direction={"column"} gap={3} key={i}>
+                    <Flex justifyContent={"space-between"} w="full">
+                      <Flex gap={3} alignItems="center">
+                        <SkeletonCircle size={"60px"}></SkeletonCircle>
+                        <Skeleton h="10px" w="90px"></Skeleton>
+                      </Flex>
+                      <Flex alignItems="center">
+                        <Skeleton h="10px" w="90px"></Skeleton>
+                      </Flex>
+                    </Flex>
+                    <Flex alignItems="center" justifyContent="flex-start">
+                      <Skeleton h="10px" w="full"></Skeleton>
+                    </Flex>
+                    <Flex>
+                      <Skeleton h="280px" w="full"></Skeleton>
+                    </Flex>
+                    <Flex justifyContent={"flex-start"}>
+                      <Skeleton h="10px" w="90px"></Skeleton>
+                    </Flex>
+                  </Flex>
+                ))}
+              </Flex>
             </Flex>
           )}
 
@@ -149,7 +180,7 @@ export const HomePage = () => {
                 }}
                 color="gray.400"
               >
-                "Follow others to see the feed"
+                Follow someone to see the feed
               </Text>
             </Flex>
           )}
@@ -172,11 +203,11 @@ export const HomePage = () => {
               }
             })}
 
-          {loading && !initialLoading && hasMore && (
+          {/* {loading && !initialLoading && hasMore && (
             <Flex justifyContent="center" alignItems="center" m={4}>
               <Spinner size={{ base: "sm", sm: "xl" }} />
             </Flex>
-          )}
+          )} */}
         </Box>
       </Box>
     </Flex>

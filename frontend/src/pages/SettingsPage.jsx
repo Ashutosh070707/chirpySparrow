@@ -30,40 +30,50 @@ export const SettingsPage = () => {
             { label: "Following", to: "/following" },
             { label: "Update Profile", to: "/update" },
             { label: "Freeze Account", to: "/freeze" },
+            { label: "Delete Account", to: "/delete" },
           ].map((item, index) => (
             <GridItem key={index}>
-              <Link
-                as={RouterLink}
-                to={item.to}
-                _hover={{ textDecoration: "none" }}
-              >
-                <Flex
-                  justifyContent="space-between"
-                  alignItems="center"
-                  borderRadius={8}
-                  p={3}
-                  _hover={{ bg: "gray.800" }}
+              <Flex gap={2} direction="column">
+                <Link
+                  as={RouterLink}
+                  to={item.to}
+                  _hover={{ textDecoration: "none" }}
                 >
-                  <Text fontSize={{ base: "md", sm: "lg" }}>{item.label}</Text>
-                  <FaArrowRight size={20} />
-                </Flex>
-              </Link>
-              {index < 3 && <Divider />}
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    borderRadius={8}
+                    p={3}
+                    _hover={{ bg: "gray.800" }}
+                  >
+                    <Text fontSize={{ base: "md", sm: "lg" }}>
+                      {item.label}
+                    </Text>
+                    <FaArrowRight size={20} />
+                  </Flex>
+                </Link>
+                <Divider />
+              </Flex>
             </GridItem>
           ))}
-          <Divider />
           <GridItem>
             <Flex
               justifyContent="space-between"
               alignItems="center"
               borderRadius={8}
               p={3}
+              _hover={{ bg: "gray.800" }}
             >
               <Text fontSize={{ base: "md", sm: "lg" }}>Appearance</Text>
               <Switch
                 isChecked={colorMode === "dark"}
                 onChange={toggleColorMode}
-                colorScheme="blue"
+                // colorScheme="blue.700"
+                sx={{
+                  ".chakra-switch__track": {
+                    bg: colorMode === "dark" ? "green.600" : "gray.800",
+                  },
+                }}
               />
             </Flex>
           </GridItem>

@@ -1,12 +1,20 @@
 import { useParams } from "react-router-dom";
 import { UserHeader } from "../components/UserHeader";
 import { useEffect, useState } from "react";
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Skeleton,
+  SkeletonCircle,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { Post } from "../components/Post";
 import { useGetUserProfile } from "../../hooks/useGetUserProfile";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useShowToast } from "../../hooks/useShowToast";
 import { userPostsAtom } from "../atoms/userPostsAtom";
+import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 
 export const UserPage = () => {
   const { username } = useParams();
@@ -14,6 +22,7 @@ export const UserPage = () => {
   const showToast = useShowToast();
   const [userPosts, setUserPosts] = useRecoilState(userPostsAtom);
   const [fetchingPost, setFetchingPost] = useState(false);
+  const loggedInUser = useRecoilValue(loggedInUserAtom);
 
   useEffect(() => {
     const getUserPosts = async () => {
@@ -68,68 +77,101 @@ export const UserPage = () => {
       alignItems="center"
       direction="column"
     >
-      {/* User Header */}
       <Box
-        w={{ base: "90%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        mt={"5%"}
+        w={{
+          base: "95%",
+          sm: "80%",
+          md: "60%",
+          lg: "55%",
+          xl: "40%",
+        }}
+        alignItems="center"
+        mt="5%"
       >
-        <UserHeader searchedUser={searchedUser} />
-      </Box>
+        <Box w="full">
+          <UserHeader searchedUser={searchedUser} />
+        </Box>
 
-      {/* Posts Section */}
-      <Box
-        w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        mt={3}
-        mb={3}
-      >
-        <Box w="full" h="1px" border="1px solid white" my="2%" />
-        <Flex w="full" justifyContent="center">
-          <Text fontWeight="bold" fontSize={{ base: "sm", sm: "md" }}>
-            Posts
-          </Text>
-        </Flex>
-        <Box w="full" h="1px" border="1px solid white" my="2%" />
-      </Box>
-
-      {/* Posts Container */}
-      <Box
-        w={{ base: "95%", sm: "80%", md: "60%", lg: "60%", xl: "42%" }}
-        h="800px" // Scrollable container
-        overflowY="auto"
-        className="custom-scrollbar"
-        p={2}
-        mb={1}
-      >
-        {fetchingPost && (
-          <Flex justifyContent="center">
-            <Spinner size={{ base: "md", sm: "lg" }} />
-          </Flex>
-        )}
-
-        {!fetchingPost && userPosts.length === 0 && (
-          <Flex justifyContent="center" alignItems="center" w="full">
-            <Text
-              fontSize={{
-                base: "sm",
-                sm: "lg",
-                md: "xl",
-                lg: "2xl",
-                xl: "2xl",
-              }}
-              color="gray.400"
-            >
-              Ready to make your first post
+        <Box w="full" mt={3} mb={3}>
+          <Box w="full" h="1px" border="1px solid white" my="2%" />
+          <Flex w="full" justifyContent="center">
+            <Text fontWeight="bold" fontSize={{ base: "sm", sm: "md" }}>
+              Posts
             </Text>
           </Flex>
-        )}
+          <Box w="full" h="1px" border="1px solid white" my="2%" />
+        </Box>
 
-        {!fetchingPost &&
-          userPosts.length > 0 &&
-          userPosts.map((post) => (
-            <Box key={post._id} mb={4}>
-              <Post post={post} postedBy={post.postedBy} />
-            </Box>
-          ))}
+        <Box
+          w="full"
+          maxW="800px" // Maximum width for the posts container
+          h="800px" // Scrollable container
+          overflowY="auto"
+          className="custom-scrollbar"
+          p={2}
+          mb={1}
+        >
+          {fetchingPost && (
+            <Flex justifyContent="center">
+              {/* <Spinner size={{ base: "md", sm: "lg" }} /> */}
+              <Flex direction="column" w="full" gap={4}>
+                {[...Array(4)].map((_, i) => (
+                  <Flex direction={"column"} gap={2} key={i}>
+                    <Flex justifyContent={"space-between"} w="full">
+                      <Flex gap={2} alignItems="center">
+                        <SkeletonCircle size={"60px"}></SkeletonCircle>
+                        <Skeleton h="10px" w="90px"></Skeleton>
+                      </Flex>
+                      <Flex alignItems="center">
+                        <Skeleton h="10px" w="90px"></Skeleton>
+                      </Flex>
+                    </Flex>
+                    <Flex alignItems="center" justifyContent="flex-start">
+                      <Skeleton h="10px" w="full"></Skeleton>
+                    </Flex>
+                    <Flex>
+                      <Skeleton h="280px" w="full"></Skeleton>
+                    </Flex>
+                    <Flex justifyContent={"flex-start"}>
+                      <Skeleton h="10px" w="90px"></Skeleton>
+                    </Flex>
+                  </Flex>
+                ))}
+              </Flex>
+            </Flex>
+          )}
+
+          {!fetchingPost && userPosts.length === 0 && (
+            <Flex justifyContent="center" alignItems="center" w="full">
+              <Text
+                fontSize={{
+                  base: "sm",
+                  sm: "lg",
+                  md: "xl",
+                  lg: "2xl",
+                  xl: "2xl",
+                }}
+                color="gray.400"
+              >
+                No Posts
+              </Text>
+            </Flex>
+          )}
+
+          {!fetchingPost &&
+            userPosts.length > 0 &&
+            userPosts.map((post) => (
+              <Box key={post._id} mb={4}>
+                <Post
+                  post={post}
+                  postedBy={post.postedBy}
+                  showActions={
+                    loggedInUser.username === username ? false : true
+                  }
+                />
+              </Box>
+            ))}
+        </Box>
       </Box>
     </Flex>
   );

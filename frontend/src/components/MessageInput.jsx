@@ -333,7 +333,7 @@ export const MessageInput = ({ setMessages }) => {
   }, [isOpen, onClose]);
 
   return (
-    <Flex gap={3} alignItems={"center"} w="full">
+    <Flex gap={3} alignItems={"flex-end"} w="full">
       <Flex flex={90} direction="column">
         {replyingToMessage.sender && (
           <Box position="relative" w="full">
@@ -670,28 +670,35 @@ export const MessageInput = ({ setMessages }) => {
         </form>
       </Flex>
 
-      <Flex flex={3} alignItems="center">
-        <Button
-          bgColor="white"
-          _hover={{ bg: "gray.200" }}
-          _active={{ bg: "gray.300" }}
-          transition="all 0.2s ease-in-out"
-          size="xs"
-          borderRadius={100}
-          onClick={improveWithAi}
-          isDisabled={improvingLoader}
-        >
-          {improvingLoader ? (
-            <Spinner size="sm" color="black" />
-          ) : (
-            <IoSparkles color="black" />
-          )}
-        </Button>
-      </Flex>
+      <Flex alignItems="bottom" gap={2}>
+        <Flex flex={3} alignItems="center">
+          <Button
+            bgColor="white"
+            _hover={{ bg: "gray.200" }}
+            _active={{ bg: "gray.300" }}
+            transition="all 0.2s ease-in-out"
+            size="xs"
+            borderRadius={100}
+            onClick={improveWithAi}
+            isDisabled={improvingLoader}
+          >
+            {improvingLoader ? (
+              <Spinner size="sm" color="black" />
+            ) : (
+              <IoSparkles color="black" />
+            )}
+          </Button>
+        </Flex>
 
-      <Flex flex={3} cursor="pointer">
-        <BsFillImageFill size={22} onClick={() => imageRef.current.click()} />
-        <Input type="file" hidden ref={imageRef} onChange={handleImageChange} />
+        <Flex flex={3} cursor="pointer" alignItems="center">
+          <BsFillImageFill size={22} onClick={() => imageRef.current.click()} />
+          <Input
+            type="file"
+            hidden
+            ref={imageRef}
+            onChange={handleImageChange}
+          />
+        </Flex>
       </Flex>
 
       <Modal isOpen={!!imgUrl} onClose={() => setImgUrl("")}>

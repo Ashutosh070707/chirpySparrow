@@ -8,7 +8,7 @@ import { useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { PostActions } from "./DeleteButton";
 
-export const Post = ({ post, postedBy }) => {
+export const Post = ({ post, postedBy, showActions = true }) => {
   const [user, setUser] = useState(null);
   const showToast = useShowToast();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
@@ -147,8 +147,8 @@ export const Post = ({ post, postedBy }) => {
             )}
           </Link>
         </Flex>
-        <Flex gap={1}>
-          <Actions post={post}></Actions>
+        <Flex justifyContent={"flex-start"}>
+          <Actions post={post} showActions={showActions} />
         </Flex>
         <Box border="1px solid" borderRadius={10} borderColor="gray.600"></Box>
       </Flex>

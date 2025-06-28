@@ -8,6 +8,8 @@ import {
   InputGroup,
   InputRightElement,
   Link,
+  Skeleton,
+  SkeletonCircle,
   Spinner,
   Text,
 } from "@chakra-ui/react";
@@ -225,16 +227,60 @@ export const SearchUserPage = () => {
           <Flex
             direction="column"
             gap={5}
-            h="80%"
+            h="9s0%"
             w="full"
             borderRadius={5}
             justifyContent="center"
             alignItems="center"
             p={10}
           >
-            <Flex h="full" alignItems="center" justifyContent="center">
+            {/* <Flex h="full" alignItems="center" justifyContent="center">
               <Spinner size={{ base: "md", sm: "lg", md: "xl" }} />
+            </Flex> */}
+
+            <Flex
+              direction="column"
+              w="full"
+              h="full"
+              gap={3}
+              overflowY={"auto"}
+              className="custom-scrollbar"
+            >
+              {[...Array(5)].map((_, i) => (
+                <Flex justifyContent={"space-between"} key={i}>
+                  <Flex gap={3} alignItems="center">
+                    <SkeletonCircle size={"50px"}></SkeletonCircle>
+                    <Flex alignItems="flex-start">
+                      <Flex direction="column" gap={2}>
+                        <Skeleton h="10px" w="90px"></Skeleton>
+                        <Skeleton h="10px" w="120px"></Skeleton>
+                      </Flex>
+                    </Flex>
+                  </Flex>
+                  <Flex alignItems="center">
+                    <Skeleton h="25px" w="70px"></Skeleton>
+                  </Flex>
+                </Flex>
+              ))}
             </Flex>
+          </Flex>
+        )}
+
+        {!fetchingSuggestedUsers && suggestedUsers.length === 0 && (
+          <Flex
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            h="90%"
+            w="full"
+            p={10}
+          >
+            <Text
+              fontSize={{ base: "sm", sm: "md", md: "lg", lg: "xl", xl: "xl" }}
+              color="gray.400"
+            >
+              No Suggested Users
+            </Text>
           </Flex>
         )}
 

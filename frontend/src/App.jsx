@@ -10,12 +10,13 @@ import { UpdateProfilePage } from "./pages/UpdateProfilePage.jsx";
 import { ChatPage } from "./pages/ChatPage.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { SettingsPage } from "./pages/SettingsPage.jsx";
-import { FreezeAccount } from "./pages/FreezeAccountPage.jsx";
+import { FreezeAccountPage } from "./pages/FreezeAccountPage.jsx";
 import { FollowersPage } from "./pages/FollowersPage.jsx";
 import { FollowingPage } from "./pages/FollowingPage.jsx";
 import { CreatePostPage } from "./pages/CreatePostPage.jsx";
 import { SearchUserPage } from "./pages/SearchUserPage.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
+import { DeleteAccountPage } from "./pages/DeleteAccountPage.jsx";
 
 function App() {
   const loggedInUser = useRecoilValue(loggedInUserAtom);
@@ -104,7 +105,17 @@ function App() {
               <Route
                 path="/freeze"
                 element={
-                  loggedInUser ? <FreezeAccount /> : <Navigate to={"/auth"} />
+                  loggedInUser ? (
+                    <FreezeAccountPage />
+                  ) : (
+                    <Navigate to={"/auth"} />
+                  )
+                }
+              ></Route>
+              <Route
+                path="/delete"
+                element={
+                  loggedInUser ? <DeleteAccountPage /> : <Navigate to="/auth" />
                 }
               ></Route>
               <Route

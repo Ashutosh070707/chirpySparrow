@@ -1,3 +1,6 @@
+// Description:
+// Renders the Signup component.
+
 import {
   Flex,
   Box,
@@ -33,6 +36,9 @@ export function SignUpCard() {
     email: "",
     password: "",
   });
+
+  // What it does:
+  // Call the backend to create the user, if user exists - throw error. If user does not exists, create a JWT token named 'jwt' and store it in cookie in response of life - 15 days. And finally return the details of user which we store in loggedInUser atom and in our localStorage.
 
   const handleSignup = async () => {
     if (loading) return;
@@ -98,8 +104,6 @@ export function SignUpCard() {
         }}
       >
         <Stack spacing={2}>
-          {/* <HStack> */}
-          {/* <Box> */}
           <FormControl isRequired>
             <FormLabel fontSize={{ base: "sm", sm: "md" }}>Full name</FormLabel>
             <Input
@@ -111,8 +115,6 @@ export function SignUpCard() {
               autoComplete="off"
             />
           </FormControl>
-          {/* </Box> */}
-          {/* <Box> */}
           <FormControl isRequired>
             <FormLabel fontSize={{ base: "sm", sm: "md" }}>Username</FormLabel>
             <Input
@@ -124,8 +126,6 @@ export function SignUpCard() {
               autoComplete="off"
             />
           </FormControl>
-          {/* </Box> */}
-          {/* </HStack> */}
           <FormControl isRequired>
             <FormLabel fontSize={{ base: "sm", sm: "md" }}>
               Email address
@@ -152,7 +152,7 @@ export function SignUpCard() {
               />
               <InputRightElement h={"full"}>
                 <Button
-                  variant={"ghost"}
+                  variant="ghost"
                   onClick={() => {
                     showPassword
                       ? setShowPassword(false)
@@ -164,13 +164,13 @@ export function SignUpCard() {
               </InputRightElement>
             </InputGroup>
           </FormControl>
-          <Stack spacing={10} pt={2}>
+          <Stack pt={4}>
             <Button
               size="lg"
               bg={useColorModeValue("gray.600", "gray.700")}
               color={"white"}
               _hover={{
-                bg: useColorModeValue("gray.700", "gray.800"),
+                bg: useColorModeValue("gray.700", "gray.600"),
               }}
               onClick={handleSignup}
               isLoading={loading}

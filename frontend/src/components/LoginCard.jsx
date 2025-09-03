@@ -1,3 +1,6 @@
+// Description:
+// Renders the Login component.
+
 import {
   Flex,
   Box,
@@ -8,7 +11,6 @@ import {
   InputRightElement,
   Stack,
   Button,
-  Heading,
   Text,
   useColorModeValue,
   Link,
@@ -32,6 +34,9 @@ export function LoginCard() {
     username: "",
     password: "",
   });
+
+  // What it does:
+  // Call the backend to find the user, if user does not exists - throw error. If user exists, create a JWT token named 'jwt' and store it in cookie in response of life - 15 days. And finally return the details of user which we store in loggedInUser atom and in aur localStorage.
 
   const handleLogin = async () => {
     if (loading) return;
@@ -108,7 +113,7 @@ export function LoginCard() {
               />
               <InputRightElement h={"full"}>
                 <Button
-                  variant={"ghost"}
+                  variant="ghost"
                   onClick={() => {
                     showPassword
                       ? setShowPassword(false)
@@ -120,13 +125,13 @@ export function LoginCard() {
               </InputRightElement>
             </InputGroup>
           </FormControl>
-          <Stack spacing={10} pt={2}>
+          <Stack pt={4}>
             <Button
               size="lg"
               bg={useColorModeValue("gray.600", "gray.700")}
               color={"white"}
               _hover={{
-                bg: useColorModeValue("gray.700", "gray.800"),
+                bg: useColorModeValue("gray.700", "gray.600"),
               }}
               onClick={handleLogin}
               isLoading={loading}

@@ -1,3 +1,6 @@
+// Description:
+// Contains search-bar where user can search other users through their username (username prefixes). Also shows suggested users.
+
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -31,6 +34,7 @@ export const SearchUserPage = () => {
   const [searchedUsers, setSearchedUsers] = useState([]);
   const prevSearchText = useRef(""); // Use ref to store previous search text without triggering re-renders
 
+  // Fetch suggested Users on first render.
   useEffect(() => {
     const getSuggestedUsers = async () => {
       setFetchingSuggestedUsers(true);

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
 
+// create new user. create a cookie in response and return details of the new user.
 export const signupUser = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
@@ -45,6 +46,7 @@ export const signupUser = async (req, res) => {
   }
 };
 
+// check user exists and its credentials. if correct, create a cookie in response and return details of the user.
 export const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;

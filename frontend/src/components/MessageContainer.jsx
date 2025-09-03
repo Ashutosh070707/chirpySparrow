@@ -34,8 +34,8 @@ export const MessageContainer = ({ setBackButton }) => {
   const setConversations = useSetRecoilState(conversationsAtom);
   const { socket, onlineUsers } = useSocket();
   const messageEndRef = useRef(null);
-  const messageContainerRef = useRef(null); // ✅ added
-  const [isAtBottom, setIsAtBottom] = useState(true); // ✅ added
+  const messageContainerRef = useRef(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
   const screenSize = useBreakpointValue({
@@ -45,9 +45,11 @@ export const MessageContainer = ({ setBackButton }) => {
     lg: "lg",
     xl: "xl",
   });
+
   const isOnline = onlineUsers.includes(selectedConversation?.userId);
 
   useEffect(() => {
+    // event listener for detecting whether other user is typing, if yes - show bouncing dots.
     if (!socket) return;
     const handleUserTyping = ({ conversationId }) => {
       if (selectedConversation._id === conversationId) {
@@ -58,7 +60,7 @@ export const MessageContainer = ({ setBackButton }) => {
           clearTimeout(typingTimeoutRef.current);
         }
 
-        // Set timeout to hide typing indicator after 3 seconds
+        // Set timeout to hide typing indicator after 2 seconds
         typingTimeoutRef.current = setTimeout(() => {
           setIsUserTyping(false);
         }, 2000);
@@ -86,7 +88,7 @@ export const MessageContainer = ({ setBackButton }) => {
     };
   }, [socket, selectedConversation._id]);
 
-  // ✅ Detect if user is at the bottom of the message list
+  //  Detect if user is at the bottom of the message list
   useEffect(() => {
     const container = messageContainerRef.current;
     if (!container) return;
@@ -103,7 +105,7 @@ export const MessageContainer = ({ setBackButton }) => {
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Scroll to bottom if loading or user is already at bottom
+  //  Scroll to bottom if loading or user is already at bottom
   const scrollToBottom = () => {
     if ((loadingMessages || isAtBottom) && messageEndRef.current) {
       setTimeout(() => {

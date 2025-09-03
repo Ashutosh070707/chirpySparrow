@@ -12,20 +12,12 @@ export const Follower = ({ user }) => {
         w="80%"
         overflow="hidden"
       >
-        {user.profilePic && (
-          <Avatar
-            name={user.name}
-            src={user.profilePic}
-            boxSize={{ base: "40px", sm: "50px" }}
-          ></Avatar>
-        )}
-        {!user.profilePic && (
-          <Avatar
-            name={user.name}
-            src="https://example.com/default-avatar.png"
-            boxSize={{ base: "40px", sm: "50px" }}
-          ></Avatar>
-        )}
+        <Avatar
+          name={user.name}
+          src={user.profilePic || "https://example.com/default-avatar.png"}
+          boxSize={{ base: "40px", sm: "50px" }}
+        />
+
         <Flex direction={"column"} w="full" overflow="hidden">
           <Text
             fontSize={{ base: "sm", sm: "md" }}

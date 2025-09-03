@@ -12,7 +12,7 @@ export const FollowersPage = () => {
   const [fetchingProfile, setFetchingProfile] = useState(true);
 
   useEffect(() => {
-    const getUserProfile = async () => {
+    const getUserFollowers = async () => {
       try {
         setFetchingProfile(true);
         const res = await fetch(`/api/users/profile/${loggedInUser.username}`);
@@ -37,7 +37,7 @@ export const FollowersPage = () => {
     };
 
     if (loggedInUser) {
-      getUserProfile();
+      getUserFollowers();
     }
   }, [loggedInUser, showToast]);
 

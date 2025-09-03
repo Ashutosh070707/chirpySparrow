@@ -5,7 +5,7 @@ import {
   Link,
   Text,
   useBreakpointValue,
-  useColorMode,
+  // useColorMode,
 } from "@chakra-ui/react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
@@ -18,7 +18,6 @@ import { HiPlus } from "react-icons/hi";
 import { useLogout } from "../../hooks/useLogout";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
-import { FaInstagram } from "react-icons/fa";
 import { useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { newMessagesCountAtom } from "../atoms/newMessagesCountAtom";
@@ -29,7 +28,7 @@ import { FaDove } from "react-icons/fa";
 export const Sidebar = () => {
   const location = useLocation();
   const setSelectedConversation = useSetRecoilState(selectedConversationAtom);
-  const { colorMode, toggleColorMode } = useColorMode();
+  // const { colorMode, toggleColorMode } = useColorMode();
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const [newMessagesCount, setNewMessagesCount] =
     useRecoilState(newMessagesCountAtom);
@@ -50,9 +49,9 @@ export const Sidebar = () => {
     if (!socket || !loggedInUser) return;
 
     if (location.pathname === "/chat") {
-      socket.emit("userInChatPage", loggedInUser._id);
-      socket.emit("userLeftConversation", loggedInUser._id);
+      socket.emit("userInChatPage", loggedInUser._id); // user enters chatPage
     }
+    // Reset selected conversation (sidebar UI reset)
     setSelectedConversation({
       _id: "",
       userId: "",
@@ -63,11 +62,25 @@ export const Sidebar = () => {
 
     return () => {
       if (socket) {
-        socket.emit("userLeftChatPage", loggedInUser._id);
-        socket.emit("userLeftConversation", loggedInUser._id);
+        socket.emit("userLeftChatPage", loggedInUser._id); // user leaves chatPage
+        socket.emit("userLeftConversation", loggedInUser._id); // user leaves active conversation
       }
     };
   }, [socket, location.pathname, loggedInUser]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (newCount) => {
+      setNewMessagesCount(newCount);
+    };
+
+    socket.on("updateNewMessagesCount", handleNewMessage); // listening updateNewMessagesCount event from backend.
+
+    return () => {
+      socket.off("updateNewMessagesCount", handleNewMessage);
+    };
+  }, [socket, setNewMessagesCount]);
 
   useEffect(() => {
     const getNewMessagesCount = async () => {
@@ -105,20 +118,6 @@ export const Sidebar = () => {
       showToast("Error", "Failed to fetch handleNewMessagesCount", "error");
     }
   };
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNewMessage = (newCount) => {
-      setNewMessagesCount(newCount);
-    };
-
-    socket.on("updateNewMessagesCount", handleNewMessage);
-
-    return () => {
-      socket.off("updateNewMessagesCount", handleNewMessage);
-    };
-  }, [socket, setNewMessagesCount]);
 
   const handleLogout = async () => {
     if (!window.confirm("Are you sure you want to logout?")) return;
@@ -330,7 +329,6 @@ export const Sidebar = () => {
             as={RouterLink}
             to={"/auth"}
             onClick={handleLogout}
-            // onClick={() => logout()}
             textDecoration="none"
             _hover={{ textDecoration: "none" }}
             alignItems="center"

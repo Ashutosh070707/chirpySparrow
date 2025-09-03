@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { searchedUserAtom } from "../src/atoms/searchedUserAtom";
 
 export const useGetUserProfile = (username) => {
+  // We have created a seperate searchedUserAtom because user can just type directly username on the seachbar in browser of other user to visit their profile page. There loggedInUser atom will not work. Thats why seperate atom for this.
   const [searchedUser, setSearchedUser] = useRecoilState(searchedUserAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();

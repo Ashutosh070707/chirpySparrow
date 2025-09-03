@@ -1,4 +1,6 @@
-import React from "react";
+// Description:
+// Renders the logo/brand and Login/Signup component based on authSreenAtom;
+
 import { SignUpCard } from "../components/SignUpCard";
 import { LoginCard } from "../components/LoginCard";
 import { authScreenAtom } from "../atoms/authAtom";
@@ -11,10 +13,6 @@ export const AuthPage = () => {
   return (
     <Box
       minH="100vh"
-      bgImage="url('/back5.png')"
-      bgSize="cover"
-      bgPosition="center"
-      bgRepeat="no-repeat"
       display="flex"
       flexDir="column"
       justifyContent="center"

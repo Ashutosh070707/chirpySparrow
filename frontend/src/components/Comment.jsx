@@ -76,10 +76,9 @@ export const Comment = ({ reply, lastReply }) => {
         >
           {reply.text}
         </Text>
+        {!lastReply && <Divider my={2} mb={"10px"}></Divider>}
+        {lastReply && <Text mb="20%"></Text>}
       </Flex>
-
-      {!lastReply && <Divider my={2} mb={"10px"}></Divider>}
-      {lastReply && <Text mb="20%"></Text>}
     </Flex>
   );
 };

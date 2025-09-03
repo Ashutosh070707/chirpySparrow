@@ -47,30 +47,19 @@ export const UserHeader = ({ searchedUser }) => {
           </Flex>
 
           <Flex justifyContent={"center"} alignItems="center">
-            {searchedUser.profilePic && (
-              <Avatar
-                name={searchedUser.name}
-                src={searchedUser.profilePic}
-                boxSize={{
-                  base: "70px",
-                  sm: "100px",
-                  md: "110px",
-                  lg: "120px",
-                }}
-              ></Avatar>
-            )}
-            {!searchedUser.profilePic && (
-              <Avatar
-                name={searchedUser.name}
-                src="https://example.com/default-avatar.png"
-                boxSize={{
-                  base: "70px",
-                  sm: "100px",
-                  md: "110px",
-                  lg: "120px",
-                }}
-              ></Avatar>
-            )}
+            <Avatar
+              name={searchedUser.name}
+              src={
+                searchedUser.profilePic ||
+                "https://example.com/default-avatar.png"
+              }
+              boxSize={{
+                base: "70px",
+                sm: "100px",
+                md: "110px",
+                lg: "120px",
+              }}
+            />
           </Flex>
         </Flex>
 

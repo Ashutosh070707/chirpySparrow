@@ -149,13 +149,6 @@ export const ChatPage = () => {
 
       const mockConversation = {
         mock: true,
-        // lastMessage: {
-        //   text: "",
-        //   sender: "",
-        //   img: "",
-        //   gif: "",
-        //   seen: false,
-        // },
         lastMessagePerUser: {
           [loggedInUser._id]: {
             text: "",
@@ -186,6 +179,7 @@ export const ChatPage = () => {
   };
 
   useEffect(() => {
+    // socket for making message seen (blue tick) when other user sees current user message
     const handleMessagesSeen = ({ conversationId }) => {
       setConversations((prev) => {
         return prev.map((conversation) => {
@@ -214,6 +208,7 @@ export const ChatPage = () => {
   }, [socket, setConversations]);
 
   useEffect(() => {
+    // socket for updating lastMessage when new message is sent
     socket?.on("conversationUpdated", ({ conversationId, lastMessage }) => {
       setConversations((prev) => {
         return prev.map((conversation) => {
@@ -237,6 +232,7 @@ export const ChatPage = () => {
   }, [socket, setConversations]);
 
   useEffect(() => {
+    // Socket for updating lastMessage for conversation when lastMessage is deleted
     socket?.on(
       "messageDeleted",
       ({ messageId, selectedConversationId, updatedLastMessage }) => {

@@ -1,3 +1,7 @@
+//Description:
+// This contains/renders sidebar + Other pages (when loggedInUser is not null) and AuthPage (when loggedInUser is null).
+// Also contains all the routes and which page to show at that route of our application.
+
 import { Box, Flex } from "@chakra-ui/react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { UserPage } from "./pages/UserPage";

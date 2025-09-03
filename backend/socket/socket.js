@@ -15,7 +15,7 @@ const io = new Server(server, {
 
 const userSocketMap = {}; //userId: socketId
 const activeChatUsers = new Set(); // Track users currently on "/chat"
-const userActiveConversations = new Map();
+const userActiveConversations = new Map(); // which conversation user opened right now when on chatpage
 
 export const getRecipientSocketId = (recipientId) => {
   return userSocketMap[recipientId] || null;
@@ -26,28 +26,28 @@ io.on("connection", (socket) => {
 
   if (userId && userId !== "undefined") {
     userSocketMap[userId] = socket.id;
-    socket.userId = userId; // ✅ Store userId inside socket
+    socket.userId = userId; // Store userId inside socket
   }
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  io.emit("getOnlineUsers", Object.keys(userSocketMap)); // emit all userSocket map to all users who are online right now.
 
-  // ✅ Handle User Entering Chat Page
+  // Handle User Entering Chat Page
   socket.on("userInChatPage", (userId) => {
     if (userId) activeChatUsers.add(userId);
   });
 
-  // ✅ Handle User Leaving Chat Page
+  //  Handle User Leaving Chat Page
   socket.on("userLeftChatPage", (userId) => {
     if (userId) activeChatUsers.delete(userId);
   });
 
-  // ✅ Track which conversation a user is actively viewing
+  //  Track which conversation a user is actively viewing
   socket.on("userViewingConversation", ({ userId, conversationId }) => {
     if (userId && conversationId) {
       userActiveConversations.set(userId, conversationId);
     }
   });
 
-  // ✅ Handle when the user leaves the conversation
+  //  Handle when the user leaves the conversation
   socket.on("userLeftConversation", (userId) => {
     if (userActiveConversations.has(userId)) {
       userActiveConversations.delete(userId);
@@ -57,14 +57,14 @@ io.on("connection", (socket) => {
   socket.on("typing", ({ conversationId, userId }) => {
     const recipientSocketId = getRecipientSocketId(userId);
     if (recipientSocketId) {
-      io.to(recipientSocketId).emit("userTyping", { conversationId });
+      io.to(recipientSocketId).emit("userTyping", { conversationId }); // sending "userTyping" event only to other user in that conversation
     }
   });
 
   socket.on("stopTyping", ({ conversationId, userId }) => {
     const recipientSocketId = getRecipientSocketId(userId);
     if (recipientSocketId) {
-      io.to(recipientSocketId).emit("userStoppedTyping", { conversationId });
+      io.to(recipientSocketId).emit("userStoppedTyping", { conversationId }); // sending "userTyping" event only to other user in that conversation
     }
   });
 
@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
         }
       }
 
-      io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
+      io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId }); // emit "messagesSeen" event to other party in that conversation
     } catch (error) {
       console.log(error);
     }
@@ -100,7 +100,7 @@ io.on("connection", (socket) => {
       delete userSocketMap[socket.userId];
       activeChatUsers.delete(socket.userId);
       userActiveConversations.delete(socket.userId);
-      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+      io.emit("getOnlineUsers", Object.keys(userSocketMap)); // If someone becomes offline, send the updated onlineUser Map to all online users
     }
   });
 });

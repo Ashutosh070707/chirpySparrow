@@ -62,7 +62,7 @@ export const UserPage = () => {
     );
   }
 
-  if (!searchedUser) {
+  if (!userLoading && !searchedUser) {
     return (
       <Flex w="full" h="100vh" justifyContent="center" alignItems="center">
         <Text fontSize="2xl">User not found</Text>

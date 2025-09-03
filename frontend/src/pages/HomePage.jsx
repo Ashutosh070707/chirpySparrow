@@ -1,38 +1,38 @@
-import {
-  Box,
-  Flex,
-  Skeleton,
-  SkeletonCircle,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+// // Description:
+// // Renders homepage (contains feed)
+
+import { Box, Flex, Skeleton, SkeletonCircle, Text } from "@chakra-ui/react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Post } from "../components/Post.jsx";
 import { useRecoilState } from "recoil";
 import { useShowToast } from "../../hooks/useShowToast.js";
-import { feedPostsAtom } from "../atoms/feedPostsAtom.js";
+import {
+  feedPostsAtom,
+  feedPageAtom,
+  feedHasMoreAtom,
+} from "../atoms/feedPostsAtom.js";
 
 export const HomePage = () => {
   const [feedPosts, setFeedPosts] = useRecoilState(feedPostsAtom);
+  const [page, setPage] = useRecoilState(feedPageAtom);
+  const [hasMore, setHasMore] = useRecoilState(feedHasMoreAtom);
+
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(feedPosts.length === 0);
   const observer = useRef();
   const showToast = useShowToast();
   const POSTS_PER_PAGE = 10;
   const loadingRef = useRef(false);
 
+  // Fetch feedPosts from backend
   const getFeedPosts = useCallback(
     async (pageNum) => {
       // Prevent simultaneous fetch requests
       if (loadingRef.current) return;
-
       loadingRef.current = true;
 
-      if (pageNum === 1) {
+      if (pageNum === 1 && feedPosts.length === 0) {
         setInitialLoading(true);
-        setFeedPosts([]);
       } else {
         setLoading(true);
       }
@@ -41,26 +41,20 @@ export const HomePage = () => {
         const res = await fetch(
           `/api/posts/feed?page=${pageNum}&limit=${POSTS_PER_PAGE}`
         );
-
         const data = await res.json();
-
         if (data.error) {
           showToast("Error", data.error, "error");
           return;
         }
-
         // Check if we got fewer posts than requested (indicates end of data)
         if (data.length < POSTS_PER_PAGE) {
           setHasMore(false);
         }
-
-        // Update the feed posts
         setFeedPosts((prev) => {
           // For first page, replace everything
-          if (pageNum === 1) return data;
+          if (pageNum === 1 && prev.length === 0) return data;
 
-          // For subsequent pages, append new posts
-          // Make sure we don't add duplicates
+          // For subsequent pages, append new posts Make sure we don't add duplicates
           const existingIds = new Set(prev.map((post) => post._id));
           const newPosts = data.filter((post) => !existingIds.has(post._id));
 
@@ -74,9 +68,10 @@ export const HomePage = () => {
         loadingRef.current = false;
       }
     },
-    [showToast, setFeedPosts]
+    [showToast, setFeedPosts, setHasMore, feedPosts.length]
   );
 
+  // Calls getFeedPosts function on initial render and when value of page changes
   useEffect(() => {
     getFeedPosts(page);
   }, [page, getFeedPosts]);
@@ -110,9 +105,10 @@ export const HomePage = () => {
       // Start observing the new last element
       if (node) observer.current.observe(node);
     },
-    [loading, initialLoading, hasMore]
+    [loading, initialLoading, hasMore, setPage]
   );
 
+  // Runs when Homepage dismounts. Work - remove the observer from the post in which obserser is currently pointing.
   useEffect(() => {
     return () => {
       if (observer.current) observer.current.disconnect();
@@ -140,7 +136,6 @@ export const HomePage = () => {
         <Box>
           {initialLoading && (
             <Flex justifyContent="center" alignItems="center" mt={4}>
-              {/* <Spinner size={{ base: "md", sm: "xl" }} /> */}
               <Flex direction="column" w="full" gap={5}>
                 {[...Array(7)].map((_, i) => (
                   <Flex direction={"column"} gap={3} key={i}>
@@ -202,12 +197,6 @@ export const HomePage = () => {
                 );
               }
             })}
-
-          {/* {loading && !initialLoading && hasMore && (
-            <Flex justifyContent="center" alignItems="center" m={4}>
-              <Spinner size={{ base: "sm", sm: "xl" }} />
-            </Flex>
-          )} */}
         </Box>
       </Box>
     </Flex>

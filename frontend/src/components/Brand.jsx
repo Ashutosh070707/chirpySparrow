@@ -1,7 +1,11 @@
+// Description:
+// Renders Project name
+
 import { Flex, Text, useColorMode } from "@chakra-ui/react";
+import React from "react";
 import { FaDove } from "react-icons/fa";
 
-export const Brand = () => {
+export const Brand = React.memo(() => {
   // const { colorMode, toggleColorMode } = useColorMode(); // hook - coming from chakra UI.
   return (
     <>
@@ -24,4 +28,4 @@ export const Brand = () => {
       </Flex>
     </>
   );
-};
+});

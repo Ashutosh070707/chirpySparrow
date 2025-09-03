@@ -13,7 +13,6 @@ import {
 import { useShowToast } from "../../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
 import { useRef, useState } from "react";
-import React from "react";
 import { loggedInUserAtom } from "../atoms/loggedInUserAtom";
 import { BiImageAdd } from "react-icons/bi";
 import { BsStars } from "react-icons/bs";
@@ -111,7 +110,6 @@ export const CreatePostPage = () => {
         showToast("Error", data.error, "error");
         return;
       }
-      console.log(data);
       setPostText(data.answer);
     } catch (error) {
       showToast("Error", error, "error");

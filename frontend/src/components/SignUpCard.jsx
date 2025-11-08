@@ -8,7 +8,6 @@ import {
   FormLabel,
   Input,
   InputGroup,
-  HStack,
   InputRightElement,
   Stack,
   Button,
@@ -42,15 +41,80 @@ export function SignUpCard() {
 
   const handleSignup = async () => {
     if (loading) return;
+
+    // Define trimmed values for consistent checking and submission
+    const trimmedFullName = inputs.fullName.trim();
+    const trimmedUsername = inputs.username.trim();
+    const trimmedEmail = inputs.email.trim();
+    const trimmedPassword = inputs.password.trim();
+
+    // 1. Check for missing/empty fields (using the trimmed constants)
     if (
-      !inputs.fullName.trim() ||
-      !inputs.username.trim() ||
-      !inputs.email.trim() ||
-      !inputs.password.trim()
+      !trimmedFullName ||
+      !trimmedUsername ||
+      !trimmedEmail ||
+      !trimmedPassword
     ) {
       showToast("Error", "Please fill all required fields", "error");
       return;
     }
+
+    // 1.1. Username validation:
+    // - Continuous (no spaces)
+    // - Only characters, numbers, underscore, and hyphen allowed (to cover common special chars)
+    // - Minimum length (e.g., 3)
+    const usernameRegex = /^[a-z0-9_-]+$/;
+    // Check against the trimmed value
+    if (!usernameRegex.test(trimmedUsername) || trimmedUsername.length < 3) {
+      showToast(
+        "Error",
+        "Username must be at least 3 characters long, continuous (no spaces), and contain only lowercase letters, numbers, hyphens, or underscores."
+      );
+      return;
+    }
+
+    // 1.3. Password validation:
+    // - No capital letters allowed (must be all lowercase, numbers, and allowed special characters)
+    // - Minimum length (e.g., 6)
+    // - Allowed characters: lowercase letters, numbers, and common special characters
+    // 3. Password validation:
+    const passwordRegex = /^[a-z0-9!@#$%^&*()_+]{6,}$/;
+
+    // Check against the trimmed value
+    if (trimmedPassword.length < 6) {
+      showToast(
+        "Error",
+        "Password must be at least 6 characters long.",
+        "error"
+      );
+      return;
+    }
+    // Check against the trimmed value
+    if (/[A-Z]/.test(trimmedPassword)) {
+      showToast(
+        "Error",
+        "Password must not contain any capital letters.",
+        "error"
+      );
+      return;
+    }
+    // Check against the trimmed value
+    if (!passwordRegex.test(trimmedPassword)) {
+      showToast(
+        "Error",
+        "Password contains disallowed characters or formatting issues."
+      );
+      return;
+    }
+
+    // 4. Email validation:
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Check against the trimmed value
+    if (!emailRegex.test(trimmedEmail)) {
+      showToast("Error", "Please enter a valid email address.", "error");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/users/signup", {
@@ -59,10 +123,10 @@ export function SignUpCard() {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          fullName: inputs.fullName.trim(),
-          username: inputs.username.trim(),
-          email: inputs.email.trim(),
-          password: inputs.password.trim(),
+          fullName: trimmedFullName,
+          username: trimmedUsername,
+          email: trimmedEmail,
+          password: trimmedPassword,
         }),
       });
       const data = await res.json();

@@ -40,10 +40,37 @@ export function LoginCard() {
 
   const handleLogin = async () => {
     if (loading) return;
-    if (!inputs.username.trim() || !inputs.password.trim()) {
+    // Define trimmed values for consistent checking and submission
+    const trimmedUsername = inputs.username.trim();
+    const trimmedPassword = inputs.password.trim();
+    // 1. Check for missing/empty fields (using the trimmed constants)
+    if (!trimmedUsername || !trimmedPassword) {
       showToast("Error", "Please fill all required fields", "error");
       return;
     }
+
+    // 2. Client-side login validation (Only required checks from signup)
+    // We only need to check username format and password length/format to prevent sending clearly bad data.
+
+    const usernameRegex = /^[a-z0-9_-]+$/;
+    if (!usernameRegex.test(trimmedUsername) || trimmedUsername.length < 3) {
+      showToast(
+        "Error",
+        "Username format is invalid. Ensure it's 3+ chars, continuous, and only uses lowercase letters, numbers, hyphens, or underscores."
+      );
+      return;
+    }
+
+    // Minimum password length check (assuming 6 is the minimum)
+    if (trimmedPassword.length < 6) {
+      showToast(
+        "Error",
+        "Password must be at least 6 characters long.",
+        "error"
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/users/login", {
@@ -52,8 +79,8 @@ export function LoginCard() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          username: inputs.username.trim(),
-          password: inputs.password.trim(),
+          username: trimmedUsername,
+          password: trimmedPassword,
         }),
       });
       const data = await res.json();

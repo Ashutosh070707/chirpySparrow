@@ -31,7 +31,7 @@ function App() {
         <Flex>
           {loggedInUser && (
             <Box
-              w={{ base: "12%", sm: "10%", md: "10%", lg: "18%", xl: "16%" }}
+              minW={{ base: "12%", sm: "10%", md: "10%", lg: "18%", xl: "16%" }}
               overflowY="auto"
               className="custom-scrollbar"
             >
@@ -43,69 +43,69 @@ function App() {
             overflowY="auto"
             flex={1}
             className="custom-scrollbar"
-            bgColor={"black"}
+            bg="black"
           >
             <Routes>
               <Route
                 path="/"
                 element={loggedInUser ? <HomePage /> : <Navigate to="/auth" />}
-              ></Route>
+              />
               <Route
                 path="/auth"
                 element={!loggedInUser ? <AuthPage /> : <Navigate to="/" />}
-              ></Route>
+              />
               <Route
                 path="/update"
                 element={
                   loggedInUser ? <UpdateProfilePage /> : <Navigate to="/auth" />
                 }
-              ></Route>
+              />
               <Route
                 path="/:username"
                 element={loggedInUser ? <UserPage /> : <Navigate to="/auth" />}
-              ></Route>
+              />
               <Route
                 path="/search"
                 element={
                   loggedInUser ? <SearchUserPage /> : <Navigate to="/auth" />
                 }
-              ></Route>
+              />
               <Route
                 path="/create"
                 element={
                   loggedInUser ? <CreatePostPage /> : <Navigate to={"/auth"} />
                 }
-              ></Route>
+              />
               <Route
                 path="/:username/post/:pid"
                 element={
                   loggedInUser ? <PostPage /> : <Navigate to={"/auth"} />
                 }
-              ></Route>
+              />
               <Route
                 path="/chat"
                 element={
                   loggedInUser ? <ChatPage /> : <Navigate to={"/auth"} />
                 }
-              ></Route>
+              />
               <Route
                 path="/settings"
                 element={
                   loggedInUser ? <SettingsPage /> : <Navigate to={"/auth"} />
                 }
-              ></Route>
+              />
               <Route
                 path="/followers"
                 element={
                   loggedInUser ? <FollowersPage /> : <Navigate to="/auth" />
                 }
-              ></Route>
+              />
               <Route
                 path="/following"
                 element={
                   loggedInUser ? <FollowingPage /> : <Navigate to="/auth" />
                 }
-              ></Route>
+              />
               <Route
                 path="/freeze"
                 element={
@@ -115,13 +115,13 @@ function App() {
                     <Navigate to={"/auth"} />
                   )
                 }
-              ></Route>
+              />
               <Route
                 path="/delete"
                 element={
                   loggedInUser ? <DeleteAccountPage /> : <Navigate to="/auth" />
                 }
-              ></Route>
+              />
               <Route
                 path="*"
                 element={loggedInUser ? <HomePage /> : <Navigate to="/auth" />}

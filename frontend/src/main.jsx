@@ -3,50 +3,27 @@
 // which helps us to use various things like routing, Chakra components, Socket features (from socketContext file), etc inside our application.
 
 import { StrictMode } from "react";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { ColorModeScript } from "@chakra-ui/react";
-import { mode } from "@chakra-ui/theme-tools";
+import theme from "./theme";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { SocketContextProvider } from "../context/SocketContext.jsx";
 
-// This whole block contains code which provides styling globally to App. I mean, this is template to provide global styling
-// (color, font, etc) in chakra UI. (Nothing Special)
-const styles = {
-  global: (props) => ({
-    body: {
-      color: mode("gray.800", "whiteAlpha.900")(props),
-      bg: mode("gray.100", "#101010")(props),
-    },
-  }),
-};
-
-const config = {
-  initialColorMode: "dark",
-  useSystemColorMode: true,
-};
-
-const colors = {
-  gray: {
-    light: "#616261",
-    dark: "#1e1e1e",
-  },
-};
-const theme = extendTheme({ config, styles, colors });
-
-createRoot(document.getElementById("root")).render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(
   <StrictMode>
-    <RecoilRoot>
-      <BrowserRouter>
-        <ChakraProvider theme={theme}>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <RecoilRoot>
+        <BrowserRouter>
           <SocketContextProvider>
             <App />
           </SocketContextProvider>
-        </ChakraProvider>
-      </BrowserRouter>
-    </RecoilRoot>
+        </BrowserRouter>
+      </RecoilRoot>
+    </ChakraProvider>
   </StrictMode>
 );

@@ -15,10 +15,10 @@ import { app, io, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
 
 connectDB();
-// job.start(); // adding crons features( make a get request every 14 minutes)
+job.start(); // adding crons features( make a get request every 14 minutes)
 
 const PORT = process.env.PORT || 5000;
-// const __dirname = path.resolve(); // deployment
+const __dirname = path.resolve(); // deployment
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -38,13 +38,13 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/gemini", geminiRoutes);
 
 // This part is for Deployment::::::::::::::::::::::::::::::::::::
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static(path.join(__dirname, "/frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-//   });
-// }
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 //////////////////////////////////////////////////////////////
 
 // THis is part of both development and deployment::::::::::::::::;;
@@ -65,3 +65,11 @@ server.listen(PORT, () =>
 //     "dev": "nodemon server.js",
 //     "start": "node server.js"
 //   },
+
+// For deployment , just do these following things:
+//  1. Update server.js (uncomment deployment code)
+// 2. update package.json scripts object.
+// 3. Move package.json, .env file outside backend folder
+// 4. Uncomment job.start(), _dirname
+// 5. update socketContext.jsx folder in forntend/context folder
+//
